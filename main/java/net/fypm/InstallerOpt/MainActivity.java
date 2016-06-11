@@ -3,12 +3,14 @@ package net.fypm.InstallerOpt;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 import java.io.File;
 
@@ -19,14 +21,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String PREF_VERSION_CODE_KEY = "version_code";
-        final int DOESNT_EXIST = -1;
-        int savedVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(this).getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
         boolean enableDark = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean("enable_darkui", false);
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
-        if (savedVersionCode < 484) {
+        final String PREF_VERSION_CODE_KEY = "version_code";
+        final int DOESNT_EXIST = -1;
+        int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(MainActivity.this).getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
+        if (oldVersionCode < 500) {
             resetPreferences();
         }
         getFragmentManager().beginTransaction()
@@ -34,15 +36,10 @@ public class MainActivity extends Activity {
     }
 
     public void resetPreferences() {
-        String dirPath = this.getApplication().getFilesDir().getParentFile().getPath() + "/shared_prefs/";
-        File sharedPrefsFile = new File(dirPath, "net.fypm.InstallerOpt_preferences.xml");
-        if (sharedPrefsFile.exists()) {
-            boolean deleted = sharedPrefsFile.delete();
-            if (deleted) {
-                Toast.makeText(this, "Preferences reset",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.commit();
     }
 
     @SuppressLint("ValidFragment")
