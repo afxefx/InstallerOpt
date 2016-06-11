@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Application Preferences">
+    <PreferenceCategory android:title="@string/AppPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_hide_app_crashes"
@@ -17,7 +17,7 @@
             android:summary="@string/enable_disable_system_apps_summary"
             android:title="@string/enable_disable_system_apps_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Application Info Preferences">
+    <PreferenceCategory android:title="@string/AppInfoPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_launch_app"
@@ -34,7 +34,7 @@
             android:summary="@string/enable_package_name_summary"
             android:title="@string/enable_package_name_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Application Install Preferences">
+    <PreferenceCategory android:title="@string/AppInstPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_auto_hide_install"
@@ -81,7 +81,7 @@
             android:summary="@string/enable_install_unknown_apps_summary"
             android:title="@string/enable_install_unknown_apps_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Application Uninstall Preferences">
+    <PreferenceCategory android:title="@string/AppUninstPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_auto_uninstall"
@@ -103,7 +103,7 @@
             android:summary="@string/enable_uninstall_device_admin_summary"
             android:title="@string/enable_uninstall_device_admin_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Misc Preferences">
+    <PreferenceCategory android:title="@string/MiscPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_disable_verify_signatures"
@@ -160,7 +160,7 @@
             android:summary="@string/enable_show_buttons_summary"
             android:title="@string/enable_show_buttons_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Advanced">
+    <PreferenceCategory android:title="@string/advanced">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_hide_icon"
