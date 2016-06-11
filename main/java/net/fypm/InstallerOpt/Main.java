@@ -16,8 +16,10 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.LayoutInflater;
 
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
@@ -438,8 +440,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
                 if (enableVersion && enableVersionCode) {
                     String versionAll = versionInfo + "\n\n" + versionCode;
+
                     Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG)
                             .show();
+
+                    /*String msg = (String) XposedHelpers.getObjectField(
+                            param.thisObject, "msg");
+
+                    msg += versionAll;*/
+
                 }
 
                 if (enableAutoInstall) {

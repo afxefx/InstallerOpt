@@ -37,12 +37,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity-alias>
-        <receiver android:name=".BootReceiver">
+        <!--<receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
         <receiver android:name=".Utils">
             <intent-filter>
                 <action android:name="InstallerOpt.intent.action.BACKUP_APK_FILE"/>

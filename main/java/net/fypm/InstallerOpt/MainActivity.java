@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
-        if (savedVersionCode < 458 || savedVersionCode == DOESNT_EXIST) {
+        if (savedVersionCode < 484) {
             resetPreferences();
         }
         getFragmentManager().beginTransaction()
@@ -34,7 +34,8 @@ public class MainActivity extends Activity {
     }
 
     public void resetPreferences() {
-        File sharedPrefsFile = new File("/data/data/net.fypm.InstallerOpt/shared_prefs/net.fypm.InstallerOpt_preferences.xml");
+        String dirPath = this.getApplication().getFilesDir().getParentFile().getPath() + "/shared_prefs/";
+        File sharedPrefsFile = new File(dirPath, "net.fypm.InstallerOpt_preferences.xml");
         if (sharedPrefsFile.exists()) {
             boolean deleted = sharedPrefsFile.delete();
             if (deleted) {
@@ -114,13 +115,14 @@ public class MainActivity extends Activity {
                 activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
                 MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean("enabled_hide_icon", false).apply();
                 //Fix below absolute path to use relative
-                File sharedPrefsFileOld = new File("/data/data/net.fypm.InstallerOpt/shared_prefs/prefs.xml");
+                String dirPath = activity.getFilesDir().getParentFile().getPath() + "/shared_prefs/";
+                File sharedPrefsFileOld = new File(dirPath, "prefs.xml");
                 if (sharedPrefsFileOld.exists()) {
                     boolean deleted = sharedPrefsFileOld.delete();
                     if (deleted) {
-                        Main.xlog_start("checkFirstRun - First run or data has been cleared");
-                        Main.xlog("Old preference file found and deleted", null);
-                        Main.xlog_end("checkFirstRun - First run or data has been cleared");
+                        //Main.xlog_start("checkFirstRun - First run or data has been cleared");
+                        //Main.xlog("Old preference file found and deleted", null);
+                        //Main.xlog_end("checkFirstRun - First run or data has been cleared");
                         //XposedBridge.log("Old preference file found and deleted");
                     }
                 }
