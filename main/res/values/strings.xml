@@ -79,4 +79,10 @@
     <string name="enable_version_summary">Shows current and new version of application prior to installing</string>
     <string name="enable_version_title">Version Display</string>
     <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
+    <string name="AppPrefs">Application Preferences</string>
+    <string name="AppInfoPrefs">Application Info Preferences</string>
+    <string name="AppInstPrefs">Application Install Preferences</string>
+    <string name="AppUninstPrefs">Application Uninstall Preferences</string>
+    <string name="MiscPrefs">Misc Preferences</string>
+    <string name="advanced">Advanced</string>
 </resources>
