@@ -5,12 +5,12 @@
     <string name="check_signatures">Kontrolovanie podpisov</string>
     <string name="confirm_check_signatures">Potvrdzovanie kontroly podpisov</string>
     <string name="confirm_check_signatures_message">Zakázať kontrolu podpisov pre túto inštaláciu?</string>
-    <string name="current_version">Aktuálna verzia</string>
-    <string name="current_version_code">Kód aktuálnej verzie</string>
+    <string name="current_version">Aktuálna verzia:</string>
+    <string name="current_version_code">Kód aktuálnej verzie:</string>
     <string name="disable">Zakázať</string>
     <string name="enable">Povoliť</string>
-    <string name="new_version">Nová verzia</string>
-    <string name="new_version_code">Kód novej verzie</string>
+    <string name="new_version">Nová verzia:</string>
+    <string name="new_version_code">Kód novej verzie:</string>
 	
     <!--Preferences-->	
 	<!--AppPrefs-->
@@ -49,6 +49,8 @@
     <string name="enable_version_code_summary">Zobrazí kód aktuálnej a novej verzie pri inštalovaní aplikácie</string>
     <string name="enable_version_title">Zobrazenie verzie</string>
     <string name="enable_version_summary">Zobrazí aktuálnu a novú verziu pri inštalovaní aplikácie</string>
+    <string name="enable_version_toast_title">Toast informácie o verzii</string>
+    <string name="enable_version_toast_summary">Zobrazí informácie o verzii v toast upozornení</string>
     <string name="enable_install_unknown_apps_title">Neznáme aplikácie</string>
     <string name="enable_install_unknown_apps_summary">Povolí nainštalovanie neznámych aplikácií</string>
 	
