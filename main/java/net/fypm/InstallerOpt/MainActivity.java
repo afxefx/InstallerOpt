@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
         final String PREF_VERSION_CODE_KEY = "version_code";
         final int DOESNT_EXIST = -1;
         int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(MainActivity.this).getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
-        if (oldVersionCode < 500) {
+        if (oldVersionCode < 538) {
             resetPreferences();
         }
         getFragmentManager().beginTransaction()

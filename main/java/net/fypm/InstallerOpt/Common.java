@@ -82,6 +82,7 @@ public class Common {
     public static final String PREF_ENABLE_SHOW_BUTTON = "enable_show_buttons";
     public static final String PREF_ENABLE_SHOW_PACKAGE_NAME = "enable_package_name";
     public static final String PREF_ENABLE_SHOW_VERSION = "enable_version";
+    public static final String PREF_ENABLE_SHOW_VERSION_TOAST = "enable_version_toast";
     public static final String PREF_ENABLE_SHOW_VERSION_CODE = "enable_version_code";
     public static final String PREF_ENABLE_UNINSTALL_DEVICE_ADMIN = "enable_uninstall_device_admin";
     public static final String PREF_ENABLE_UNINSTALL_SYSTEM_APP = "enable_uninstall_system_apps";

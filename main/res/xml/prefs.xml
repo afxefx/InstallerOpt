@@ -77,6 +77,11 @@
             android:title="@string/enable_version_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="enable_version_toast"
+            android:summary="@string/enable_version_toast_summary"
+            android:title="@string/enable_version_toast_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="enable_install_unknown_apps"
             android:summary="@string/enable_install_unknown_apps_summary"
             android:title="@string/enable_install_unknown_apps_title" />

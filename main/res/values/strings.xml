@@ -5,12 +5,12 @@
     <string name="check_signatures">Checking signatures</string>
     <string name="confirm_check_signatures">Confirming signatures check</string>
     <string name="confirm_check_signatures_message">Disable signatures check for this installation?</string>
-    <string name="current_version">Current version</string>
-    <string name="current_version_code">Current version code</string>
+    <string name="current_version">Current version:</string>
+    <string name="current_version_code">Current version code:</string>
     <string name="disable">Disable</string>
     <string name="enable">Enable</string>
-    <string name="new_version">New version</string>
-    <string name="new_version_code">New version code</string>
+    <string name="new_version">New version:</string>
+    <string name="new_version_code">New version code:</string>
     <!--Preferences-->
     <string name="enable_auto_install_close_summary">Automatically closes application installation window upon completion</string>
     <string name="enable_auto_install_close_title">Auto Install Close</string>
@@ -78,6 +78,8 @@
     <string name="enable_version_code_title">Version Code Display</string>
     <string name="enable_version_summary">Shows current and new version of application prior to installing</string>
     <string name="enable_version_title">Version Display</string>
+    <string name="enable_version_toast_summary">Shows version information in a toast</string>
+    <string name="enable_version_toast_title">Version Info Toast</string>
     <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
     <string name="AppPrefs">Application Preferences</string>
     <string name="AppInfoPrefs">Application Info Preferences</string>

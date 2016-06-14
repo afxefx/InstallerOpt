@@ -16,15 +16,16 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.LayoutInflater;
 
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
 
+import de.robv.android.xposed.IXposedHookInitPackageResources;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
+import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -34,12 +35,13 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XSharedPreferences;
 
-public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
+public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
     public XC_MethodHook appInfoHook;
     public XC_MethodHook autoCloseInstallHook;
     public XC_MethodHook autoHideInstallHook;
     public XC_MethodHook autoInstallHook;
+    public XC_LayoutInflated autoInstallHook2;
     public XC_MethodHook autoCloseUninstallHook;
     public XC_MethodHook autoUninstallHook;
     public XC_MethodHook bootCompletedHook;
@@ -66,8 +68,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     public Class<?> disableChangerClass;
     public Context mContext;
-    public static int appCrash;
-    public static int errorCount;
+    public TextView view;
     public static boolean bootCompleted;
     public static XSharedPreferences prefs;
     public static boolean autoInstallCanceled;
@@ -97,6 +98,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     public static boolean enablePlay;
     public static boolean enableVersion;
     public static boolean enableVersionCode;
+    public static boolean enableVersionToast;
     public static boolean forwardLock;
     public static boolean hideAppCrashes;
     public static boolean installAppsOnExternal;
@@ -110,9 +112,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
-
-        appCrash = 0;
-        errorCount = 0;
 
         //xlog("bootCompleted value at initZygote", bootCompleted);
 
@@ -347,15 +346,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
         autoInstallHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+            public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, getInstallerOptContext());
                 enableVersionCode = getPref(Common.PREF_ENABLE_SHOW_VERSION_CODE, getInstallerOptContext());
+                enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, getInstallerOptContext());
                 enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, getInstallerOptContext());
                 //Add below two in prefs
                 //checkSignatures = getPref("enabled_disable_sig_check", getInstallerOptContext());
                 confirmCheckSignatures = getPref("enabled_confirm_check_signatures", getInstallerOptContext());
+                //int msg = (int) XposedHelpers.getObjectField(param.thisObject, "msg");
                 int newCode = 0;
                 int currentCode = 0;
                 PackageInfo pi = null;
@@ -372,14 +373,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 Resources res = getInstallerOptContext().getResources();
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = res.getString(R.string.new_version)
-                        + ": " + mPkgInfo.versionName;
+                versionInfo = res.getString(R.string.new_version) + "        " + newVersion;
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += "\n"
-                            + res.getString(R.string.current_version)
-                            + ": " + currentVersion;
+                    versionInfo += "\n" + res.getString(R.string.current_version) + "   " + currentVersion;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -388,26 +386,21 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     }
                 }
                 if (enableVersion && !enableVersionCode) {
-                    Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG)
-                            .show();
-                }
+                    CharSequence temp = view.getText();
+                    temp = temp + "\n\n" + versionInfo;
+                    view.setText(temp);
 
-                   /*Button mOk2 = (Button) XposedHelpers.getObjectField(
-                            param.thisObject, "mOk");
-                    PackageManager mPm2 = mContext.getPackageManager();
-                    PackageInfo mPkgInfo2 = (PackageInfo) XposedHelpers
-                            .getObjectField(param.thisObject, "mPkgInfo");
-                    Resources res2 = getInstallerOptContext().getResources();
-                    String packageName2 = mPkgInfo.packageName;*/
+                    if (enableVersionToast) {
+                        Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
                 newCode = mPkgInfo.versionCode;
-                versionCode = res.getString(R.string.new_version_code)
-                        + ": " + mPkgInfo.versionCode;
+                versionCode = res.getString(R.string.new_version_code) + "        " + newCode;
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += "\n"
-                            + res.getString(R.string.current_version_code)
-                            + ": " + currentCode;
+                    versionCode += "\n" + res.getString(R.string.current_version_code) + "   " + currentCode;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -416,8 +409,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     }
                 }
                 if (enableVersionCode && !enableVersion) {
-                    Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG)
-                            .show();
+                    CharSequence temp = view.getText();
+                    temp = temp + "\n\n" + versionCode;
+                    view.setText(temp);
+
+                    if (enableVersionToast) {
+                        Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG)
+                                .show();
+                    }
                 }
 
                 if (enableDebug) {
@@ -440,15 +439,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
 
                 if (enableVersion && enableVersionCode) {
                     String versionAll = versionInfo + "\n\n" + versionCode;
+                    CharSequence temp = view.getText();
+                    temp = temp + "\n\n" + versionAll;
+                    view.setText(temp);
 
-                    Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG)
-                            .show();
-
-                    /*String msg = (String) XposedHelpers.getObjectField(
-                            param.thisObject, "msg");
-
-                    msg += versionAll;*/
-
+                    if (enableVersionToast) {
+                        Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG)
+                                .show();
+                    }
                 }
 
                 if (enableAutoInstall) {
@@ -473,6 +471,39 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     getInstallerOptContext().sendBroadcast(confirmSignatureCheck);
 
                 }
+
+
+
+                /*ScrollView mScrollView = (ScrollView) XposedHelpers.getObjectField(
+                        param.thisObject, "mScrollView");
+                TextView label = (TextView) XposedHelpers.getObjectField(
+                        param.thisObject, "label");
+                TextView label = new TextView(mContext);
+                label.setText("blahblah");*/
+                //mScrollView.addView(label);
+                //setPref(getInstallerOptContext(), "app_version", null, 0, versionInfo);
+                //setPref(getInstallerOptContext(), "app_version_code", null, 0, versionCode);
+            }
+        };
+
+
+        autoInstallHook2 = new XC_LayoutInflated() {
+            @Override
+            public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+                //versionCode = getPrefString("app_version", getInstallerOptContext());
+                //versionInfo = getPrefString("app_version_code", getInstallerOptContext());
+
+                view = (TextView) liparam.view.findViewById(
+                        liparam.res.getIdentifier("install_confirm_question", "id", Common.PACKAGEINSTALLER_PKG));
+                /*CharSequence temp = view.getText();
+                temp = "\n\n" + versionInfo + "\n\n" + versionCode;
+                view.setText(temp);
+
+                String versionInfo = null;
+                String versionCode = null;*/
+
+                //MultiprocessPreferences.edit(mContext).remove("app_version");
+                //MultiprocessPreferences.edit(mContext).remove("app_version_code");
             }
         };
 
@@ -732,8 +763,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                 hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
                 if (hideAppCrashes) {
                     xlog("hideAppCrashes set to", hideAppCrashes);
-                            XposedHelpers.setObjectField(param.thisObject,
-                                    "DISMISS_TIMEOUT", 0);
+                    XposedHelpers.setObjectField(param.thisObject,
+                            "DISMISS_TIMEOUT", 0);
                 }
             }
         };
@@ -1247,6 +1278,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
                     lpparam.classLoader, "startInstallConfirm",
                     autoInstallHook);
 
+            XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
+                    lpparam.classLoader, "initiateInstall",
+                    autoInstallHook2);
+
             XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS + "$1",
                     lpparam.classLoader, "handleMessage", Message.class,
                     autoCloseInstallHook);
@@ -1332,6 +1367,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         }
     }
 
+    @Override
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        if (!resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG))
+            return;
+
+        resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_start", autoInstallHook2);
+    }
+
 
     public void backupApkFile(String apkFile) {
         Intent backupApkFile = new Intent(Common.ACTION_BACKUP_APK_FILE);
@@ -1380,8 +1423,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         return context;
     }
 
-    public static boolean getPref(String pref, Context context) {
+    public static Boolean getPref(String pref, Context context) {
         return MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(pref, false);
+    }
+
+    public static String getPrefString(String pref, Context context) {
+        return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(pref, null);
     }
 
     public boolean isExpertModeEnabled() {
@@ -1402,7 +1449,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         prefs.makeWorldReadable();
         prefs.reload();*/
         //autoInstallCanceled;
-        backupApkFiles = prefs.getBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false);;
+        backupApkFiles = prefs.getBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false);
+        ;
         checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
         checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
         checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
@@ -1428,6 +1476,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         enablePlay = prefs.getBoolean(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, false);
         enableVersion = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION, false);
         enableVersionCode = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION_CODE, false);
+        enableVersionToast = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION_TOAST, false);
         forwardLock = prefs.getBoolean(Common.PREF_DISABLE_FORWARD_LOCK, false);
         hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
         installAppsOnExternal = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, false);
@@ -1440,8 +1489,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage {
         verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
     }
 
-    public static void setPref(Context context, String pref, Boolean value) {
-        MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putBoolean(pref, value).apply();
+    public static void setPref(Context context, String pref, Boolean value, int value2, String value3) {
+        if (value != null) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putBoolean(pref, value).apply();
+        }
+        if (value2 != 0) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putInt(pref, value2).apply();
+        }
+        if (value3 != null) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(pref, value3).apply();
+        }
     }
 
     public void uninstallSystemApp(String packageName) {
