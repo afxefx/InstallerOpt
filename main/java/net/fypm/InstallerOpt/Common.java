@@ -23,7 +23,7 @@ public class Common {
 
     //Prefs
     public static final String PREF_APP_HELP = "app_help";
-    public static final String PREF_ENABLE_APP_ICON = "enable_app_icon";
+    public static final String PREF_ENABLE_HIDE_APP_ICON = "enable_hide_icon";
     public static final String PREF_APP_TRANSLATOR = "app_translator";
     public static final String PREF_APP_LOCALE = "app_locale";
     public static final String PREF_APP_VERSION = "app_version";
@@ -61,6 +61,7 @@ public class Common {
     public static final String PREF_ENABLE_BACKUP_APP_PACKAGE = "enable_backup_app_packages";
     public static final String PREF_ENABLE_CHANGE_DEVICE_PROPERTIES = "enable_change_device_properties";
     public static final String PREF_ENABLE_CONFIRM_CHECK_SIGNATURE = "enable_confirm_check_signatures";
+    public static final String PREF_ENABLE_DARK_THEME = "enable_darkui";
     public static final String PREF_ENABLE_DEBUG = "enable_debug";
     public static final String PREF_ENABLE_DEBUG_APP = "enable_debug_apps";
     public static final String PREF_ENABLE_DELETE_APK_FILE_INSTALL = "enable_delete_apk_files";
@@ -87,6 +88,7 @@ public class Common {
     public static final String PREF_ENABLE_UNINSTALL_DEVICE_ADMIN = "enable_uninstall_device_admin";
     public static final String PREF_ENABLE_UNINSTALL_SYSTEM_APP = "enable_uninstall_system_apps";
     public static final String PREF_ENABLE_DOWNGRADE_APP = "enable_downgrade_apps";
+    public static final String PREF_VERSION_CODE_KEY = "version_code";
 
     // Constants
     public static final int LATEST_ANDROID_RELEASE = 24; // Android N
@@ -131,6 +133,7 @@ public class Common {
     // Flags
     public static final int DEBUG_ENABLE_DEBUGGER = 0x1;
     public static final int DELETE_KEEP_DATA = 0x00000001;
+    public static final int DOESNT_EXIST = -1;
     public static final int INSTALL_ALLOW_DOWNGRADE = 0x00000080;
     public static final int INSTALL_EXTERNAL = 0x00000008;
     public static final int INSTALL_FORWARD_LOCK = 0x00000001;
