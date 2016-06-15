@@ -50,7 +50,7 @@ public class Common {
     public static final String PREF_DISABLE_VERIFY_SIGNATURE = "enable_disable_verify_signatures";
     public static final String PREF_ENABLE = "enable";
     public static final String PREF_ENABLE_AUTO_BACKUP = "enable_auto_backup";
-    public static final String PREF_ENABLE_AUTO_CLOSE_INSTALL = "enable_auto_install_close";
+    public static final String PREF_ENABLE_AUTO_CLOSE_INSTALL = "enable_auto_close_install";
     public static final String PREF_ENABLE_AUTO_CLOSE_UNINSTALL = "enable_auto_close_uninstall";
     public static final String PREF_ENABLE_AUTO_ENABLE_CLEAR_BUTTON = "enable_auto_enable_clear_buttons";
     public static final String PREF_ENABLE_AUTO_HIDE_INSTALL = "enable_auto_hide_install";
@@ -75,7 +75,7 @@ public class Common {
     public static final String PREF_ENABLE_INSTALL_UNSIGNED_APP = "enable_install_unsigned_apps";
     public static final String PREF_ENABLE_KEEP_APP_DATA = "enable_keep_apps_data";
     public static final String PREF_ENABLE_LAUNCH_APP = "enable_launch_app";
-    public static final String PREF_ENABLE_LAUNCH_INSTALL = "enable_auto_install_launch";
+    public static final String PREF_ENABLE_AUTO_LAUNCH_INSTALL = "enable_auto_install_launch";
     public static final String PREF_ENABLE_MODULE = "enable_module";
     public static final String PREF_ENABLE_MOVE_APP = "enable_move_apps";
     public static final String PREF_ENABLE_OPEN_APP_GOOGLE_PLAY = "enable_play_open";

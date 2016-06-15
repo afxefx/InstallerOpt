@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
         }
 
         int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(MainActivity.this).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
-        if (oldVersionCode < 538) {
+        if (oldVersionCode < 559) {
             resetPreferences();
         }
         getFragmentManager().beginTransaction()
@@ -53,10 +53,10 @@ public class MainActivity extends Activity {
             super.onCreate(savedInstanceState);
             Activity activity = getActivity();
             stateOfClose = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);
-            stateOfLaunch = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_LAUNCH_INSTALL, false);
+            stateOfLaunch = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false);
             if (stateOfClose && stateOfLaunch) {
                 MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false).apply();
-                MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_LAUNCH_INSTALL, false).apply();
+                MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
             }
             checkFirstRun();
             getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_HIDE_APP_ICON).setOnPreferenceChangeListener(changeListenerLauncher);
             findPreference(Common.PREF_ENABLE_DARK_THEME).setOnPreferenceChangeListener(changeListenerLauncher2);
             findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher3);
-            findPreference(Common.PREF_ENABLE_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
+            findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
             //findPreference("enabled_version").setOnPreferenceChangeListener(changeListenerLauncher5);
         }
 
@@ -101,7 +101,7 @@ public class MainActivity extends Activity {
             } else if (savedVersionCode == Common.DOESNT_EXIST) {
 
                 // New install or shared preferences cleared
-                Toast.makeText(getActivity(), "First run detected, resetting preferences to avoid conflicts", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Resetting preferences to avoid conflicts", Toast.LENGTH_LONG).show();
                 Activity activity = getActivity();
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
@@ -170,10 +170,10 @@ public class MainActivity extends Activity {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Activity activity = getActivity();
                 if (newValue.equals(true) ) {
-                    findPreference(Common.PREF_ENABLE_LAUNCH_INSTALL).setEnabled(false);
-                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_LAUNCH_INSTALL, false).apply();
+                    findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setEnabled(false);
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
                 } else {
-                    findPreference(Common.PREF_ENABLE_LAUNCH_INSTALL).setEnabled(true);
+                    findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setEnabled(true);
                 }
                 return true;
             }

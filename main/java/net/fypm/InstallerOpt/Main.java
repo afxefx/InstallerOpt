@@ -69,7 +69,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public Class<?> disableChangerClass;
     public Context mContext;
     public TextView view;
-    public static boolean bootCompleted;
+    //public static boolean bootCompleted;
     public static XSharedPreferences prefs;
     public static boolean autoInstallCanceled;
     public static boolean backupApkFiles;
@@ -88,8 +88,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean downgradeApps;
     public static boolean enableAutoHideInstall;
     public static boolean enableAutoInstall;
-    public static boolean enableAutoInstallClose;
-    public static boolean enableAutoInstallLaunch;
+    public static boolean enableAutoCloseInstall;
+    public static boolean enableAutoLaunchInstall;
     public static boolean enableAutoCloseUninstall;
     public static boolean enableAutoUninstall;
     public static boolean enableDebug;
@@ -280,8 +280,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableAutoInstallClose = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
-                enableAutoInstallLaunch = getPref(Common.PREF_ENABLE_LAUNCH_INSTALL, getInstallerOptContext());
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
+                enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
+                enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, getInstallerOptContext());
                 deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
 
                 Button mLaunch = (Button) XposedHelpers.getObjectField(
@@ -294,13 +295,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     installedApp = (msg.arg1 == Common.INSTALL_SUCCEEDED);
                 }
 
-                if (enableAutoInstallLaunch) {
+                if (enableAutoLaunchInstall) {
                     if (installedApp && mLaunch != null) {
                         mLaunch.performClick();
                     }
                 }
 
-                if (enableAutoInstallClose) {
+                if (enableAutoCloseInstall) {
                     Button mDone = (Button) XposedHelpers.getObjectField(
                             XposedHelpers.getSurroundingThis(param.thisObject),
                             "mDoneButton");
@@ -312,6 +313,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         appInstalledText = (String) resources.getText(resources
                                 .getIdentifier("install_done", "string",
                                         Common.PACKAGEINSTALLER_PKG));
+                        if(enableDebug){
+                            xlog("mDone", mDone);
+                            xlog("appInstalledText", appInstalledText);
+                        }
                         if (!appInstalledText.isEmpty()) {
                             Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();
@@ -328,6 +333,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             "mPackageURI");
                     String apkFile = packageUri.getPath();
                     deleteApkFile(apkFile);
+                }
+
+                if (enableDebug) {
+                    xlog_start("autoCloseInstallHook");
+                    xlog("Auto close install status", enableAutoCloseInstall);
+                    xlog("Auto launch isntall status", enableAutoLaunchInstall);
+                    xlog("mLaunch", mLaunch);
+                    xlog("msg", msg);
+                    xlog("installedApp status", installedApp);
+                    xlog_end("autoCloseInstallHook");
                 }
             }
         };
@@ -373,11 +388,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 Resources res = getInstallerOptContext().getResources();
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = res.getString(R.string.new_version) + "        " + newVersion;
+                versionInfo = res.getString(R.string.new_version) + newVersion;
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += "\n" + res.getString(R.string.current_version) + "   " + currentVersion;
+                    versionInfo += "\n" + res.getString(R.string.current_version) + currentVersion;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -396,11 +411,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 newCode = mPkgInfo.versionCode;
-                versionCode = res.getString(R.string.new_version_code) + "        " + newCode;
+                versionCode = res.getString(R.string.new_version_code) + newCode;
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += "\n" + res.getString(R.string.current_version_code) + "   " + currentCode;
+                    versionCode += "\n" + res.getString(R.string.current_version_code) + currentCode;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -539,7 +554,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
             }
 
-            /*@Override
+            @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, getInstallerOptContext());
@@ -552,7 +567,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
 
                 }
-            }*/
+            }
 
         };
 
@@ -1250,7 +1265,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         }
 
-
         if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
             if (Common.LOLLIPOP_MR1_NEWER) {
                 // 5.1 and newer
@@ -1277,10 +1291,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
                     lpparam.classLoader, "startInstallConfirm",
                     autoInstallHook);
-
-            XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
-                    lpparam.classLoader, "initiateInstall",
-                    autoInstallHook2);
 
             XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS + "$1",
                     lpparam.classLoader, "handleMessage", Message.class,
@@ -1369,9 +1379,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (!resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG))
-            return;
-
+        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG))
         resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_start", autoInstallHook2);
     }
 
@@ -1466,8 +1474,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         downgradeApps = prefs.getBoolean(Common.PREF_ENABLE_DOWNGRADE_APP, false);
         enableAutoHideInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, false);
         enableAutoInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_INSTALL, false);
-        enableAutoInstallClose = prefs.getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);
-        enableAutoInstallLaunch = prefs.getBoolean(Common.PREF_ENABLE_LAUNCH_INSTALL, false);
+        enableAutoCloseInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);
+        enableAutoLaunchInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false);
         enableAutoCloseUninstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_UNINSTALL, false);
         enableAutoUninstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_UNINSTALL, false);
         enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);

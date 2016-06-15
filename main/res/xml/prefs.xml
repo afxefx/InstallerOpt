@@ -47,9 +47,9 @@
             android:title="@string/enable_auto_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_auto_install_close"
-            android:summary="@string/enable_auto_install_close_summary"
-            android:title="@string/enable_auto_install_close_title" />
+            android:key="enable_auto_close_install"
+            android:summary="@string/enable_auto_close_install_summary"
+            android:title="@string/enable_auto_close_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_auto_install_launch"
