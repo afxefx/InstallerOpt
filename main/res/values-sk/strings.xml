@@ -5,12 +5,12 @@
     <string name="check_signatures">Kontrolovanie podpisov</string>
     <string name="confirm_check_signatures">Potvrdzovanie kontroly podpisov</string>
     <string name="confirm_check_signatures_message">Zakázať kontrolu podpisov pre túto inštaláciu?</string>
-    <string name="current_version">Aktuálna verzia:</string>
-    <string name="current_version_code">Kód aktuálnej verzie:</string>
+    <string name="current_version">Aktuálna verzia: </string>
+    <string name="current_version_code">Kód aktuálnej verzie: </string>
     <string name="disable">Zakázať</string>
     <string name="enable">Povoliť</string>
-    <string name="new_version">Nová verzia:</string>
-    <string name="new_version_code">Kód novej verzie:</string>
+    <string name="new_version">Nová verzia: </string>
+    <string name="new_version_code">Kód novej verzie: </string>
 	
     <!--Preferences-->	
 	<!--AppPrefs-->
@@ -37,8 +37,8 @@
     <string name="enable_auto_hide_install_summary">Automaticky skryje okno inštalácie</string>
     <string name="enable_auto_install_title">Automatická inštalácia</string>
     <string name="enable_auto_install_summary">Autoamticky nainštaluje aplikáciu bez zásahu používateľa</string>
-    <string name="enable_auto_install_close_title">Automatické zavretie po nainštalovaní</string>
-    <string name="enable_auto_install_close_summary">Automaticky zavrie okno po nainštalovaní</string>
+    <string name="enable_auto_close_install_title">Automatické zavretie po nainštalovaní</string>
+    <string name="enable_auto_close_install_summary">Automaticky zavrie okno po nainštalovaní</string>
     <string name="enable_auto_install_launch_title">Automatické spustenie po nainštalovaní</string>
     <string name="enable_auto_install_launch_summary">Automaticky spustí aplikáciu po nainštalovaní</string>
     <string name="disable_verify_apps_title">Zakázať overovanie aplikácie</string>
