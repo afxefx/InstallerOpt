@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="net.fypm.InstallerOpt">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
@@ -46,12 +47,12 @@
         <receiver android:name=".Utils">
             <intent-filter>
                 <action android:name="InstallerOpt.intent.action.BACKUP_APK_FILE"/>
-                <action android:name="InstallerOpt.intent.action.DELETE_APK_FILE"/>
-                <action android:name="InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP"/>
                 <action android:name="InstallerOpt.intent.action.BACKUP_PREFERENCES"/>
-                <action android:name="InstallerOpt.intent.action.RESTORE_PREFERENCES"/>
-                <action android:name="InstallerOpt.intent.action.RESET_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.CONFIRM_CHECK_SIGNATURE"/>
+                <action android:name="InstallerOpt.intent.action.DELETE_APK_FILE"/>
+                <action android:name="InstallerOpt.intent.action.RESET_PREFERENCES"/>
+                <action android:name="InstallerOpt.intent.action.RESTORE_PREFERENCES"/>
+                <action android:name="InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP"/>
             </intent-filter>
         </receiver>
 

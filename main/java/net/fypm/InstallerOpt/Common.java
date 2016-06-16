@@ -95,6 +95,7 @@ public class Common {
     public static final String ANDROID_PKG = "android";
     public static final String EMPTY_STRING = "";
     public static final String GOOGLE_PACKAGEINSTALLER_PKG = "com.google.android.packageinstaller";
+    public static final String INSTALLEROPT = "net.fypm.InstallerOpt";
     public static final String LUCKYPATCHER_PKG = "com.android.vending.billing.InAppBillingService.LUCK";
     public static final String PACKAGE_NAME = Main.class.getPackage().getName();
     public static final String PACKAGE_PREFERENCES = PACKAGE_NAME + "_preferences";
@@ -102,7 +103,6 @@ public class Common {
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
     public static final String SETTINGS_PKG = "com.android.settings";
     public static final String SYSTEM_UI = "com.android.systemui";
-    public static final String INSTALLEROPT = "net.fypm.InstallerOpt";
 
     // Checks
     public static final int SDK = Build.VERSION.SDK_INT;

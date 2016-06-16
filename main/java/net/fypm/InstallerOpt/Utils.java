@@ -1,6 +1,5 @@
 package net.fypm.InstallerOpt;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
@@ -22,11 +22,10 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import de.robv.android.xposed.XposedBridge;
-import net.fypm.InstallerOpt.Main;
-
 @SuppressWarnings("deprecation")
 public class Utils extends BroadcastReceiver {
+
+    private static final String TAG = "InstallerOpt";
 
     public static final String APP_DIR = Environment
             .getExternalStorageDirectory()
@@ -38,11 +37,28 @@ public class Utils extends BroadcastReceiver {
     //       + File.separator + Common.PACKAGE_TAG + ".backup");
     public Context ctx;
     public Resources resources;
+    public static boolean enableDebug;
+    Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
+    File sdCard = externalLocations.get(ExternalStorage.SD_CARD);
+    File externalSdCard = externalLocations.get(ExternalStorage.EXTERNAL_SD_CARD);
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!PACKAGE_DIR.exists()) {
-            PACKAGE_DIR.mkdir();
+        enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        if (enableDebug) {
+            Log.i(TAG, "sdCard equals: " + sdCard);
+            Log.i(TAG, "externalSdCard equals: " + externalSdCard);
+        }
+        try {
+            if (!PACKAGE_DIR.exists()) {
+                if (PACKAGE_DIR.mkdir()) {
+                    Log.i(TAG, "Package directory: " + APP_DIR + " created successfully");
+                } else {
+                    Log.e(TAG, "Package directory: " + APP_DIR + " was not created successfully");
+                }
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "Error creating package directory: ", t);
         }
         ctx = context;
         resources = ctx.getResources();
@@ -77,39 +93,54 @@ public class Utils extends BroadcastReceiver {
     }
 
     public void backupApkFile(String apkFile) {
-        PackageManager pm = ctx.getPackageManager();
         try {
-            //xlog_start("backupApkFilesMethod");
-            //xlog("APK file", apkFile);
+            PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageArchiveInfo(apkFile, 0);
-            //xlog("Package info", pi);
-            pi.applicationInfo.publicSourceDir = apkFile;
-            //xlog("Public source dir", pi.applicationInfo.publicSourceDir);
             pi.applicationInfo.sourceDir = apkFile;
-            //xlog("Source dir", pi.applicationInfo.sourceDir);
+            pi.applicationInfo.publicSourceDir = apkFile;
             ApplicationInfo ai = pi.applicationInfo;
-            //xlog("Application info", ai);
             String appName = (String) pm.getApplicationLabel(ai);
-            //xlog("App name", appName);
             String versionName = pi.versionName;
-            //xlog("Version name", versionName);
             String fileName = appName + " " + versionName + ".apk";
-            //xlog("File name", fileName);
             String backupApkFile = APP_DIR + fileName;
-            //xlog("Backup apk file", backupApkFile);
             File src = new File(apkFile);
-            //xlog("Source file", src);
             File dst = new File(backupApkFile);
-            //xlog("Destination file", dst);
-            if (!dst.equals(src)) {
-                copyFile(src, dst);
+            if (enableDebug) {
+                Log.i(TAG, "backupApkFile Debug Start");
+                Log.i(TAG, "Backup directory: " + APP_DIR);
+                Log.i(TAG, "APK file: " + apkFile);
+                Log.i(TAG, "pm: " + pm);
+                Log.i(TAG, "pi: " + pi);
+                Log.i(TAG, "applicationInfo sourceDir: " + pi.applicationInfo.sourceDir);
+                Log.i(TAG, "applicationInfo.publicSourceDir: " + pi.applicationInfo.publicSourceDir);
+                Log.i(TAG, "ai: " + ai);
+                Log.i(TAG, "appName: " + appName);
+                Log.i(TAG, "versionName: " + versionName);
+                Log.i(TAG, "fileName: " + fileName);
+                Log.i(TAG, "backupApkFile: " + backupApkFile);
+                Log.i(TAG, "Source file " + src);
+                Log.i(TAG, "Destination file " + dst);
+                Log.i(TAG, "backupApkFile Debug End");
             }
-            //xlog_end("backupApkFilesMethod");
+            if (!dst.equals(src)) {
+                if (copyFile(src, dst)) {
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully backed up",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.i(TAG, "APK file " + apkFile + " successfully backed up");
+                } else {
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully backed up",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.e(TAG, "APK file " + apkFile + " was not successfully backed up");
+                }
+            }
         } catch (Exception e) {
-            XposedBridge.log(e);
-            //xlog_start("backupApkFilesMethod Exception");
-            //xlog("/n", e);
-            //xlog_end("backupApkFilesMethod Exception");
+            Log.e(TAG, "backupApkFile Error Debug Start");
+            Log.e(TAG, "Error caught: " + e);
+            Log.e(TAG, "backupApkFile Error Debug End");
         }
     }
 
@@ -120,36 +151,42 @@ public class Utils extends BroadcastReceiver {
         ctx.startActivity(openConfirmCheckSignatures);
     }
 
-    public void copyFile(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
+    public boolean copyFile(File src, File dst) throws IOException {
+        try {
+            InputStream in = new FileInputStream(src);
+            OutputStream out = new FileOutputStream(dst);
 
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+            return true;
+        } catch (Throwable t) {
+            Log.e(TAG, "Error in copyFile: ", t);
+            return false;
         }
-        in.close();
-        out.close();
     }
 
     public void deleteApkFile(String apkFile) {
         File apk = new File(apkFile);
         if (apk.exists()) {
-            apk.delete();
+            if(apk.delete()) {
+                if (enableDebug) {
+                    Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
+                            Toast.LENGTH_LONG).show();
+                }
+                Log.i(TAG, "APK file " + apkFile + " successfully deleted");
+            } else {
+                if (enableDebug) {
+                    Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
+                            Toast.LENGTH_LONG).show();
+                }
+                Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
+            }
         }
-    }
-
-    public static void xlog(String description, Object object) {
-        XposedBridge.log(description + ": " + object);
-    }
-
-    public static void xlog_start(String text) {
-        XposedBridge.log("[ InstallerOpt Debug Start - " + text + " ]");
-    }
-
-    public static void xlog_end(String text) {
-        XposedBridge.log("[ InstallerOpt Debug End - " + text + " ]");
     }
 
     public void uninstallSystemApp(String packageName) {
@@ -185,10 +222,7 @@ public class Utils extends BroadcastReceiver {
             Toast.makeText(ctx, resources.getString(R.string.app_uninstalled),
                     Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            XposedBridge.log(e);
-            //xlog_start("uninstallSystemApp Exception");
-            //xlog("/n", e);
-            //xlog_end("uninstallSystemApp Exception");
+            Log.e(TAG, "Error in uninstallSystemApp", e);
         }
     }
 

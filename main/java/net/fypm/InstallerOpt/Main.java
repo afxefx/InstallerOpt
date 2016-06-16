@@ -338,7 +338,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableDebug) {
                     xlog_start("autoCloseInstallHook");
                     xlog("Auto close install status", enableAutoCloseInstall);
-                    xlog("Auto launch isntall status", enableAutoLaunchInstall);
+                    xlog("Auto launch install status", enableAutoLaunchInstall);
                     xlog("mLaunch", mLaunch);
                     xlog("msg", msg);
                     xlog("installedApp status", installedApp);
@@ -388,11 +388,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 Resources res = getInstallerOptContext().getResources();
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = res.getString(R.string.new_version) + newVersion;
+                versionInfo = res.getString(R.string.new_version) + " " + newVersion;
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += "\n" + res.getString(R.string.current_version) + currentVersion;
+                    versionInfo += "\n" + res.getString(R.string.current_version) + " " + currentVersion;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -411,11 +411,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 newCode = mPkgInfo.versionCode;
-                versionCode = res.getString(R.string.new_version_code) + newCode;
+                versionCode = res.getString(R.string.new_version_code) + " " + newCode;
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += "\n" + res.getString(R.string.current_version_code) + currentCode;
+                    versionCode += "\n" + res.getString(R.string.current_version_code) + " " + currentCode;
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -455,7 +455,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableVersion && enableVersionCode) {
                     String versionAll = versionInfo + "\n\n" + versionCode;
                     CharSequence temp = view.getText();
-                    temp = temp + "\n\n" + versionAll;
+                    temp = temp + "\n\n" + versionAll + "\n";
                     view.setText(temp);
 
                     if (enableVersionToast) {
@@ -959,14 +959,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                         if (apkFile != null) {
                             backupApkFile(apkFile);
-                        }
-                        if (enableDebug) {
-                            xlog_start("backupApkFilesHook");
-                            xlog("APK file: ", apkFile);
-                            xlog_end("backupApkFilesHook");
-                            XposedBridge.log("Stacktrace follows:");
-                            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-                                XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                            if (enableDebug) {
+                                xlog_start("backupApkFilesHook");
+                                xlog("APK file: ", apkFile);
+                                xlog_end("backupApkFilesHook");
+                                XposedBridge.log("Stacktrace follows:");
+                                for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                                    XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                                }
                             }
                         }
                     }
