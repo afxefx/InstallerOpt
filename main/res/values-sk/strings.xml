@@ -1,5 +1,6 @@
 <resources>
     <!--Strings-->
+    <string name="about_menu">o</string>
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">Aplikácia bola odinštalovaná</string>
     <string name="check_signatures">Kontrolovanie podpisov</string>
@@ -7,10 +8,12 @@
     <string name="confirm_check_signatures_message">Zakázať kontrolu podpisov pre túto inštaláciu?</string>
     <string name="current_version">Aktuálna verzia: </string>
     <string name="current_version_code">Kód aktuálnej verzie: </string>
+    <string name="dialog_message">XDA support thread: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Zakázať</string>
     <string name="enable">Povoliť</string>
     <string name="new_version">Nová verzia: </string>
     <string name="new_version_code">Kód novej verzie: </string>
+    <string name="stats_menu">štatistiky</string>
 	
     <!--Preferences-->	
 	<!--AppPrefs-->
@@ -98,7 +101,8 @@
     <string name="enable_darkui_summary">Prepne na tmavú tému</string>
     <string name="enable_debug_title">Ladenie</string>
     <string name="enable_debug_summary">Povolí dodatočné záznamy pre InstallerOpt</string>
-	
-	
-	
+    <string name="enable_app_storage_buttons_summary">Enables clear storage and data buttons prior to size calculation</string>
+    <string name="enable_app_storage_buttons_title">Enable App Storage Buttons</string>
+
+
 </resources>

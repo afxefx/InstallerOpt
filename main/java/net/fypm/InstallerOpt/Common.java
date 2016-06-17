@@ -49,6 +49,7 @@ public class Common {
     public static final String PREF_DISABLE_VERIFY_JAR = "disable_verify_jar";
     public static final String PREF_DISABLE_VERIFY_SIGNATURE = "enable_disable_verify_signatures";
     public static final String PREF_ENABLE = "enable";
+    public static final String PREF_ENABLE_APP_STORAGE_BUTTONS = "enable_app_storage_buttons";
     public static final String PREF_ENABLE_AUTO_BACKUP = "enable_auto_backup";
     public static final String PREF_ENABLE_AUTO_CLOSE_INSTALL = "enable_auto_close_install";
     public static final String PREF_ENABLE_AUTO_CLOSE_UNINSTALL = "enable_auto_close_uninstall";
@@ -115,6 +116,7 @@ public class Common {
     public static final boolean MARSHMALLOW_NEWER = SDK >= 23; // MARSHMALLOW
 
     // Classes
+    public static final String APPSTORAGEDETAILS = "com.android.settings.applications.AppStorageSettings";
     public static final String APPERRORDIALOG = "com.android.server.am.AppErrorDialog";
     public static final String DEVICEPOLICYMANAGERSERVICE = (LOLLIPOP_NEWER) ? "com.android.server.devicepolicy.DevicePolicyManagerService" : "com.android.server.DevicePolicyManagerService";
     public static final String INSTALLAPPPROGRESS = "com.android.packageinstaller.InstallAppProgress";

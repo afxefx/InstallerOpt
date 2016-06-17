@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -55,6 +57,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook disableUserAppsHook;
     public XC_MethodHook getPackageInfoHook;
     public XC_MethodHook hideAppCrashesHook;
+    public XC_MethodHook initAppStorageSettingsButtonsHook;
     public XC_MethodHook initUninstallButtonsHook;
     public XC_MethodHook installPackageHook;
     public XC_MethodHook scanPackageHook;
@@ -86,6 +89,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean disableSystemApps;
     public static boolean disableUserApps;
     public static boolean downgradeApps;
+    public static boolean enableAppStorageSettingsButtons;
     public static boolean enableAutoHideInstall;
     public static boolean enableAutoInstall;
     public static boolean enableAutoCloseInstall;
@@ -320,6 +324,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (!appInstalledText.isEmpty()) {
                             Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();
+                            if (enableDebug) {
+                                try {
+                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    Ringtone r = RingtoneManager.getRingtone(mContext, notification);
+                                    r.play();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     } else {
                         Toast.makeText(mContext, "App not installed",
@@ -333,6 +346,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             "mPackageURI");
                     String apkFile = packageUri.getPath();
                     deleteApkFile(apkFile);
+                    if (enableDebug){
+                        xlog_start("deleteApkFiles");
+                        xlog("APK file: ", apkFile);
+                        xlog_end("deleteApkFiles");
+                    }
                 }
 
                 if (enableDebug) {
@@ -401,9 +419,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 if (enableVersion && !enableVersionCode) {
-                    CharSequence temp = view.getText();
-                    temp = temp + "\n\n" + versionInfo;
-                    view.setText(temp);
+                    if (view != null) {
+                        CharSequence temp = view.getText();
+                        temp = temp + "\n\n" + versionInfo;
+                        view.setText(temp);
+                    }
 
                     if (enableVersionToast) {
                         Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG)
@@ -424,9 +444,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 if (enableVersionCode && !enableVersion) {
-                    CharSequence temp = view.getText();
-                    temp = temp + "\n\n" + versionCode;
-                    view.setText(temp);
+                    if (view != null) {
+                        CharSequence temp = view.getText();
+                        temp = temp + "\n\n" + versionCode;
+                        view.setText(temp);
+                    }
 
                     if (enableVersionToast) {
                         Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG)
@@ -454,9 +476,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
                 if (enableVersion && enableVersionCode) {
                     String versionAll = versionInfo + "\n\n" + versionCode;
-                    CharSequence temp = view.getText();
-                    temp = temp + "\n\n" + versionAll + "\n";
-                    view.setText(temp);
+                    if (view != null) {
+                        CharSequence temp = view.getText();
+                        temp = temp + "\n\n" + versionAll + "\n";
+                        view.setText(temp);
+                    }
 
                     if (enableVersionToast) {
                         Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG)
@@ -784,6 +808,35 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
+        initAppStorageSettingsButtonsHook = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(final MethodHookParam param)
+                    throws Throwable {
+                mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
+                enableAppStorageSettingsButtons = getPref(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, getInstallerOptContext());
+                if (enableAppStorageSettingsButtons) {
+                    if (enableDebug) {
+                        xlog_start("initAppStorageSettingsButtonsHook");
+                        xlog("Hooked initAppStorageSettingsButtonsHook", null);
+                        xlog_end("initAppStorageSettingsButtonsHook");
+                    }
+                    Button mClearDataButton = (Button) XposedHelpers
+                            .getObjectField(param.thisObject,
+                                    "mClearDataButton");
+                    XposedHelpers.callMethod(mClearDataButton,
+                            "setOnClickListener", param.thisObject);
+                    Button mClearCacheButton = (Button) XposedHelpers
+                            .getObjectField(param.thisObject,
+                                    "mClearCacheButton");
+                    XposedHelpers.callMethod(mClearCacheButton,
+                            "setOnClickListener", param.thisObject);
+                    mClearDataButton.setEnabled(true);
+                    mClearCacheButton.setEnabled(true);
+                }
+            }
+        };
+
         initUninstallButtonsHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param)
@@ -963,10 +1016,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog_start("backupApkFilesHook");
                                 xlog("APK file: ", apkFile);
                                 xlog_end("backupApkFilesHook");
-                                XposedBridge.log("Stacktrace follows:");
+                                /*XposedBridge.log("Stacktrace follows:");
                                 for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                                     XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
-                                }
+                                }*/
                             }
                         }
                     }
@@ -1130,6 +1183,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
+    }
+
+    @Override
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG)) {
+            resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
+        } else if (resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
+            resparam.res.hookLayout(Common.GOOGLE_PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
+        }
     }
 
     @Override
@@ -1374,15 +1436,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     lpparam.classLoader, "setAppLabelAndIcon",
                     PackageInfo.class, appInfoHook);
 
+            // 4.2 and newer
+            if (Common.JB_MR1_NEWER) {
+                XposedHelpers.findAndHookMethod(Common.APPSTORAGEDETAILS,
+                        lpparam.classLoader, "initDataButtons",
+                        initAppStorageSettingsButtonsHook);
+            }
+
         }
     }
-
-    @Override
-    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG))
-        resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_start", autoInstallHook2);
-    }
-
 
     public void backupApkFile(String apkFile) {
         Intent backupApkFile = new Intent(Common.ACTION_BACKUP_APK_FILE);
@@ -1472,6 +1534,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         disableSystemApps = prefs.getBoolean(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, false);
         disableUserApps = prefs.getBoolean(Common.PREF_ENABLE_DISABLE_USER_APPS, false);
         downgradeApps = prefs.getBoolean(Common.PREF_ENABLE_DOWNGRADE_APP, false);
+        enableAppStorageSettingsButtons = prefs.getBoolean(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, false);
         enableAutoHideInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, false);
         enableAutoInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_INSTALL, false);
         enableAutoCloseInstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);

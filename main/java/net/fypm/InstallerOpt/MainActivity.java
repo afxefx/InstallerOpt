@@ -1,21 +1,25 @@
 package net.fypm.InstallerOpt;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
+
 import java.io.File;
 
 
@@ -33,7 +37,7 @@ public class MainActivity extends Activity {
         }
 
         int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(MainActivity.this).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
-        if (oldVersionCode < 559) {
+        if (oldVersionCode < 591) {
             resetPreferences();
         }
         getFragmentManager().beginTransaction()
@@ -45,6 +49,25 @@ public class MainActivity extends Activity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
         editor.commit();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about:
+                startActivity(new Intent(this, About.class));
+                return true;
+            case R.id.stats:
+                startActivity(new Intent(this, Stats.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @SuppressLint("ValidFragment")
@@ -72,7 +95,7 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_DARK_THEME).setOnPreferenceChangeListener(changeListenerLauncher2);
             findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher3);
             findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
-            //findPreference("enabled_version").setOnPreferenceChangeListener(changeListenerLauncher5);
+            //findPreference(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher5);
             if (Build.VERSION.SDK_INT >= 23) {
                 if(isReadStorageAllowed()){
                     //If permission is already having then showing the toast
@@ -211,7 +234,13 @@ public class MainActivity extends Activity {
 
         /*private final Preference.OnPreferenceChangeListener changeListenerLauncher5 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                initPrefs();
+                Activity activity = getActivity();
+                if (newValue.equals(true) ) {
+                    findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(true);
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
+                } *//*else {
+                    findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(true);
+                }*//*
                 return true;
             }
         };*/
