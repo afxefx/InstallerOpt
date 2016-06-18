@@ -15,6 +15,9 @@
     <string name="new_version_code">Kód novej verzie: </string>
     <string name="stats_menu">Štatistiky</string>
     <string name="reset">Nastavenia boli obnovené aby sa predišlo konfliktom</string>
+    <string name="updated">Modul bol aktualizovaný</string>
+    <string name="perm_granted">Povolenie bolo udelené</string>
+    <string name="perm_denied">Povolenie bolo odopreté</string>
 
     <!--Preferences-->
     <!--AppPrefs-->
