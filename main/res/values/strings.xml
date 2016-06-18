@@ -15,6 +15,9 @@
     <string name="new_version_code">New version code: </string>
     <string name="stats_menu">Stats</string>
     <string name="reset">Resetting preferences to avoid conflicts</string>
+    <string name="updated">Module has been updated</string>
+    <string name="perm_granted">Permission granted now you can read the storage</string>
+    <string name="perm_denied">Oops you just denied the permission</string>
     <!--Preferences-->
     <string name="enable_app_storage_buttons_summary">Enables clear storage and data buttons prior to size calculation</string>
     <string name="enable_app_storage_buttons_title">Enable App Storage Buttons</string>

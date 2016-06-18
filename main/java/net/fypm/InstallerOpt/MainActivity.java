@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
             } else if (currentVersionCode > savedVersionCode) {
 
                 // This is an upgrade
-                Toast.makeText(getActivity(), "Module has been updated", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.updated), Toast.LENGTH_LONG).show();
 
             }
 
@@ -254,11 +254,11 @@ public class MainActivity extends Activity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     //Displaying a toast
-                    Toast.makeText(activity, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, getString(R.string.perm_granted), Toast.LENGTH_LONG).show();
 
                 } else {
                     //Displaying another toast if permission is not granted
-                    Toast.makeText(activity, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, getString(R.string.perm_denied), Toast.LENGTH_LONG).show();
                 }
             }
         }
