@@ -14,6 +14,7 @@
     <string name="new_version">New version: </string>
     <string name="new_version_code">New version code: </string>
     <string name="stats_menu">Stats</string>
+    <string name="reset">Resetting preferences to avoid conflicts</string>
     <!--Preferences-->
     <string name="enable_app_storage_buttons_summary">Enables clear storage and data buttons prior to size calculation</string>
     <string name="enable_app_storage_buttons_title">Enable App Storage Buttons</string>

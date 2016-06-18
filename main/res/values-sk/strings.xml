@@ -1,6 +1,6 @@
 <resources>
     <!--Strings-->
-    <string name="about_menu">o</string>
+    <string name="about_menu">O aplikácii</string>
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">Aplikácia bola odinštalovaná</string>
     <string name="check_signatures">Kontrolovanie podpisov</string>
@@ -8,24 +8,27 @@
     <string name="confirm_check_signatures_message">Zakázať kontrolu podpisov pre túto inštaláciu?</string>
     <string name="current_version">Aktuálna verzia: </string>
     <string name="current_version_code">Kód aktuálnej verzie: </string>
-    <string name="dialog_message">XDA support thread: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
+    <string name="dialog_message">Podpora na XDA: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Zakázať</string>
     <string name="enable">Povoliť</string>
     <string name="new_version">Nová verzia: </string>
     <string name="new_version_code">Kód novej verzie: </string>
-    <string name="stats_menu">štatistiky</string>
-	
-    <!--Preferences-->	
-	<!--AppPrefs-->
+    <string name="stats_menu">Štatistiky</string>
+    <string name="reset">Nastavenia boli obnovené aby sa predišlo konfliktom</string>
+
+    <!--Preferences-->
+    <!--AppPrefs-->
     <string name="AppPrefs">Predvoľby aplikácie</string>
     <string name="enable_hide_app_crashes_title">Zakázanie dialógu zastavenia aplikácie</string>
     <string name="enable_hide_app_crashes_summary">Skryje dialóg zobrazovaný pri nečakanom zastavení aplikácie</string>
     <string name="enable_disable_user_apps_title">Deaktivovanie užívateľských aplikácií</string>
     <string name="enable_disable_user_apps_summary">Upraví tlačidlo pre odinštalovanie v informáciách o aplikácii na deaktivovanie aplikácie, dlhé podržanie ju odinštaluje</string>
+    <string name="enable_app_storage_buttons_title">Povoliť tlačidlá pre úložisko aplikácií</string>
+    <string name="enable_app_storage_buttons_summary">Povolí tlačidlá pre vymazanie dát pred výpočtom veľkostí</string>
     <string name="enable_disable_system_apps_title">Stav systémovej aplikácie</string>
     <string name="enable_disable_system_apps_summary">Povolí deaktivovanie systémových aplikácií, dlhé podržanie ju odinštaluje</string>
-	
-	<!--AppInfoPrefs-->
+
+    <!--AppInfoPrefs-->
     <string name="AppInfoPrefs">Predvoľby informácií o aplikácii</string>
     <string name="enable_launch_app_title">Spustenie aplikácie pomocou ikony</string>
     <string name="enable_launch_app_summary">Povolí spustenie aplikácie po kliknutí na ikonu aplikácie v informáciách o aplikácii</string>
@@ -33,8 +36,8 @@
     <string name="enable_play_open_summary">Povolí otvorenie v Obchode Play po dlhom podržaní na ikone aplikácie v informáciách o aplikácii</string>
     <string name="enable_package_name_title">Zobrazenie mena balíčku</string>
     <string name="enable_package_name_summary">Povolí zobrazenie mena balíčka po kliknutí na meno aplikácie v informáciách o aplikácii</string>
-	
-	<!--AppInstPrefs-->
+
+    <!--AppInstPrefs-->
     <string name="AppInstPrefs">Predvoľby inštalovania aplikácie</string>
     <string name="enable_auto_hide_install_title">Automatické skrytie inštalácie</string>
     <string name="enable_auto_hide_install_summary">Automaticky skryje okno inštalácie</string>
@@ -56,8 +59,8 @@
     <string name="enable_version_toast_summary">Zobrazí informácie o verzii v toast upozornení</string>
     <string name="enable_install_unknown_apps_title">Neznáme aplikácie</string>
     <string name="enable_install_unknown_apps_summary">Povolí nainštalovanie neznámych aplikácií</string>
-	
-	<!--AppUninstPrefs-->
+
+    <!--AppUninstPrefs-->
     <string name="AppUninstPrefs">Predvoľby odinštalovania aplikácie</string>
     <string name="enable_auto_uninstall_title">Automatické odinštalovanie</string>
     <string name="enable_auto_uninstall_summary">Autoamticky odinštaluje aplikáciu bez zásahu používateľa</string>
@@ -67,8 +70,8 @@
     <string name="enable_uninstall_system_apps_summary">Povolí odinštalovanie systémových aplikácií cez dlhé podržanie</string>
     <string name="enable_uninstall_device_admin_title">Odinštalovanie sprcávcov zariadenia</string>
     <string name="enable_uninstall_device_admin_summary">Povolí odinštalovanie aplikácie nastavenej ako správca zariadenia</string>
-	
-	<!--MiscPrefs-->
+
+    <!--MiscPrefs-->
     <string name="MiscPrefs">Rôzne predvoľby</string>
     <string name="enable_disable_verify_signatures_title">Zakázať overovanie podpisov</string>
     <string name="enable_disable_verify_signatures_summary">Povolí nainštalovanie aplikácie s neoverenými podpismi</string>
@@ -84,7 +87,7 @@
     <string name="enable_debug_apps_summary">Povolí ladenie pre všetky aplikácie</string>
     <string name="enable_delete_apk_files_title">Mazanie súborov APK</string>
     <string name="enable_delete_apk_files_summary">Vymaže APK súbory po nainštalovaní</string>
-    <string name="enable_downgrade_apps_title">Downgrade aplikácií</string>    
+    <string name="enable_downgrade_apps_title">Downgrade aplikácií</string>
     <string name="enable_downgrade_apps_summary">Povolí inštalovanie starších verzií aplikácií</string>
     <string name="disable_check_sdk_version_title">Zakázať kontrolu SDK</string>
     <string name="disable_check_sdk_version_summary">Vždy vráti najnovšiu verziu SDK</string>
@@ -92,8 +95,8 @@
     <string name="enable_disable_lucky_patcher_presence_summary">Pokúsi sa skryť prítomnosť Lucky Patcher pred ostatnými aplikáciami</string>
     <string name="enable_show_buttons_title">Zobrazenie tlačidiel</string>
     <string name="enable_show_buttons_summary">Povolí interakciu tlačidiel pod toast upozornením</string>
-	
-	<!--Advanced-->
+
+    <!--Advanced-->
     <string name="advanced">Pokročilé</string>
     <string name="enable_hide_icon_title">Ikona aplikácie</string>
     <string name="enable_hide_icon_summary">Odstráni ikonu aplikácie z launchera</string>
@@ -101,8 +104,6 @@
     <string name="enable_darkui_summary">Prepne na tmavú tému</string>
     <string name="enable_debug_title">Ladenie</string>
     <string name="enable_debug_summary">Povolí dodatočné záznamy pre InstallerOpt</string>
-    <string name="enable_app_storage_buttons_summary">Enables clear storage and data buttons prior to size calculation</string>
-    <string name="enable_app_storage_buttons_title">Enable App Storage Buttons</string>
 
 
 </resources>
