@@ -21,7 +21,8 @@ public class About extends Activity {
                 new SpannableString(this.getText(R.string.dialog_message));
         Linkify.addLinks(s, Linkify.WEB_URLS);
         message.setText(s);
-        message.setMovementMethod(LinkMovementMethod.getInstance());
+        //message.setMovementMethod(LinkMovementMethod.getInstance());
+        //message.setClickable(true);
         aboutDialog.setTitle("About");
         aboutDialog.setMessage(s);
         aboutDialog.setCancelable(true);
@@ -44,6 +45,8 @@ public class About extends Activity {
 
         AlertDialog thisAboutDialog = aboutDialog.create();
         thisAboutDialog.show();
+        ((TextView)thisAboutDialog.findViewById(android.R.id.message)).setClickable(true);
+        ((TextView)thisAboutDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 
     }
 

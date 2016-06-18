@@ -317,14 +317,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         appInstalledText = (String) resources.getText(resources
                                 .getIdentifier("install_done", "string",
                                         Common.PACKAGEINSTALLER_PKG));
-                        if(enableDebug){
+                        if (enableDebug) {
+                            xlog_start("autoCloseInstallHook");
+                            xlog("msg", msg);
                             xlog("mDone", mDone);
                             xlog("appInstalledText", appInstalledText);
+                            xlog_end("autoCloseInstallHook");
                         }
                         if (!appInstalledText.isEmpty()) {
                             Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();
-                            if (enableDebug) {
+                            if (enableDebug && !autoInstallCanceled) {
                                 try {
                                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                     Ringtone r = RingtoneManager.getRingtone(mContext, notification);
@@ -337,6 +340,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     } else {
                         Toast.makeText(mContext, "App not installed",
                                 Toast.LENGTH_LONG).show();
+                        if (enableDebug) {
+                            xlog_start("autoCloseInstallHook");
+                            xlog("Install failed", msg);
+                            xlog("msg", msg);
+                            xlog_end("autoCloseInstallHook");
+                        }
                     }
                 }
 
@@ -346,7 +355,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             "mPackageURI");
                     String apkFile = packageUri.getPath();
                     deleteApkFile(apkFile);
-                    if (enableDebug){
+                    if (enableDebug) {
                         xlog_start("deleteApkFiles");
                         xlog("APK file: ", apkFile);
                         xlog_end("deleteApkFiles");
@@ -948,20 +957,34 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 int id = 0;
 
                 if (isInstallStage) {
-                    id = 4;
-                    flags = (Integer) XposedHelpers.getObjectField(
-                            param.args[id], "installFlags");
-                    if (enableDebug) {
-                        xlog_start("isInstallStage");
-                        xlog("Install flags: ", flags);
-                        xlog_end("isInstallStage");
+                    try {
+                        id = 4;
+                        flags = (Integer) XposedHelpers.getObjectField(
+                                param.args[id], "installFlags");
+                        if (enableDebug) {
+                            xlog_start("isInstallStage");
+                            xlog("isInstallStage equals", isInstallStage);
+                            xlog("flags", flags);
+                            xlog_end("isInstallStage");
+                        }
+                    } catch (Exception e) {
+                        XposedBridge.log(e);
+                        XposedBridge.log("Stacktrace follows:");
+                        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                            XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                        }
                     }
                 } else {
                     try {
                         id = Common.JB_MR1_NEWER ? 2 : 1;
-                        xlog("id equals", id);
                         flags = (Integer) param.args[id];
-                        xlog("flags equal", flags);
+                        if (enableDebug) {
+                            xlog_start("isInstallStage");
+                            xlog("isInstallStage equals", isInstallStage);
+                            xlog("id", id);
+                            xlog("flags", flags);
+                            xlog_end("isInstallStage");
+                        }
                     } catch (Exception e) {
                         XposedBridge.log(e);
                         XposedBridge.log("Stacktrace follows:");
@@ -991,6 +1014,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     XposedHelpers.setIntField(sessions, "installFlags",
                             flags);
                     param.args[id] = sessions;
+                    if (enableDebug) {
+                        xlog("sessions", sessions);
+                    }
                 } else {
                     param.args[id] = flags;
                 }
