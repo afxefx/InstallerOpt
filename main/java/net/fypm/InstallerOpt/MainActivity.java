@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
             } else if (savedVersionCode == Common.DOESNT_EXIST) {
 
                 // New install or shared preferences cleared
-                Toast.makeText(getActivity(), "Resetting preferences to avoid conflicts", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.reset), Toast.LENGTH_LONG).show();
                 Activity activity = getActivity();
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
