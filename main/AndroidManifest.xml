@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
@@ -67,6 +68,7 @@
                 <action android:name="InstallerOpt.intent.action.RESET_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.RESTORE_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP"/>
+                <action android:name="InstallerOpt.intent.action.VIBRATE_DEVICE"/>
             </intent-filter>
         </receiver>
 

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -80,6 +81,11 @@ public class Utils extends BroadcastReceiver {
             if (hasExtras) {
                 String packageName = extras.getString(Common.PACKAGE);
                 uninstallSystemApp(packageName);
+            }
+        } else if (Common.ACTION_VIBRATE_DEVICE.equals(action)) {
+            if (hasExtras) {
+                int duration = extras.getInt(Common.DURATION);
+                vibrateDevice(duration);
             }
         } else if (Common.ACTION_BACKUP_PREFERENCES.equals(action)) {
             //backupPreferences();
@@ -224,6 +230,12 @@ public class Utils extends BroadcastReceiver {
         } catch (Exception e) {
             Log.e(TAG, "Error in uninstallSystemApp", e);
         }
+    }
+
+    public void vibrateDevice(int duration) {
+        Vibrator v = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 1000 milliseconds
+        v.vibrate(duration);
     }
 
     /*public void backupPreferences() {

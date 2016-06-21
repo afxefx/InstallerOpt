@@ -26,6 +26,7 @@ import java.io.File;
 public class MainActivity extends Activity {
 
     private static final int REQUEST_WRITE_STORAGE = 112;
+    private static final int REQUEST_VIBRATE = 113;
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -105,6 +106,14 @@ public class MainActivity extends Activity {
                 }else{
                     requestStoragePermission();
                 }
+                /*if(isVibrateAllowed()){
+                    //If permission is already having then showing the toast
+                    //Toast.makeText(SplashActivity.this,"You already have the permission",Toast.LENGTH_LONG).show();
+                    //Existing the method with return
+                    return;
+                }else{
+                    requestVibratePermission();
+                }*/
             }
         }
 
@@ -261,6 +270,19 @@ public class MainActivity extends Activity {
                     Toast.makeText(activity, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
                 }
             }
+            if (requestCode == REQUEST_VIBRATE) {
+                Activity activity = getActivity();
+                //If permission is granted
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    //Displaying a toast
+                    Toast.makeText(activity, "Permission granted for vibration", Toast.LENGTH_LONG).show();
+
+                } else {
+                    //Displaying another toast if permission is not granted
+                    Toast.makeText(activity, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+                }
+            }
         }
 
         private boolean isReadStorageAllowed() {
@@ -289,5 +311,30 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(activity,new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_WRITE_STORAGE);
         }
 
+        /*private boolean isVibrateAllowed() {
+            //Getting the permission status
+            Activity activity = getActivity();
+            int result = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.VIBRATE);
+
+            //If permission is granted returning true
+            if (result == PackageManager.PERMISSION_GRANTED)
+                return true;
+
+            //If permission is not granted returning false
+            return false;
+        }
+
+        //Requesting permission
+        private void requestVibratePermission(){
+            Activity activity = getActivity();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.VIBRATE)){
+                //If the user has denied the permission previously your code will come to this block
+                //Here you can explain why you need this permission
+                //Explain here why you need this permission
+            }
+
+            //And finally ask for the permission
+            ActivityCompat.requestPermissions(activity,new String[]{android.Manifest.permission.VIBRATE},REQUEST_VIBRATE);
+        }*/
     }
 }

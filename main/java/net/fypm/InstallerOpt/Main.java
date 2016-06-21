@@ -15,6 +15,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -327,14 +328,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (!appInstalledText.isEmpty()) {
                             Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();
-                            if (enableDebug && !autoInstallCanceled) {
-                                try {
-                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            try {
+
+                                    /*Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                     Ringtone r = RingtoneManager.getRingtone(mContext, notification);
-                                    r.play();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                    r.play();*/
+                                vibrateDevice(1000);
+                                xlog("Vibrate on install successful", null);
+                            } catch (Exception e) {
+                                xlog("Unable to vibrate on install", e);
+                                e.printStackTrace();
                             }
                         }
                     } else {
@@ -430,7 +433,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableVersion && !enableVersionCode) {
                     if (view != null) {
                         CharSequence temp = view.getText();
-                        temp = temp + "\n\n" + versionInfo;
+                        temp = temp + "\n\n" + versionInfo + "\n";
                         view.setText(temp);
                     }
 
@@ -455,7 +458,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableVersionCode && !enableVersion) {
                     if (view != null) {
                         CharSequence temp = view.getText();
-                        temp = temp + "\n\n" + versionCode;
+                        temp = temp + "\n\n" + versionCode + "\n";
                         view.setText(temp);
                     }
 
@@ -1213,10 +1216,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG)) {
+        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
             resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
-        } else if (resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
-            resparam.res.hookLayout(Common.GOOGLE_PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
+        /*} else if (resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
+            resparam.res.hookLayout(Common.GOOGLE_PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);*/
         }
     }
 
@@ -1596,6 +1599,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         if (value3 != null) {
             MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(pref, value3).apply();
         }
+    }
+
+    public void vibrateDevice(int duration) {
+        Intent vibrateDevice = new Intent(
+                Common.ACTION_VIBRATE_DEVICE);
+        //uninstallSystemApp.setPackage(Common.PACKAGE_NAME);
+        vibrateDevice.putExtra(Common.DURATION, duration);
+        getInstallerOptContext().sendBroadcast(vibrateDevice);
     }
 
     public void uninstallSystemApp(String packageName) {

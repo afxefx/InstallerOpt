@@ -14,8 +14,10 @@ public class Common {
     public static final String ACTION_RESET_PREFERENCES = "InstallerOpt.intent.action.RESET_PREFERENCES";
     public static final String ACTION_RESTORE_PREFERENCES = "InstallerOpt.intent.action.RESTORE_PREFERENCES";
     public static final String ACTION_UNINSTALL_SYSTEM_APP = "InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP";
+    public static final String ACTION_VIBRATE_DEVICE = "InstallerOpt.intent.action.VIBRATE_DEVICE";
 
     //public static final String DESCRIPTION = "description";
+    public static final String DURATION = "duration";
     public static final String FILE = "file";
     public static final String PACKAGE = "package";
     public static final String PREFERENCE = "preference";
