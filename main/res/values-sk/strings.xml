@@ -50,6 +50,8 @@
     <string name="enable_auto_close_install_summary">Automaticky zavrie okno po nainštalovaní</string>
     <string name="enable_auto_install_launch_title">Automatické spustenie po nainštalovaní</string>
     <string name="enable_auto_install_launch_summary">Automaticky spustí aplikáciu po nainštalovaní</string>
+    <string name="enable_auto_close_install_vibrate_title">Vibrovanie pri automatickom inštalovaní</string>
+    <string name="enable_auto_close_install_vibrate_summary">Telefón zavibruje po dokončení inštalácie s použitím funkcie automatická inštalácia</string>
     <string name="disable_verify_apps_title">Zakázať overovanie aplikácie</string>
     <string name="disable_verify_apps_summary">Povolí nainštalovanie neoverené aplikácie</string>
     <string name="enable_disable_sig_check_title">Zakázať kontrolovanie podpisov</string>
@@ -107,8 +109,6 @@
     <string name="enable_darkui_summary">Prepne na tmavú tému</string>
     <string name="enable_debug_title">Ladenie</string>
     <string name="enable_debug_summary">Povolí dodatočné záznamy pre InstallerOpt</string>
-    <string name="enable_auto_close_install_vibrate_summary">Vibrates phone on install completion when using auto install options</string>
-    <string name="enable_auto_close_install_vibrate_title">Auto Install Vibrate</string>
 
 
 </resources>
