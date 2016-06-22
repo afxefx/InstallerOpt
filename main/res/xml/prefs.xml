@@ -161,12 +161,6 @@
             android:title="@string/enable_debug_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_downgrade_apps"
-            android:enabled="false"
-            android:summary="@string/enable_downgrade_apps_summary"
-            android:title="@string/enable_downgrade_apps_title" />
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="disable_check_sdk_version"
             android:enabled="false"
             android:summary="@string/disable_check_sdk_version_summary"
@@ -177,6 +171,11 @@
             android:enabled="false"
             android:summary="@string/enable_disable_lucky_patcher_presence_summary"
             android:title="@string/enable_disable_lucky_patcher_presence_title" />-->
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_downgrade_apps"
+            android:summary="@string/enable_downgrade_apps_summary"
+            android:title="@string/enable_downgrade_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_show_buttons"
