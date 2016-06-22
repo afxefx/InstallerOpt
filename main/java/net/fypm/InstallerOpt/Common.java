@@ -54,6 +54,7 @@ public class Common {
     public static final String PREF_ENABLE_APP_STORAGE_BUTTONS = "enable_app_storage_buttons";
     public static final String PREF_ENABLE_AUTO_BACKUP = "enable_auto_backup";
     public static final String PREF_ENABLE_AUTO_CLOSE_INSTALL = "enable_auto_close_install";
+    public static final String PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE = "enable_auto_close_install_vibrate";
     public static final String PREF_ENABLE_AUTO_CLOSE_UNINSTALL = "enable_auto_close_uninstall";
     public static final String PREF_ENABLE_AUTO_ENABLE_CLEAR_BUTTON = "enable_auto_enable_clear_buttons";
     public static final String PREF_ENABLE_AUTO_HIDE_INSTALL = "enable_auto_hide_install";

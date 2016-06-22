@@ -23,6 +23,8 @@
     <string name="enable_app_storage_buttons_title">Enable App Storage Buttons</string>
     <string name="enable_auto_close_install_summary">Automatically closes application installation window upon completion</string>
     <string name="enable_auto_close_install_title">Auto Install Close</string>
+    <string name="enable_auto_close_install_vibrate_summary">Vibrates phone on install completion when using auto install options</string>
+    <string name="enable_auto_close_install_vibrate_title">Auto Install Vibrate</string>
     <string name="enable_auto_install_launch_summary">Automatically launches application upon installation completion</string>
     <string name="enable_auto_install_launch_title">Auto Install Launch</string>
     <string name="enable_auto_install_summary">Automatically installs application without user interaction</string>

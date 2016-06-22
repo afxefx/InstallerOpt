@@ -8,14 +8,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -104,6 +101,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean enableVersion;
     public static boolean enableVersionCode;
     public static boolean enableVersionToast;
+    public static boolean enableVibrateDevice;
     public static boolean forwardLock;
     public static boolean hideAppCrashes;
     public static boolean installAppsOnExternal;
@@ -289,6 +287,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
                 enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, getInstallerOptContext());
                 deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
+                enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, getInstallerOptContext());
 
                 Button mLaunch = (Button) XposedHelpers.getObjectField(
                         XposedHelpers.getSurroundingThis(param.thisObject),
@@ -328,17 +327,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (!appInstalledText.isEmpty()) {
                             Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();
-                            try {
-
-                                    /*Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    Ringtone r = RingtoneManager.getRingtone(mContext, notification);
-                                    r.play();*/
-                                vibrateDevice(1000);
-                                xlog("Vibrate on install successful", null);
-                            } catch (Exception e) {
-                                xlog("Unable to vibrate on install", e);
-                                e.printStackTrace();
-                            }
+                            if (enableVibrateDevice) {
+                                try {
+                                    vibrateDevice(1000);
+                                    xlog("Vibrate on install successful", null);
+                                } catch (Exception e) {
+                                    xlog("Unable to vibrate on install", e);
+                                    e.printStackTrace();
+                                }
+                        }
                         }
                     } else {
                         Toast.makeText(mContext, "App not installed",
@@ -1577,6 +1574,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         enableVersion = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION, false);
         enableVersionCode = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION_CODE, false);
         enableVersionToast = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION_TOAST, false);
+        enableVibrateDevice = prefs.getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, false);
         forwardLock = prefs.getBoolean(Common.PREF_DISABLE_FORWARD_LOCK, false);
         hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
         installAppsOnExternal = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, false);

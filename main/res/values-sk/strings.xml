@@ -107,6 +107,8 @@
     <string name="enable_darkui_summary">Prepne na tmavú tému</string>
     <string name="enable_debug_title">Ladenie</string>
     <string name="enable_debug_summary">Povolí dodatočné záznamy pre InstallerOpt</string>
+    <string name="enable_auto_close_install_vibrate_summary">Vibrates phone on install completion when using auto install options</string>
+    <string name="enable_auto_close_install_vibrate_title">Auto Install Vibrate</string>
 
 
 </resources>

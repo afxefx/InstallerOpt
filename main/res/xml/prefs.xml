@@ -62,6 +62,11 @@
             android:title="@string/enable_auto_install_launch_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="enable_auto_close_install_vibrate"
+            android:summary="@string/enable_auto_close_install_vibrate_summary"
+            android:title="@string/enable_auto_close_install_vibrate_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="enable_backup_apk_files"
             android:summary="@string/enable_backup_apk_files_summary"
             android:title="@string/enable_backup_apk_files_title" />

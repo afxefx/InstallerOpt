@@ -93,4 +93,9 @@
     <string name="enable_app_storage_buttons_summary">Enables clear storage and data buttons prior to size calculation</string>
     <string name="reset">Repor as preferências para evitar conflitos</string>
     <string name="stats_menu">Estatísticas</string>
+    <string name="enable_auto_close_install_vibrate_summary">Vibrates phone on install completion when using auto install options</string>
+    <string name="enable_auto_close_install_vibrate_title">Auto Install Vibrate</string>
+    <string name="perm_denied">Oops you just denied the permission</string>
+    <string name="perm_granted">Permission granted now you can read the storage</string>
+    <string name="updated">Module has been updated</string>
 </resources>
