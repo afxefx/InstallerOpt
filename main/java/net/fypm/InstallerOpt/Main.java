@@ -1286,7 +1286,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
+        if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG)) {
             resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
         /*} else if (resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
             resparam.res.hookLayout(Common.GOOGLE_PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);*/
@@ -1447,7 +1447,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         }
 
-        if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
+        if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG)) {
             if (Common.LOLLIPOP_MR1_NEWER) {
                 // 5.1 and newer
                 try {

@@ -112,6 +112,7 @@ public class Common {
     public static final String GOOGLE_PACKAGEINSTALLER_PKG = "com.google.android.packageinstaller";
     public static final String INSTALLEROPT = "net.fypm.InstallerOpt";
     public static final String LUCKYPATCHER_PKG = "com.android.vending.billing.InAppBillingService.LUCK";
+    public static final String MOKEE_PACKAGEINSTALLER_PKG = "com.mokee.packageinstaller";
     public static final String PACKAGE_NAME = Main.class.getPackage().getName();
     public static final String PACKAGE_PREFERENCES = PACKAGE_NAME + "_preferences";
     public static final String PACKAGE_TAG = "InstallerOpt";
