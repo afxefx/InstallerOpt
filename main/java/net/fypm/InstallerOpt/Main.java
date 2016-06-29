@@ -13,6 +13,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -78,7 +79,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static XSharedPreferences prefs;
     public static boolean autoInstallCanceled;
     public static boolean backupApkFiles;
-    //public static boolean bootCompleted;
+    public static boolean bootCompleted;
     public static boolean checkDuplicatedPermissions;
     public static boolean checkLuckyPatcher;
     public static boolean checkPermissions;
@@ -117,11 +118,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean verifyApps;
     public static boolean verifyJar;
     public static boolean verifySignature;
+    private static final String TAG = "InstallerOpt";
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
-
-        //xlog("bootCompleted value at initZygote", bootCompleted);
 
         xlog_start("XSharedPreferences - Init");
         try {
@@ -136,11 +136,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         }
         xlog_end("XSharedPreferences - Init");
 
-        disableCheckSignatures = true;
-        //checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
-        //checkSignatures = true;//prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
-        //verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
+        bootCompleted = false;
+        xlog("bootCompleted value at initZygote", bootCompleted);
 
+        disableCheckSignatures = true;
         xlog_start("Signature Checking and Verification Overview");
         xlog("disableCheckSignatures status", disableCheckSignatures);
         xlog("checkSignatures status ", checkSignatures);
@@ -615,15 +614,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         bootCompletedHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
-                mContext = AndroidAppHelper.currentApplication();
-                //xlog_start("bootCompletedHook");
-                //xlog("Boot completed status before calling bootCompletedHook method", bootCompleted);
-                //ctx = getInstallerOptContext();
-                //bootCompletedHook(ctx);
-                //watcher();
-                //initPrefs();
-                //xlog("Reloading preferences after onPause method in InstallerOpt Main Activity", bootCompleted);
-                //xlog_end("bootCompletedHook");
+                bootCompleted = true;
             }
         };
 
@@ -877,11 +868,25 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param)
                     throws Throwable {
-                //mContext = AndroidAppHelper.currentApplication();
-                /*hideAppCrashes = getPref(Common.PREF_ENABLE_HIDE_APP_CRASHES, getInstallerOptContext());*/
-                prefs.reload();
-                hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
-                if (hideAppCrashes) {
+                Log.i(TAG, "bootcompleted value when hideAppCrashesHook is called: " + bootCompleted);
+                if (bootCompleted) {
+                    try {
+                        mContext = AndroidAppHelper.currentApplication();
+                        hideAppCrashes = getPref(Common.PREF_ENABLE_HIDE_APP_CRASHES, getInstallerOptContext());
+                        Log.i(TAG, "hideAppCrashes set via context");
+                    } catch (Throwable e) {
+                        Log.e(TAG, "hideAppCrashes error via context: ", e);
+                    }
+                } else {
+                    try {
+                        prefs.reload();
+                        hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
+                        Log.i(TAG, "hideAppCrashes set via shared prefs");
+                    } catch (Throwable e) {
+                        Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
+                    }
+                }
+                    if (hideAppCrashes) {
                     xlog("hideAppCrashes set to", hideAppCrashes);
                     XposedHelpers.setObjectField(param.thisObject,
                             "DISMISS_TIMEOUT", 0);
@@ -1296,17 +1301,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @SuppressWarnings("unchecked")
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        /*if (lpparam.packageName.equals(Common.SYSTEM_UI)) {
-                XposedHelpers.findAndHookMethod(
-                        Common.SYSTEMUIACTIVITY, lpparam.classLoader,
-                        "onCreate", bootCompletedHook);
-            }*/
-
-        /*if (lpparam.packageName.equals(Common.INSTALLEROPT)) {
+        if (lpparam.packageName.equals(Common.INSTALLEROPT)) {
             XposedHelpers.findAndHookMethod(
                     Common.INSTALLEROPTACTIVITY, lpparam.classLoader,
-                    "onPause", bootCompletedHook);
-        }*/
+                    "onReceive", bootCompletedHook);
+        }
 
         if (Common.ANDROID_PKG.equals(lpparam.packageName)
                 && Common.ANDROID_PKG.equals(lpparam.processName)) {

@@ -137,7 +137,7 @@ public class Common {
     public static final String DEVICEPOLICYMANAGERSERVICE = (LOLLIPOP_NEWER) ? "com.android.server.devicepolicy.DevicePolicyManagerService" : "com.android.server.DevicePolicyManagerService";
     public static final String INSTALLAPPPROGRESS = "com.android.packageinstaller.InstallAppProgress";
     public static final String INSTALLEDAPPDETAILS = "com.android.settings.applications.InstalledAppDetails";
-    public static final String INSTALLEROPTACTIVITY = "net.fypm.InstallerOpt.MainActivity$PrefsFragment";
+    public static final String INSTALLEROPTACTIVITY = "net.fypm.InstallerOpt.BootReceiver";
     public static final String JARVERIFIER = "java.util.jar.JarVerifier$VerifierEntry";
     public static final String PACKAGEINSTALLERACTIVITY = "com.android.packageinstaller.PackageInstallerActivity";
     public static final String PACKAGEMANAGERSERVICE = "com.android.server.pm.PackageManagerService";
