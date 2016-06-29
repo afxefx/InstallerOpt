@@ -178,6 +178,11 @@
             android:title="@string/enable_downgrade_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="external_sdcard_full_access"
+            android:summary="@string/external_sdcard_full_access_summary"
+            android:title="@string/external_sdcard_full_access_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="enable_show_buttons"
             android:summary="@string/enable_show_buttons_summary"
             android:title="@string/enable_show_buttons_title" />

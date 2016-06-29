@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.xmlpull.v1.XmlPullParser;
+
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
@@ -53,6 +55,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook deviceAdminsHook;
     public XC_MethodHook disableChangerHook;
     public XC_MethodHook disableUserAppsHook;
+    public XC_MethodHook externalSdCardAccessHook; // 4.4 - 5.0
+    public XC_MethodHook externalSdCardAccessHook2; // 6.0 and up
     public XC_MethodHook getPackageInfoHook;
     public XC_MethodHook hideAppCrashesHook;
     public XC_MethodHook initAppStorageSettingsButtonsHook;
@@ -70,10 +74,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public Class<?> disableChangerClass;
     public Context mContext;
     public TextView view;
-    //public static boolean bootCompleted;
+    public static String backupDir;
     public static XSharedPreferences prefs;
     public static boolean autoInstallCanceled;
     public static boolean backupApkFiles;
+    //public static boolean bootCompleted;
     public static boolean checkDuplicatedPermissions;
     public static boolean checkLuckyPatcher;
     public static boolean checkPermissions;
@@ -329,13 +334,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                     Toast.LENGTH_LONG).show();
                             if (enableVibrateDevice) {
                                 try {
-                                    vibrateDevice(1000);
+                                    vibrateDevice(500);
                                     xlog("Vibrate on install successful", null);
                                 } catch (Exception e) {
                                     xlog("Unable to vibrate on install", e);
                                     e.printStackTrace();
                                 }
-                        }
+                            }
                         }
                     } else {
                         Toast.makeText(mContext, "App not installed",
@@ -415,11 +420,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 Resources res = getInstallerOptContext().getResources();
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = res.getString(R.string.new_version) + " " + newVersion;
+                versionInfo = String.format("%-20s %20s", res.getString(R.string.new_version), newVersion);
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += "\n" + res.getString(R.string.current_version) + " " + currentVersion;
+                    versionInfo += String.format("%-20s %20s", res.getString(R.string.current_version).replace( "\\n", "%n"), currentVersion);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -440,11 +445,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 newCode = mPkgInfo.versionCode;
-                versionCode = res.getString(R.string.new_version_code) + " " + newCode;
+                versionCode = String.format("%-30s %10d", res.getString(R.string.new_version_code), newCode);
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += "\n" + res.getString(R.string.current_version_code) + " " + currentCode;
+                    versionCode += String.format("%-30s %10d", res.getString(R.string.current_version_code).replace( "\\n", "%n"), currentCode);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -455,7 +460,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableVersionCode && !enableVersion) {
                     if (view != null) {
                         CharSequence temp = view.getText();
-                        temp = temp + "\n\n" + versionCode + "\n";
+                        temp = temp
+                                + "\n\n"
+                                + versionCode
+                                + "\n";
                         view.setText(temp);
                     }
 
@@ -776,6 +784,70 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
+        externalSdCardAccessHook = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param)
+                    throws Throwable {
+                prefs.reload();
+                String permission = (String) param.args[1];
+                boolean externalSdCardFullAccess = prefs.getBoolean(
+                        Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
+                if (!externalSdCardFullAccess) {
+                    return;
+                }
+                if (Common.PERM_WRITE_EXTERNAL_STORAGE
+                        .equals(permission)
+                        || Common.PERM_ACCESS_ALL_EXTERNAL_STORAGE
+                        .equals(permission)) {
+                    Class<?> process = XposedHelpers.findClass(
+                            "android.os.Process", null);
+                    int gid = (Integer) XposedHelpers.callStaticMethod(process,
+                            "getGidForName", "media_rw");
+                    Object permissions = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        permissions = XposedHelpers.getObjectField(
+                                param.thisObject, "mPermissions");
+                    } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                        Object settings = XposedHelpers.getObjectField(
+                                param.thisObject, "mSettings");
+                        permissions = XposedHelpers.getObjectField(settings,
+                                "mPermissions");
+                    }
+                    Object bp = XposedHelpers.callMethod(permissions, "get",
+                            permission);
+                    int[] bpGids = (int[]) XposedHelpers.getObjectField(bp,
+                            "gids");
+                    XposedHelpers.setObjectField(bp, "gids",
+                            appendInt(bpGids, gid));
+                }
+            }
+        };
+
+
+        externalSdCardAccessHook2 = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param)
+                    throws Throwable {
+                prefs.reload();
+                boolean externalSdCardFullAccess = prefs.getBoolean(
+                        Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
+                if (!externalSdCardFullAccess) {
+                    return;
+                }
+                Object extras = XposedHelpers.getObjectField(param.args[0], "mExtras");
+                Object ps = XposedHelpers.callMethod(extras, "getPermissionsState");
+                Object settings = XposedHelpers.getObjectField(param.thisObject, "mSettings");
+                Object permissions = XposedHelpers.getObjectField(settings, "mPermissions");
+                boolean hasPermission = (boolean) XposedHelpers.callMethod(ps, "hasInstallPermission", Common.PERM_WRITE_MEDIA_STORAGE);
+                if (!hasPermission) {
+                    Object permWriteMediaStorage = XposedHelpers.callMethod(permissions, "get",
+                            Common.PERM_WRITE_MEDIA_STORAGE);
+                    XposedHelpers.callMethod(ps, "grantInstallPermission", permWriteMediaStorage);
+                }
+
+            }
+        };
+
         getPackageInfoHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param)
@@ -943,6 +1015,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, getInstallerOptContext());
+                backupDir = getPrefString(Common.PREF_BACKUP_APK_LOCATION, getInstallerOptContext());
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 //add below to prefs
                 downgradeApps = getPref(Common.PREF_ENABLE_DOWNGRADE_APP, getInstallerOptContext());
@@ -1027,7 +1100,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
-                if (backupApkFiles) {
+                if (backupApkFiles && backupDir != null) {
                     if (!isInstallStage) {
                         String apkFile = null;
                         if (Common.LOLLIPOP_NEWER) {
@@ -1037,7 +1110,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             apkFile = packageUri.getPath();
                         }
                         if (apkFile != null) {
-                            backupApkFile(apkFile);
+                            backupApkFile(apkFile, backupDir);
                             if (enableDebug) {
                                 xlog_start("backupApkFilesHook");
                                 xlog("APK file: ", apkFile);
@@ -1220,6 +1293,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         /*if (lpparam.packageName.equals(Common.SYSTEM_UI)) {
@@ -1248,6 +1322,26 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     lpparam.classLoader);
             Class<?> appErrorDialogClass = XposedHelpers.findClass(
                     Common.APPERRORDIALOG, lpparam.classLoader);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                XposedHelpers.findAndHookMethod(XposedHelpers.findClass(
+                        "com.android.server.pm.PackageManagerService",
+                        lpparam.classLoader), "grantPermissionsLPw",
+                        Common.CLASS_PACKAGE_PARSER_PACKAGE, boolean.class, String.class, externalSdCardAccessHook2);
+            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+                XposedHelpers.findAndHookMethod(
+                        XposedHelpers.findClass(
+                                "com.android.server.SystemConfig",
+                                lpparam.classLoader), "readPermission",
+                        XmlPullParser.class, String.class,
+                        externalSdCardAccessHook);
+            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                XposedHelpers.findAndHookMethod(XposedHelpers.findClass(
+                        "com.android.server.pm.PackageManagerService",
+                        lpparam.classLoader), "readPermission",
+                        XmlPullParser.class, String.class,
+                        externalSdCardAccessHook);
+            }
 
             if (Common.LOLLIPOP_NEWER) {
                 // 5.0 and newer
@@ -1472,10 +1566,27 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         }
     }
 
-    public void backupApkFile(String apkFile) {
+    public int[] appendInt(int[] cur, int val) {
+        if (cur == null) {
+            return new int[]{val};
+        }
+        final int N = cur.length;
+        for (int i = 0; i < N; i++) {
+            if (cur[i] == val) {
+                return cur;
+            }
+        }
+        int[] ret = new int[N + 1];
+        System.arraycopy(cur, 0, ret, 0, N);
+        ret[N] = val;
+        return ret;
+    }
+
+    public void backupApkFile(String apkFile, String dir) {
         Intent backupApkFile = new Intent(Common.ACTION_BACKUP_APK_FILE);
         backupApkFile.setPackage(Common.PACKAGE_NAME);
         backupApkFile.putExtra(Common.FILE, apkFile);
+        backupApkFile.putExtra(Common.BACKUP_DIR, dir);
         getInstallerOptContext().sendBroadcast(backupApkFile);
     }
 
@@ -1546,17 +1657,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         prefs.reload();*/
         //autoInstallCanceled;
         backupApkFiles = prefs.getBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false);
-        ;
         checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
         checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
         checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
         checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
         checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
-        //confirmCheckSignatures;
         debugApps = prefs.getBoolean(Common.PREF_ENABLE_DEBUG_APP, false);
         deleteApkFiles = prefs.getBoolean(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, false);
         deviceAdmins = prefs.getBoolean(Common.PREF_ENABLE_UNINSTALL_DEVICE_ADMIN, false);
-        //disableCheckSignatures;
         disableSystemApps = prefs.getBoolean(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, false);
         disableUserApps = prefs.getBoolean(Common.PREF_ENABLE_DISABLE_USER_APPS, false);
         downgradeApps = prefs.getBoolean(Common.PREF_ENABLE_DOWNGRADE_APP, false);

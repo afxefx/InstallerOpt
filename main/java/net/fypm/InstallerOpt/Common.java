@@ -17,11 +17,17 @@ public class Common {
     public static final String ACTION_VIBRATE_DEVICE = "InstallerOpt.intent.action.VIBRATE_DEVICE";
 
     //public static final String DESCRIPTION = "description";
+    public static final String BACKUP_DIR = "backup_dir";
     public static final String DURATION = "duration";
     public static final String FILE = "file";
     public static final String PACKAGE = "package";
     public static final String PREFERENCE = "preference";
     public static final String VALUE = "value";
+
+    //Perms
+    public static final String PERM_WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    public static final String PERM_ACCESS_ALL_EXTERNAL_STORAGE = "android.permission.ACCESS_ALL_EXTERNAL_STORAGE";
+    public static final String PERM_WRITE_MEDIA_STORAGE = "android.permission.WRITE_MEDIA_STORAGE";
 
     //Prefs
     public static final String PREF_APP_HELP = "app_help";
@@ -32,6 +38,8 @@ public class Common {
     public static final String PREF_APP_ABOUT = "about";
     public static final String PREF_APP_BACKUP_RESTORE = "backup_restore_preferences";
 
+    public static final String PREF_BACKUP_APK_LOCATION = "backup_apk_location";
+    public static final String PREF_BACKUP_APK_LOCATION_OLD = "backup_apk_location_old";
     public static final String PREF_BACKUP_PREFERENCES = "backup_preferences";
     public static final String PREF_RESTORE_PREFERENCES = "restore_preferences";
     public static final String PREF_RESET_PREFERENCES = "reset_preferences";
@@ -71,6 +79,7 @@ public class Common {
     public static final String PREF_ENABLE_DELETE_APK_FILE_INSTALL = "enable_delete_apk_files";
     public static final String PREF_ENABLE_DISABLE_SYSTEM_APP = "enable_disable_system_apps";
     public static final String PREF_ENABLE_DISABLE_USER_APPS = "enable_disable_user_apps";
+    public static final String PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS = "external_sdcard_full_access";
     public static final String PREF_ENABLE_EXPERT_MODE = "enable_expert_mode";
     public static final String PREF_ENABLE_EXPORT_APP = "enable_export_apps";
     public static final String PREF_ENABLE_HIDE_APP_CRASHES = "enable_hide_app_crashes";
@@ -93,6 +102,8 @@ public class Common {
     public static final String PREF_ENABLE_UNINSTALL_SYSTEM_APP = "enable_uninstall_system_apps";
     public static final String PREF_ENABLE_DOWNGRADE_APP = "enable_downgrade_apps";
     public static final String PREF_VERSION_CODE_KEY = "version_code";
+    public static final String PREF_CONTINUE_BACKUP_ON_REBOOT = "continue_backup_on_reboot";
+
 
     // Constants
     public static final int LATEST_ANDROID_RELEASE = 24; // Android N
@@ -107,6 +118,7 @@ public class Common {
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
     public static final String SETTINGS_PKG = "com.android.settings";
     public static final String SYSTEM_UI = "com.android.systemui";
+    public static final String[] MTP_APPS = {"com.android.MtpApplication", "com.samsung.android.MtpApplication"};
 
     // Checks
     public static final int SDK = Build.VERSION.SDK_INT;
@@ -129,6 +141,7 @@ public class Common {
     public static final String PACKAGEINSTALLERACTIVITY = "com.android.packageinstaller.PackageInstallerActivity";
     public static final String PACKAGEMANAGERSERVICE = "com.android.server.pm.PackageManagerService";
     public static final String PACKAGEPARSER = "android.content.pm.PackageParser";
+    public static final String CLASS_PACKAGE_PARSER_PACKAGE = "android.content.pm.PackageParser.Package";
     public static final String SIGNATURE = "java.security.Signature";
     public static final String SYSTEMUIACTIVITY = "com.android.systemui.SystemUIApplication";
     public static final String UNINSTALLAPPPROGRESS = "com.android.packageinstaller.UninstallAppProgress";

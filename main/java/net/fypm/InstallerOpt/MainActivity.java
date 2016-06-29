@@ -9,24 +9,34 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.io.File;
+import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends Activity {
 
-    private static final int REQUEST_WRITE_STORAGE = 112;
-    private static final int REQUEST_VIBRATE = 113;
+    private static final int REQUEST_DIRECTORY = 112;
+    private static final int REQUEST_MOVE_BACKUPS = 113;
+    private static final int REQUEST_REBOOT = 114;
+    private static final int REQUEST_WRITE_STORAGE = 115;
+
+    private static final String TAG = "InstallerOpt";
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -96,25 +106,8 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_DARK_THEME).setOnPreferenceChangeListener(changeListenerLauncher2);
             findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher3);
             findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
-            //findPreference(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher5);
-            if (Build.VERSION.SDK_INT >= 23) {
-                if(isReadStorageAllowed()){
-                    //If permission is already having then showing the toast
-                    //Toast.makeText(SplashActivity.this,"You already have the permission",Toast.LENGTH_LONG).show();
-                    //Existing the method with return
-                    return;
-                }else{
-                    requestStoragePermission();
-                }
-                /*if(isVibrateAllowed()){
-                    //If permission is already having then showing the toast
-                    //Toast.makeText(SplashActivity.this,"You already have the permission",Toast.LENGTH_LONG).show();
-                    //Existing the method with return
-                    return;
-                }else{
-                    requestVibratePermission();
-                }*/
-            }
+            findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE).setOnPreferenceChangeListener(changeListenerLauncher5);
+            findPreference(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS).setOnPreferenceChangeListener(changeListenerLauncher6);
         }
 
         @Override
@@ -134,9 +127,9 @@ public class MainActivity extends Activity {
                 currentVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
             } catch (android.content.pm.PackageManager.NameNotFoundException e) {
                 // handle exception
-                Main.xlog_start("checkFirstRun - Current version code not found");
-                Main.xlog("", e);
-                Main.xlog_end("checkFirstRun - Current version code not found");
+                Log.e(TAG, "checkFirstRun - Current version code not found");
+                Log.e(TAG, "checkFirstRun: ", e);
+                Log.e(TAG, "checkFirstRun - Current version code not found");
                 return;
             }
 
@@ -162,10 +155,9 @@ public class MainActivity extends Activity {
                 if (sharedPrefsFileOld.exists()) {
                     boolean deleted = sharedPrefsFileOld.delete();
                     if (deleted) {
-                        //Main.xlog_start("checkFirstRun - First run or data has been cleared");
-                        //Main.xlog("Old preference file found and deleted", null);
-                        //Main.xlog_end("checkFirstRun - First run or data has been cleared");
-                        //XposedBridge.log("Old preference file found and deleted");
+                        Log.e(TAG, "checkFirstRun - Old preference file found and deleted");
+                        Log.e(TAG, "checkFirstRun: ", null);
+                        Log.e(TAG, "checkFirstRun - Old preference file found and deleted");
                     }
                 }
 
@@ -189,13 +181,8 @@ public class MainActivity extends Activity {
         private final Preference.OnPreferenceChangeListener changeListenerLauncher = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Activity activity = getActivity();
-               /* PackageManager packageManager = activity.getPackageManager();
-                int state = (Boolean) newValue ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;*/
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
-                /*activity.getPackageManager().setComponentEnabledSetting(alias, state,
-                        PackageManager.DONT_KILL_APP);*/
                 if (isLauncherIconVisible(alias)) {
                     activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
                 } else {
@@ -218,7 +205,7 @@ public class MainActivity extends Activity {
         private final Preference.OnPreferenceChangeListener changeListenerLauncher3 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Activity activity = getActivity();
-                if (newValue.equals(true) ) {
+                if (newValue.equals(true)) {
                     findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setEnabled(false);
                     MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
                 } else {
@@ -231,7 +218,7 @@ public class MainActivity extends Activity {
         private final Preference.OnPreferenceChangeListener changeListenerLauncher4 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Activity activity = getActivity();
-                if (newValue.equals(true) ) {
+                if (newValue.equals(true)) {
                     findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(false);
                     MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false).apply();
                 } else {
@@ -241,18 +228,100 @@ public class MainActivity extends Activity {
             }
         };
 
-        /*private final Preference.OnPreferenceChangeListener changeListenerLauncher5 = new Preference.OnPreferenceChangeListener() {
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher5 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Activity activity = getActivity();
-                if (newValue.equals(true) ) {
-                    findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(true);
-                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
-                } *//*else {
-                    findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(true);
-                }*//*
+                if (newValue.equals(true)) {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        if (isReadStorageAllowed()) {
+                            //Toast.makeText(MainActivity.this,"You already granted the permission, thanks!",Toast.LENGTH_LONG).show();
+                            //return;
+                        } else {
+                            requestStoragePermission();
+                        }
+                    }
+                    boolean externalSD = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, false);
+                    if (!externalSD) {
+                        startActivityForResult(new Intent(activity, Reboot.class), REQUEST_REBOOT);
+                    } else {
+                        chooseBackupDir();
+                    }
+                } else {
+                    //MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION, null).apply();
+                }
                 return true;
             }
-        };*/
+        };
+
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher6 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Activity activity = getActivity();
+                if (newValue.equals(true)) {
+                    startActivity(new Intent(activity, Reboot.class));
+                }
+                return true;
+            }
+        };
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+            super.onActivityResult(requestCode, resultCode, resultData);
+            Activity activity = getActivity();
+            if (requestCode == REQUEST_DIRECTORY) {
+                if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+                    String curBackupDir = MultiprocessPreferences.getDefaultSharedPreferences(activity).getString(Common.PREF_BACKUP_APK_LOCATION, null);
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION_OLD, curBackupDir).apply();
+                    String newBackupDir = resultData.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
+                    long curBackupDirSize = Stats.getFileSize(new File(curBackupDir));
+                    long availableSpace = Stats.getAvailableSpaceInBytes(newBackupDir);
+                    if (availableSpace < curBackupDirSize) {
+                        Toast.makeText(activity, R.string.free_space_message, Toast.LENGTH_LONG).show();
+                        chooseBackupDir();
+                    }
+                    if (curBackupDir != null && curBackupDir != newBackupDir) {
+                        MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION, newBackupDir).apply();
+                        startActivityForResult(new Intent(activity, MoveBackups.class), REQUEST_MOVE_BACKUPS);
+                    }
+                } else {
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false).apply();
+                    Preference pref = findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE);
+                    CheckBoxPreference check = (CheckBoxPreference) pref;
+                    check.setChecked(false);
+                }
+            }
+            if (requestCode == REQUEST_MOVE_BACKUPS) {
+                if (resultCode == MoveBackups.RESULT_MOVE_PERFORM) {
+                    String oldBackupDir = MultiprocessPreferences.getDefaultSharedPreferences(activity).getString(Common.PREF_BACKUP_APK_LOCATION_OLD, null);
+                    String newBackupDir = MultiprocessPreferences.getDefaultSharedPreferences(activity).getString(Common.PREF_BACKUP_APK_LOCATION, null);
+
+                    ArrayList<String> TmpList = new ArrayList<String>();
+                    File old_file = new File(oldBackupDir);
+                    //Log.i(TAG, "old_file " + old_file);
+                    ArrayList<String> old_files = new ArrayList<String>(Arrays.asList(old_file.list()));
+                    //Log.i(TAG, "old_files array " + old_files.size());
+
+                    File new_file = new File(newBackupDir);
+                    if(!new_file.exists())
+                        new_file.mkdir();
+
+                    for(int i=0;i<old_files.size();i++){
+                        File check = new File(newBackupDir,old_files.get(i));
+                        if(!check.exists())
+                            TmpList.add(old_files.get(i));
+                    }
+
+                    if (old_files.size() > 0)
+                        new AsyncCopy(activity, newBackupDir, TmpList).execute("");
+                    else
+                        Toast.makeText(getApplicationContext(), R.string.no_old_files_message, Toast.LENGTH_LONG).show();
+                }
+            }
+            if (requestCode == REQUEST_REBOOT) {
+                if (resultCode == Reboot.RESULT_CANCELED) {
+                    chooseBackupDir();
+                }
+            }
+        }
 
         @Override
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -270,19 +339,23 @@ public class MainActivity extends Activity {
                     Toast.makeText(activity, getString(R.string.perm_denied), Toast.LENGTH_LONG).show();
                 }
             }
-            if (requestCode == REQUEST_VIBRATE) {
-                Activity activity = getActivity();
-                //If permission is granted
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        }
 
-                    //Displaying a toast
-                    Toast.makeText(activity, "Permission granted for vibration", Toast.LENGTH_LONG).show();
+        private void chooseBackupDir() {
+            Activity activity = getActivity();
+            final Intent chooserIntent = new Intent(activity, DirectoryChooserActivity.class);
 
-                } else {
-                    //Displaying another toast if permission is not granted
-                    Toast.makeText(activity, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
-                }
-            }
+            final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                    .allowReadOnlyDirectory(false)
+                    .allowNewDirectoryNameModification(true)
+                    .initialDirectory("/")
+                    .newDirectoryName("InstallerOpt")
+                    .build();
+
+            chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config);
+
+            // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
+            startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
         }
 
         private boolean isReadStorageAllowed() {
@@ -299,42 +372,14 @@ public class MainActivity extends Activity {
         }
 
         //Requesting permission
-        private void requestStoragePermission(){
+        private void requestStoragePermission() {
             Activity activity = getActivity();
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                //If the user has denied the permission previously your code will come to this block
-                //Here you can explain why you need this permission
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //Explain here why you need this permission
+                Toast.makeText(activity, R.string.write_permission_message, Toast.LENGTH_LONG).show();
             }
-
             //And finally ask for the permission
-            ActivityCompat.requestPermissions(activity,new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_WRITE_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
         }
-
-        /*private boolean isVibrateAllowed() {
-            //Getting the permission status
-            Activity activity = getActivity();
-            int result = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.VIBRATE);
-
-            //If permission is granted returning true
-            if (result == PackageManager.PERMISSION_GRANTED)
-                return true;
-
-            //If permission is not granted returning false
-            return false;
-        }
-
-        //Requesting permission
-        private void requestVibratePermission(){
-            Activity activity = getActivity();
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.VIBRATE)){
-                //If the user has denied the permission previously your code will come to this block
-                //Here you can explain why you need this permission
-                //Explain here why you need this permission
-            }
-
-            //And finally ask for the permission
-            ActivityCompat.requestPermissions(activity,new String[]{android.Manifest.permission.VIBRATE},REQUEST_VIBRATE);
-        }*/
     }
 }

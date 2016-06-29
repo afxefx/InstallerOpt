@@ -16,8 +16,8 @@ public class BootReceiver extends BroadcastReceiver {
 
     public BootReceiver() {
         try {
-            mContext = getApplicationUsingReflection();
-        } catch (Throwable e){
+            //mContext = getApplicationUsingReflection();
+        } catch (Throwable e) {
 
         }
         try {
@@ -52,8 +52,8 @@ public class BootReceiver extends BroadcastReceiver {
         MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putBoolean(pref, value).apply();
     }
 
-    public static Application getApplicationUsingReflection() throws Exception {
+    /*public static Application getApplicationUsingReflection() throws Exception {
         return (Application) Class.forName("android.app.ActivityThread")
                 .getMethod("currentApplication").invoke(null, (Object[]) null);
-    }
+    }*/
 }

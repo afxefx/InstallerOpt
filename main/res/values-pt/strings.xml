@@ -3,6 +3,9 @@
     <!--Strings-->
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">App foi desinstalado</string>
+    <string name="backup_free">\nBackup folder free:</string>
+    <string name="backup_location">Backup folder location:\n</string>
+    <string name="backup_used">\n\nBackup folder used:</string>
     <string name="check_signatures">Verificando assinaturas</string>
     <string name="confirm_check_signatures">Confirmando assinaturas</string>
     <string name="confirm_check_signatures_message">Disabilitar verficação de assinatura para essa instalação?</string>
@@ -98,4 +101,20 @@
     <string name="perm_denied">Oops you just denied the permission</string>
     <string name="perm_granted">Permission granted now you can read the storage</string>
     <string name="updated">Module has been updated</string>
+    <string name="external_sdcard_full_access_summary">Allows read/write to external SD Card(requires reboot)</string>
+    <string name="reboot">Reboot</string>
+    <string name="external_sdcard_full_access_title">External SD Card Full Access</string>
+    <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up APKs to external SD cards, would you like it enabled and then reboot?</string>
+    <string name="delete_button_text">Delete</string>
+    <string name="enable_backup_message">Please enable backup APK option and choose your backup folder to see stats</string>
+    <string name="enable_reboot_message">Enable and Reboot?</string>
+    <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
+    <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
+    <string name="move_backups_message">New backup folder differs from the old one, would you like to move your old backups to the new location?</string>
+    <string name="move_complete_message">Move Completed Successfully</string>
+    <string name="move_file_message">Moving file*</string>
+    <string name="move_file_of_message">*of*</string>
+    <string name="move_file_prepare_message">Preparing to move files to new backup location</string>
+    <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
+    <string name="no_old_files_message">No files present in old backup folder</string>
 </resources>

@@ -8,7 +8,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,7 +18,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
@@ -27,40 +25,13 @@ import java.util.Map;
 public class Utils extends BroadcastReceiver {
 
     private static final String TAG = "InstallerOpt";
-
-    public static final String APP_DIR = Environment
-            .getExternalStorageDirectory()
-            + File.separator
-            + Common.PACKAGE_TAG
-            + File.separator;
-    public static final File PACKAGE_DIR = new File(APP_DIR);
-    //public static final File PREFERENCES_BACKUP_FILE = new File(APP_DIR
-    //       + File.separator + Common.PACKAGE_TAG + ".backup");
     public Context ctx;
     public Resources resources;
     public static boolean enableDebug;
-    Map<String, File> externalLocations = ExternalStorage.getAllStorageLocations();
-    File sdCard = externalLocations.get(ExternalStorage.SD_CARD);
-    File externalSdCard = externalLocations.get(ExternalStorage.EXTERNAL_SD_CARD);
 
     @Override
     public void onReceive(Context context, Intent intent) {
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
-        if (enableDebug) {
-            Log.i(TAG, "sdCard equals: " + sdCard);
-            Log.i(TAG, "externalSdCard equals: " + externalSdCard);
-        }
-        try {
-            if (!PACKAGE_DIR.exists()) {
-                if (PACKAGE_DIR.mkdir()) {
-                    Log.i(TAG, "Package directory: " + APP_DIR + " created successfully");
-                } else {
-                    Log.e(TAG, "Package directory: " + APP_DIR + " was not created successfully");
-                }
-            }
-        } catch (Throwable t) {
-            Log.e(TAG, "Error creating package directory: ", t);
-        }
         ctx = context;
         resources = ctx.getResources();
         String action = intent.getAction();
@@ -70,7 +41,8 @@ public class Utils extends BroadcastReceiver {
         if (Common.ACTION_BACKUP_APK_FILE.equals(action)) {
             if (hasExtras) {
                 String apkFile = extras.getString(Common.FILE);
-                backupApkFile(apkFile);
+                String backupDir = extras.getString(Common.BACKUP_DIR);
+                backupApkFile(apkFile, backupDir);
             }
         } else if (Common.ACTION_DELETE_APK_FILE.equals(action)) {
             if (hasExtras) {
@@ -98,7 +70,7 @@ public class Utils extends BroadcastReceiver {
         }
     }
 
-    public void backupApkFile(String apkFile) {
+    public void backupApkFile(String apkFile, String dir) {
         try {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageArchiveInfo(apkFile, 0);
@@ -108,12 +80,12 @@ public class Utils extends BroadcastReceiver {
             String appName = (String) pm.getApplicationLabel(ai);
             String versionName = pi.versionName;
             String fileName = appName + " " + versionName + ".apk";
-            String backupApkFile = APP_DIR + fileName;
+            String backupApkFile = dir + File.separator + fileName;
             File src = new File(apkFile);
             File dst = new File(backupApkFile);
             if (enableDebug) {
                 Log.i(TAG, "backupApkFile Debug Start");
-                Log.i(TAG, "Backup directory: " + APP_DIR);
+                Log.i(TAG, "Backup directory: " + dir);
                 Log.i(TAG, "APK file: " + apkFile);
                 Log.i(TAG, "pm: " + pm);
                 Log.i(TAG, "pi: " + pi);
@@ -124,8 +96,8 @@ public class Utils extends BroadcastReceiver {
                 Log.i(TAG, "versionName: " + versionName);
                 Log.i(TAG, "fileName: " + fileName);
                 Log.i(TAG, "backupApkFile: " + backupApkFile);
-                Log.i(TAG, "Source file " + src);
-                Log.i(TAG, "Destination file " + dst);
+                Log.i(TAG, "Source file Uri " + src);
+                Log.i(TAG, "Destination file Uri " + dst);
                 Log.i(TAG, "backupApkFile Debug End");
             }
             if (!dst.equals(src)) {
@@ -161,7 +133,6 @@ public class Utils extends BroadcastReceiver {
         try {
             InputStream in = new FileInputStream(src);
             OutputStream out = new FileOutputStream(dst);
-
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
@@ -234,7 +205,6 @@ public class Utils extends BroadcastReceiver {
 
     public void vibrateDevice(int duration) {
         Vibrator v = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 1000 milliseconds
         v.vibrate(duration);
     }
 
