@@ -166,6 +166,8 @@ public class Utils extends BroadcastReceiver {
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                 }
             }
+        } else {
+            Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
         }
     }
 
