@@ -423,7 +423,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += String.format("%-20s %20s", res.getString(R.string.current_version).replace( "\\n", "%n"), currentVersion);
+                    versionInfo += String.format("%-20s %20s", res.getString(R.string.current_version).replace("\\n", "%n"), currentVersion);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -448,7 +448,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += String.format("%-30s %10d", res.getString(R.string.current_version_code).replace( "\\n", "%n"), currentCode);
+                    versionCode += String.format("%-30s %10d", res.getString(R.string.current_version_code).replace("\\n", "%n"), currentCode);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -886,7 +886,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
                     }
                 }
-                    if (hideAppCrashes) {
+                if (hideAppCrashes) {
                     xlog("hideAppCrashes set to", hideAppCrashes);
                     XposedHelpers.setObjectField(param.thisObject,
                             "DISMISS_TIMEOUT", 0);

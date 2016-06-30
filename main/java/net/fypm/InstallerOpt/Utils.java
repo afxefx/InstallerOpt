@@ -96,8 +96,8 @@ public class Utils extends BroadcastReceiver {
                 Log.i(TAG, "versionName: " + versionName);
                 Log.i(TAG, "fileName: " + fileName);
                 Log.i(TAG, "backupApkFile: " + backupApkFile);
-                Log.i(TAG, "Source file Uri " + src);
-                Log.i(TAG, "Destination file Uri " + dst);
+                Log.i(TAG, "Source file " + src);
+                Log.i(TAG, "Destination file " + dst);
                 Log.i(TAG, "backupApkFile Debug End");
             }
             if (!dst.equals(src)) {
@@ -148,20 +148,23 @@ public class Utils extends BroadcastReceiver {
     }
 
     public void deleteApkFile(String apkFile) {
+        String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(ctx).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         File apk = new File(apkFile);
-        if (apk.exists()) {
-            if(apk.delete()) {
-                if (enableDebug) {
-                    Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
-                            Toast.LENGTH_LONG).show();
+        if (apk.getPath() != backupDir) {
+            if (apk.exists()) {
+                if (apk.delete()) {
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.i(TAG, "APK file " + apkFile + " successfully deleted");
+                } else {
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                 }
-                Log.i(TAG, "APK file " + apkFile + " successfully deleted");
-            } else {
-                if (enableDebug) {
-                    Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
-                            Toast.LENGTH_LONG).show();
-                }
-                Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
             }
         }
     }

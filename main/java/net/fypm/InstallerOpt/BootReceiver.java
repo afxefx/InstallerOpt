@@ -18,8 +18,8 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             try {
-                Toast.makeText(context, "Boot completed",
-                        Toast.LENGTH_LONG).show();
+                /*Toast.makeText(context, "Boot completed",
+                        Toast.LENGTH_LONG).show();*/
                 Log.i(TAG, "Boot Complete");
             } catch (Exception e) {
                 Log.e(TAG, "BootReceiver.onReceive: ", e);
