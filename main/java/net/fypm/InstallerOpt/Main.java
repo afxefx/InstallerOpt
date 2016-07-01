@@ -25,6 +25,7 @@ import org.xmlpull.v1.XmlPullParser;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
+import java.util.logging.Handler;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -123,28 +124,31 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
-        xlog_start("XSharedPreferences - Init");
+        disableCheckSignatures = true;
+
         try {
+            xlog_start("XSharedPreferences - Init");
             //prefs = initPrefs();
             prefs = new XSharedPreferences(Main.class.getPackage().getName());
             prefs.makeWorldReadable();
             prefs.reload();
             //initPrefs();
             xlog("Success", null);
+            xlog_end("XSharedPreferences - Init");
         } catch (Throwable e) {
             xlog("", e);
+            xlog_end("XSharedPreferences - Init");
         }
-        xlog_end("XSharedPreferences - Init");
 
-        bootCompleted = false;
-        xlog("bootCompleted value at initZygote", bootCompleted);
-
-        disableCheckSignatures = true;
-        xlog_start("Signature Checking and Verification Overview");
-        xlog("disableCheckSignatures status", disableCheckSignatures);
-        xlog("checkSignatures status ", checkSignatures);
-        xlog("verifySignature status", verifySignature);
-        xlog_end("Signature Checking and Verification Overview");
+        enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        if (enableDebug) {
+            //xlog("bootCompleted value at initZygote", bootCompleted);
+            xlog_start("Signature Checking and Verification Overview");
+            xlog("disableCheckSignatures status", disableCheckSignatures);
+            xlog("checkSignatures status ", checkSignatures);
+            xlog("verifySignature status", verifySignature);
+            xlog_end("Signature Checking and Verification Overview");
+        }
 
         appInfoHook = new XC_MethodHook() {
             @Override
@@ -613,8 +617,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         bootCompletedHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+            public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+                Log.i(TAG, "bootCompletedHook: bootCompleted value before changing " + bootCompleted);
                 bootCompleted = true;
+                Log.i(TAG, "bootCompletedHook: bootCompleted after changing " + bootCompleted);
             }
         };
 
@@ -703,8 +709,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     throws Throwable {
                 prefs.reload();
                 deviceAdmins = prefs.getBoolean(Common.PREF_ENABLE_UNINSTALL_DEVICE_ADMIN, false);
+                enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 if (deviceAdmins) {
-                    xlog("deviceAdmins set to", deviceAdmins);
+                    if (enableDebug) {
+                        xlog_start("deviceAdminsHook");
+                        xlog("deviceAdmins set to", deviceAdmins);
+                        xlog_end("deviceAdminsHook");
+                    }
                     param.setResult(false);
                     return;
                 }
@@ -866,30 +877,34 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         hideAppCrashesHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
+            protected void afterHookedMethod(MethodHookParam param)
                     throws Throwable {
-                Log.i(TAG, "bootcompleted value when hideAppCrashesHook is called: " + bootCompleted);
-                if (bootCompleted) {
-                    try {
-                        mContext = AndroidAppHelper.currentApplication();
-                        hideAppCrashes = getPref(Common.PREF_ENABLE_HIDE_APP_CRASHES, getInstallerOptContext());
-                        Log.i(TAG, "hideAppCrashes set via context");
-                    } catch (Throwable e) {
-                        Log.e(TAG, "hideAppCrashes error via context: ", e);
-                    }
-                } else {
-                    try {
-                        prefs.reload();
-                        hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
+                try {
+                    prefs.reload();
+                    hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                    if (enableDebug) {
                         Log.i(TAG, "hideAppCrashes set via shared prefs");
-                    } catch (Throwable e) {
-                        Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
                     }
+                } catch (Throwable e) {
+                    Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
                 }
                 if (hideAppCrashes) {
-                    xlog("hideAppCrashes set to", hideAppCrashes);
-                    XposedHelpers.setObjectField(param.thisObject,
-                            "DISMISS_TIMEOUT", 0);
+                    try {
+                        if (enableDebug) {
+                            xlog_start("hideAppCrashesHook");
+                            xlog("hideAppCrashes set to", hideAppCrashes);
+                            xlog("App crashed", param.args[3]);
+                            xlog_end("hideAppCrashesHook");
+                        }
+                        XposedHelpers.setObjectField(param.thisObject,
+                                "DISMISS_TIMEOUT", 0);
+                        XposedHelpers.callMethod(param.thisObject, "dismiss");
+                    } catch (Throwable e) {
+                        xlog_start("hideAppCrashesHook");
+                        xlog("hideAppCrashes: ", e);
+                        xlog_end("hideAppCrashesHook");
+                    }
                 }
             }
         };
@@ -1304,7 +1319,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         if (lpparam.packageName.equals(Common.INSTALLEROPT)) {
             XposedHelpers.findAndHookMethod(
                     Common.INSTALLEROPTACTIVITY, lpparam.classLoader,
-                    "onReceive", bootCompletedHook);
+                    "onReceive", Context.class, Intent.class, bootCompletedHook);
         }
 
         if (Common.ANDROID_PKG.equals(lpparam.packageName)
@@ -1588,27 +1603,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         backupApkFile.putExtra(Common.BACKUP_DIR, dir);
         getInstallerOptContext().sendBroadcast(backupApkFile);
     }
-
-    /*public void bootCompletedHook(Context context) {
-        // Register mMessageReceiver to receive messages.
-        LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
-                new IntentFilter("my-event"));
-
-
-        // Unregister since the activity is not visible
-        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-    }
-
-    // handler for received Intents for the "my-event" event
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Extract data included in the Intent
-            String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
-            initPrefs();
-        }
-    };*/
 
     public void deleteApkFile(String apkFile) {
         Intent deleteApkFile = new Intent(Common.ACTION_DELETE_APK_FILE);
