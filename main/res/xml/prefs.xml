@@ -203,5 +203,10 @@
             android:key="enable_debug"
             android:summary="@string/enable_debug_summary"
             android:title="@string/enable_debug_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_force_english"
+            android:summary="@string/enable_force_english_summary"
+            android:title="@string/enable_force_english_title" />
     </PreferenceCategory>
 </PreferenceScreen>

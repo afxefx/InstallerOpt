@@ -82,6 +82,7 @@ public class Common {
     public static final String PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS = "external_sdcard_full_access";
     public static final String PREF_ENABLE_EXPERT_MODE = "enable_expert_mode";
     public static final String PREF_ENABLE_EXPORT_APP = "enable_export_apps";
+    public static final String PREF_ENABLE_FORCE_ENGLISH = "enable_force_english";
     public static final String PREF_ENABLE_HIDE_APP_CRASHES = "enable_hide_app_crashes";
     public static final String PREF_ENABLE_INSTALL_EXTERNAL_STORAGE = "enable_install_external_storage";
     public static final String PREF_ENABLE_INSTALL_UNKNOWN_APP = "enable_install_unknown_apps";

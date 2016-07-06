@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -28,6 +29,7 @@ import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
 
@@ -86,6 +88,7 @@ public class MainActivity extends Activity {
 
         boolean stateOfClose;
         boolean stateOfLaunch;
+        boolean forceEnglish;
 
 
         @SuppressWarnings("deprecation")
@@ -93,11 +96,28 @@ public class MainActivity extends Activity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Activity activity = getActivity();
+            forceEnglish = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_FORCE_ENGLISH, false);
             stateOfClose = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);
             stateOfLaunch = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false);
             if (stateOfClose && stateOfLaunch) {
                 MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false).apply();
                 MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
+            }
+            if (forceEnglish) {
+                String languageToLoad  = "en";
+                Locale locale = new Locale(languageToLoad);
+                //Locale.setDefault(locale);
+                Configuration config = new Configuration();
+                config.locale = locale;
+                getBaseContext().getResources().updateConfiguration(config,
+                        getBaseContext().getResources().getDisplayMetrics());
+            } else {
+                Locale locale = Locale.getDefault();
+                Configuration config = new Configuration();
+                config.locale = locale;
+                getBaseContext().getResources().updateConfiguration(config,
+                        getBaseContext().getResources().getDisplayMetrics());
+
             }
             checkFirstRun();
             getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
@@ -108,6 +128,7 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
             findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE).setOnPreferenceChangeListener(changeListenerLauncher5);
             findPreference(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS).setOnPreferenceChangeListener(changeListenerLauncher6);
+            findPreference(Common.PREF_ENABLE_FORCE_ENGLISH).setOnPreferenceChangeListener(changeListenerLauncher7);
         }
 
         @Override
@@ -259,6 +280,16 @@ public class MainActivity extends Activity {
                 if (newValue.equals(true)) {
                     startActivity(new Intent(activity, Reboot.class));
                 }
+                return true;
+            }
+        };
+
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher7 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Intent refresh = new Intent(getActivity(), getActivity()
+                        .getClass());
+                startActivity(refresh);
+                getActivity().finish();
                 return true;
             }
         };

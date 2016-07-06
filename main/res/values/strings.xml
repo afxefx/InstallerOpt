@@ -92,6 +92,8 @@
     <string name="enable_disable_verify_signatures_title">Disable Signature Verification</string>
     <string name="enable_downgrade_apps_summary">Allow installing older versions of applications</string>
     <string name="enable_downgrade_apps_title">Downgrade Apps</string>
+    <string name="enable_force_english_summary">Force english for this module regardless of current locale</string>
+    <string name="enable_force_english_title">Force English</string>
     <string name="enable_hide_app_crashes_summary">Hide the dialog when an app force closes</string>
     <string name="enable_hide_app_crashes_title">Disable FC Dialog</string>
     <string name="enable_hide_icon_summary">Removes application icon from launcher</string>

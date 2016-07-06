@@ -117,4 +117,9 @@
     <string name="move_file_prepare_message">Preparing to move files to new backup location</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
     <string name="no_old_files_message">No files present in old backup folder</string>
+    <string name="manage_button_text">Manage</string>
+    <string name="enable_force_english_title">Force English</string>
+    <string name="enable_force_english_summary">Force english for this module regardless of current locale</string>
+    <string name="backup_total_items">\\n\\nTotal backed up:</string>
+    <string name="backup_last_backed_up">\\n\\nLast backed up:\\n</string>
 </resources>
