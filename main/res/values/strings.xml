@@ -4,7 +4,9 @@
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">App was uninstalled</string>
     <string name="backup_free">\nBackup folder free:</string>
+    <string name="backup_last_backed_up">\n\nLast backed up:\n</string>
     <string name="backup_location">Backup folder location:\n</string>
+    <string name="backup_total_items">\n\nTotal backed up:</string>
     <string name="backup_used">\n\nBackup folder used:</string>
     <string name="check_signatures">Checking signatures</string>
     <string name="confirm_check_signatures">Confirming signatures check</string>
@@ -19,6 +21,7 @@
     <string name="enable_reboot_message">Enable and Reboot?</string>
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
+    <string name="manage_button_text">Manage</string>
     <string name="move_backups_message">New backup folder differs from the old one, would you like to move your old backups to the new location?</string>
     <string name="move_complete_message">Move Completed Successfully</string>
     <string name="move_file_message">Moving file*</string>
@@ -32,7 +35,7 @@
     <string name="reboot">Reboot</string>
     <string name="reset">Resetting preferences to avoid conflicts</string>
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
-    <string name="stats_menu">Stats</string>
+    <string name="stats_menu">Backup Stats</string>
     <string name="updated">Module has been updated</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
     <!--Preferences-->

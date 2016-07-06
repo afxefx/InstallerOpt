@@ -1,12 +1,16 @@
 package net.fypm.InstallerOpt;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StatFs;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,11 +26,13 @@ public class Stats extends Activity {
         if (backupDir != null) {
             final File PACKAGE_DIR = new File(backupDir + File.separator);
             long mSize = getFileSize(PACKAGE_DIR);
-            statsDialog
-                    /*.setMessage("Backup folder location:\n" + PACKAGE_DIR + "\n\nBackup folder used:\t\t\t\t"
-                            + humanReadableByteCount(mSize, true) + "\nBackup folder free:\t\t\t\t\t\t\t\t"
-                            + humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true));*/
-                    .setMessage(String.format("%s %s %-22s %10s %-22s %10s", getString(R.string.backup_location), PACKAGE_DIR.toString(), getString(R.string.backup_used), humanReadableByteCount(mSize, true), getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true)));
+            statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
+                            getString(R.string.backup_location), PACKAGE_DIR.toString(),
+                            getString(R.string.backup_last_backed_up), getLatestFilefromDir(backupDir),
+                            getString(R.string.backup_used), humanReadableByteCount(mSize, true),
+                            getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true),
+                            getString(R.string.backup_total_items), getFileCount(PACKAGE_DIR)
+                    ));
             statsDialog.setCancelable(false);
             statsDialog.setPositiveButton(R.string.delete_button_text,
                     new DialogInterface.OnClickListener() {
@@ -74,9 +80,26 @@ public class Stats extends Activity {
     public static long getAvailableSpaceInBytes(String path) {
         long availableSpace = -1L;
         StatFs stat = new StatFs(path);
-        availableSpace = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+        if (Build.VERSION.SDK_INT >= 18) {
+            availableSpace = getAvailableBytes(stat);
+        }
+        else {
+            availableSpace = stat.getAvailableBlocks() * stat.getBlockSize();
+        }
 
         return availableSpace;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private static long getAvailableBytes(StatFs stat) {
+        return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+    }
+
+    public static String getFileCount(final File file) {
+        ArrayList<String> backup_dir = new ArrayList<String>(Arrays.asList(file.list()));
+        int result = backup_dir.size();
+        String total = result + " apps";
+        return total;
     }
 
     public static long getFileSize(final File file) {
@@ -101,6 +124,23 @@ public class Stats extends Activity {
             }
         }
         return result;
+    }
+
+    private String getLatestFilefromDir(String dirPath){
+        File dir = new File(dirPath);
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) {
+            return null;
+        }
+
+        File lastModifiedFile = files[0];
+        for (int i = 1; i < files.length; i++) {
+            if (lastModifiedFile.lastModified() < files[i].lastModified()) {
+                lastModifiedFile = files[i];
+            }
+        }
+        String filename = lastModifiedFile.getName();
+        return filename;
     }
 
     public static String humanReadableByteCount(long bytes, boolean si) {
