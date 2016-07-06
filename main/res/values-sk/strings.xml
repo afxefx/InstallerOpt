@@ -16,7 +16,7 @@
     <string name="enable">Povoliť</string>
     <string name="new_version">Nová verzia: </string>
     <string name="new_version_code">Kód novej verzie: </string>
-    <string name="stats_menu">Štatistiky</string>
+    <string name="stats_menu">Štatistiky zálohovania</string>
     <string name="reset">Nastavenia boli obnovené aby sa predišlo konfliktom</string>
     <string name="updated">Modul bol aktualizovaný</string>
     <string name="perm_granted">Povolenie bolo udelené</string>
@@ -128,13 +128,13 @@
     <string name="move_file_prepare_message">Príprava presunu súborov na nové umiestnenie</string>
     <string name="write_permission_message">Pre fungovanie zálohovania APK súborov je potrebné povolenie pre zápis</string>
     <string name="no_old_files_message">V starom adresári nie sú žiadne súbory</string>
-    <string name="manage_button_text">Manage</string>
-    <string name="enable_force_english_title">Force English</string>
-    <string name="enable_force_english_summary">Force english for this module regardless of current locale</string>
-    <string name="backup_total_items">\\n\\nTotal backed up:</string>
-    <string name="backup_last_backed_up">\\n\\nLast backed up:\\n</string>
-    <string name="enable_version_inline_title">Version Info Inline</string>
-    <string name="enable_version_inline_summary">Shows version information inline with install dialog</string>
+    <string name="manage_button_text">Spravovať</string>
+    <string name="enable_force_english_title">Vynútiť angličtinu</string>
+    <string name="enable_force_english_summary">Vynúti anglický jazyk pre tento modul bez ohľadu na systémové nastavenia</string>
+    <string name="backup_total_items">\\n\\nCelkovo zálohované:</string>
+    <string name="backup_last_backed_up">\\n\\nPosledné zálohované:\\n</string>
+    <string name="enable_version_inline_title">Informácie o verzii v rade</string>
+    <string name="enable_version_inline_summary">Zobrazí informácie o verzií v rade s inštalačným dialógom</string>
 
 
 </resources>
