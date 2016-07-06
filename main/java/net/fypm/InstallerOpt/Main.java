@@ -106,6 +106,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean enablePackageName;
     public static boolean enablePlay;
     public static boolean enableVersion;
+    public static boolean enableVersionInline;
     public static boolean enableVersionCode;
     public static boolean enableVersionToast;
     public static boolean enableVibrateDevice;
@@ -401,6 +402,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, getInstallerOptContext());
                 enableVersionCode = getPref(Common.PREF_ENABLE_SHOW_VERSION_CODE, getInstallerOptContext());
+                enableVersionInline = getPref(Common.PREF_ENABLE_SHOW_VERSION_INLINE, getInstallerOptContext());
                 enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, getInstallerOptContext());
                 enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, getInstallerOptContext());
                 //Add below two in prefs
@@ -436,10 +438,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 if (enableVersion && !enableVersionCode) {
-                    if (view != null) {
-                        CharSequence temp = view.getText();
-                        temp = temp + "\n\n" + versionInfo + "\n";
-                        view.setText(temp);
+                    if (enableVersionInline) {
+                        if (view != null) {
+                            CharSequence temp = view.getText();
+                            temp = temp + "\n\n" + versionInfo + "\n";
+                            view.setText(temp);
+                        }
                     }
 
                     if (enableVersionToast) {
@@ -461,13 +465,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 if (enableVersionCode && !enableVersion) {
-                    if (view != null) {
-                        CharSequence temp = view.getText();
-                        temp = temp
-                                + "\n\n"
-                                + versionCode
-                                + "\n";
-                        view.setText(temp);
+                    if (enableVersionInline) {
+                        if (view != null) {
+                            CharSequence temp = view.getText();
+                            temp = temp
+                                    + "\n\n"
+                                    + versionCode
+                                    + "\n";
+                            view.setText(temp);
+                        }
                     }
 
                     if (enableVersionToast) {
@@ -496,10 +502,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
                 if (enableVersion && enableVersionCode) {
                     String versionAll = versionInfo + "\n\n" + versionCode;
-                    if (view != null) {
-                        CharSequence temp = view.getText();
-                        temp = temp + "\n\n" + versionAll + "\n";
-                        view.setText(temp);
+                    if (enableVersionInline) {
+                        if (view != null) {
+                            CharSequence temp = view.getText();
+                            temp = temp + "\n\n" + versionAll + "\n";
+                            view.setText(temp);
+                        }
                     }
 
                     if (enableVersionToast) {

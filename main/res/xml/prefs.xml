@@ -96,6 +96,11 @@
             android:summary="@string/enable_version_summary"
             android:title="@string/enable_version_title" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_version_inline"
+            android:summary="@string/enable_version_inline_summary"
+            android:title="@string/enable_version_inline_title" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_version_toast"
             android:summary="@string/enable_version_toast_summary"

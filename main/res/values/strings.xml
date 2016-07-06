@@ -116,6 +116,8 @@
     <string name="enable_version_code_title">Version Code Display</string>
     <string name="enable_version_summary">Shows current and new version of application prior to installing</string>
     <string name="enable_version_title">Version Display</string>
+    <string name="enable_version_inline_summary">Shows version information inline with install dialog</string>
+    <string name="enable_version_inline_title">Version Info Inline</string>
     <string name="enable_version_toast_summary">Shows version information in a toast</string>
     <string name="enable_version_toast_title">Version Info Toast</string>
     <string name="external_sdcard_full_access_summary">Allows read/write to external SD Card(requires reboot)</string>
