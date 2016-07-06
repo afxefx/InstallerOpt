@@ -44,7 +44,11 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
     protected String doInBackground(String... urls) {
         File f = new File(savePath);
         if (!f.exists()) {
-            f.mkdir();
+            if(f.mkdir()) {
+                Log.i(TAG, "doInBackground: Backup directory created");
+            } else {
+                Log.e(TAG, "doInBackground: Unable to create backup directory");
+            }
         }
         for (int i = 0; i < arr.size(); i++) {
             Copy(arr.get(i));
@@ -57,7 +61,7 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
     protected void onPostExecute(String unused) {
         long curBackupDirSize = Stats.getFileSize(new File(oldPath));
         long newBackupDirSize = Stats.getFileSize(new File(savePath));
-        if (newBackupDirSize == curBackupDirSize) {
+        if (newBackupDirSize == curBackupDirSize && !oldPath.equals(savePath)) {
             Stats.deleteRecursive(new File(oldPath + File.separator));
             Toast.makeText(ctx, R.string.move_complete_message, Toast.LENGTH_LONG).show();
         } else {

@@ -72,6 +72,13 @@ public class Utils extends BroadcastReceiver {
 
     public void backupApkFile(String apkFile, String dir) {
         try {
+            File f = new File(dir);
+            if (!f.exists()) {
+                if(f.mkdir()) {
+                    Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
+                    Toast.makeText(ctx, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
+                }
+            }
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageArchiveInfo(apkFile, 0);
             pi.applicationInfo.sourceDir = apkFile;
@@ -150,7 +157,7 @@ public class Utils extends BroadcastReceiver {
     public void deleteApkFile(String apkFile) {
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(ctx).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         File apk = new File(apkFile);
-        if (apk.getPath() != backupDir) {
+        if (!apk.getPath().equals(backupDir)) {
             if (apk.exists()) {
                 if (apk.delete()) {
                     if (enableDebug) {

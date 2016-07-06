@@ -135,6 +135,8 @@
     <string name="backup_last_backed_up">\\n\\nPosledné zálohované:\\n</string>
     <string name="enable_version_inline_title">Informácie o verzii v rade</string>
     <string name="enable_version_inline_summary">Zobrazí informácie o verzií v rade s inštalačným dialógom</string>
+    <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
+    <string name="backup_location_missing_message">Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???</string>
 
 
 </resources>

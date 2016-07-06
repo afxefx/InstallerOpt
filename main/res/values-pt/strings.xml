@@ -124,4 +124,6 @@
     <string name="backup_last_backed_up">\\n\\nLast backed up:\\n</string>
     <string name="enable_version_inline_title">Version Info Inline</string>
     <string name="enable_version_inline_summary">Shows version information inline with install dialog</string>
+    <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
+    <string name="backup_location_missing_message">Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???</string>
 </resources>

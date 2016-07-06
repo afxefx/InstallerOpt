@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
                 MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
             }
             if (forceEnglish) {
-                String languageToLoad  = "en";
+                String languageToLoad = "en";
                 Locale locale = new Locale(languageToLoad);
                 //Locale.setDefault(locale);
                 Configuration config = new Configuration();
@@ -255,6 +255,7 @@ public class MainActivity extends Activity {
                 if (newValue.equals(true)) {
                     if (Build.VERSION.SDK_INT >= 23) {
                         if (isReadStorageAllowed()) {
+                            Log.i(TAG, "isReadStorageAllowed(): True");
                             //Toast.makeText(MainActivity.this,"You already granted the permission, thanks!",Toast.LENGTH_LONG).show();
                             //return;
                         } else {
@@ -267,8 +268,6 @@ public class MainActivity extends Activity {
                     } else {
                         chooseBackupDir();
                     }
-                } else {
-                    //MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION, null).apply();
                 }
                 return true;
             }
@@ -301,16 +300,43 @@ public class MainActivity extends Activity {
             if (requestCode == REQUEST_DIRECTORY) {
                 if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
                     String curBackupDir = MultiprocessPreferences.getDefaultSharedPreferences(activity).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION_OLD, curBackupDir).apply();
                     String newBackupDir = resultData.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
-                    long curBackupDirSize = Stats.getFileSize(new File(curBackupDir));
-                    long availableSpace = Stats.getAvailableSpaceInBytes(newBackupDir);
-                    if (availableSpace < curBackupDirSize) {
-                        Toast.makeText(activity, R.string.free_space_message, Toast.LENGTH_LONG).show();
+                    boolean writeable;
+                    boolean enoughSpace;
+                    if (newBackupDir != null) {
+                        File newBackupDirWriteable = new File(newBackupDir);
+                        if (newBackupDirWriteable.canWrite()) {
+                            writeable = true;
+                        } else {
+                            writeable = false;
+                            Log.e(TAG, "Unable to write to chosen folder");
+                            Toast.makeText(activity, R.string.non_writeable_message, Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        writeable = false;
+                    }
+                    if (curBackupDir != null && writeable) {
+                        long curBackupDirSize = Stats.getFileSize(new File(curBackupDir));
+                        long availableSpace = Stats.getAvailableSpaceInBytes(newBackupDir);
+                        if (availableSpace > curBackupDirSize) {
+                            enoughSpace = true;
+                        } else {
+                            enoughSpace = false;
+                            Log.e(TAG, "Chosen folder does not have enough free space");
+                            Toast.makeText(activity, R.string.free_space_message, Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        enoughSpace = true;
+                    }
+                    if (enoughSpace && writeable) {
+                        MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION_OLD, curBackupDir).apply();
+                        MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION, newBackupDir).apply();
+                    } else {
                         chooseBackupDir();
                     }
-                    if (curBackupDir != null && curBackupDir != newBackupDir) {
-                        MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putString(Common.PREF_BACKUP_APK_LOCATION, newBackupDir).apply();
+                    if (curBackupDir != null && enoughSpace && writeable && !curBackupDir.equals(newBackupDir)) {
+                        Log.i(TAG, "curBackupDir: " + curBackupDir + " Length is: " + curBackupDir.length());
+                        Log.i(TAG, "newBackupDir: " + newBackupDir + " Length is: " + newBackupDir.length());
                         startActivityForResult(new Intent(activity, MoveBackups.class), REQUEST_MOVE_BACKUPS);
                     }
                 } else {
@@ -332,19 +358,25 @@ public class MainActivity extends Activity {
                     //Log.i(TAG, "old_files array " + old_files.size());
 
                     File new_file = new File(newBackupDir);
-                    if(!new_file.exists())
-                        new_file.mkdir();
+                    if (!new_file.exists()) {
+                        if (new_file.mkdir()) {
+                            Log.i(TAG, "onActivityResult: Backup directory created");
+                        } else {
+                            Log.e(TAG, "onActivityResult: Unable to create backup directory");
+                        }
+                    }
 
-                    for(int i=0;i<old_files.size();i++){
-                        File check = new File(newBackupDir,old_files.get(i));
-                        if(!check.exists())
+                    for (int i = 0; i < old_files.size(); i++) {
+                        File check = new File(newBackupDir, old_files.get(i));
+                        if (!check.exists())
                             TmpList.add(old_files.get(i));
                     }
 
-                    if (old_files.size() > 0)
+                    if (old_files.size() > 0) {
                         new AsyncCopy(activity, newBackupDir, TmpList).execute("");
-                    else
+                    } else {
                         Toast.makeText(getApplicationContext(), R.string.no_old_files_message, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
             if (requestCode == REQUEST_REBOOT) {

@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StatFs;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,14 +18,23 @@ import java.util.List;
 
 public class Stats extends Activity {
 
+    private static final String TAG = "InstallerOpt";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
+        File f = new File(backupDir);
+        if (!f.exists()) {
+            if(f.mkdir()) {
+                Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
+                Toast.makeText(this, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
+            }
+        }
         AlertDialog.Builder statsDialog = new AlertDialog.Builder(
                 this, android.R.style.Theme_DeviceDefault_Dialog);
         statsDialog.setTitle(R.string.stats_menu);
-        if (backupDir != null) {
+        if (!backupDir.equals(null)) {
             final File PACKAGE_DIR = new File(backupDir + File.separator);
             long mSize = getFileSize(PACKAGE_DIR);
             statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
@@ -74,25 +85,20 @@ public class Stats extends Activity {
                 deleteRecursive(child);
             }
         }
-        fileOrDirectory.delete();
+        if(fileOrDirectory.delete()) {
+            Log.i(TAG, "deleteRecursive: Successfully deleted");
+        }
     }
 
     public static long getAvailableSpaceInBytes(String path) {
         long availableSpace = -1L;
         StatFs stat = new StatFs(path);
         if (Build.VERSION.SDK_INT >= 18) {
-            availableSpace = getAvailableBytes(stat);
-        }
-        else {
+            availableSpace = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+        } else {
             availableSpace = stat.getAvailableBlocks() * stat.getBlockSize();
         }
-
         return availableSpace;
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private static long getAvailableBytes(StatFs stat) {
-        return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
     }
 
     public static String getFileCount(final File file) {
@@ -130,7 +136,7 @@ public class Stats extends Activity {
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
         if (files == null || files.length == 0) {
-            return null;
+            return "N/A";
         }
 
         File lastModifiedFile = files[0];
