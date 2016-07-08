@@ -133,8 +133,8 @@
     <string name="enable_force_english_summary">Vynúti anglický jazyk pre tento modul bez ohľadu na systémové nastavenia</string>
     <string name="backup_total_items">\\n\\nCelkovo zálohované:</string>
     <string name="backup_last_backed_up">\\n\\nPosledné zálohované:\\n</string>
-    <string name="enable_version_inline_title">Informácie o verzii v rade</string>
-    <string name="enable_version_inline_summary">Zobrazí informácie o verzií v rade s inštalačným dialógom</string>
+    <string name="enable_version_inline_title">Informácie o verzii v dialógu</string>
+    <string name="enable_version_inline_summary">Zobrazí informácie o verzií v inštalačnom dialógu</string>
     <string name="non_writeable_message">Do zvoleného adresára nie je možné zapisovať, prosím, vyberte iný</string>
     <string name="backup_location_missing_message">Zálohovací adresár neexistoval a bol vytvorený, pravdepodobne bol vymazaný mimo InstallerOpt?!</string>
 
