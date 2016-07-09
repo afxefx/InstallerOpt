@@ -33,7 +33,7 @@ public class Reboot extends Activity {
                             proc.waitFor();
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            Toast.makeText(Reboot.this, "Reboot operation failed, please do so manually!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(Reboot.this, R.string.reboot_failed, Toast.LENGTH_LONG).show();
 
                         }
                         finish();
