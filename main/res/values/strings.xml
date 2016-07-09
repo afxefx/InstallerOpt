@@ -126,4 +126,5 @@
     <string name="external_sdcard_full_access_title">External SD Card Full Access</string>
     <string name="MiscPrefs">Misc Preferences</string>
     <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
+    <string name="yes">Yes</string>
 </resources>
