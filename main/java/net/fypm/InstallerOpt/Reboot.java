@@ -19,7 +19,7 @@ public class Reboot extends Activity {
         rebootDialog
                 .setMessage(getText(R.string.sdcard_access_message));
         rebootDialog.setCancelable(false);
-        rebootDialog.setPositiveButton("Yes",
+        rebootDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
