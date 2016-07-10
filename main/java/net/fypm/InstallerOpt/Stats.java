@@ -1,6 +1,5 @@
 package net.fypm.InstallerOpt;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -26,7 +25,7 @@ public class Stats extends Activity {
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         File f = new File(backupDir);
         if (!f.exists()) {
-            if(f.mkdir()) {
+            if (f.mkdir()) {
                 Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
                 Toast.makeText(this, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
             }
@@ -38,12 +37,12 @@ public class Stats extends Activity {
             final File PACKAGE_DIR = new File(backupDir + File.separator);
             long mSize = getFileSize(PACKAGE_DIR);
             statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
-                            getString(R.string.backup_location), PACKAGE_DIR.toString(),
-                            getString(R.string.backup_last_backed_up), getLatestFilefromDir(backupDir),
-                            getString(R.string.backup_used), humanReadableByteCount(mSize, true),
-                            getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true),
-                            getString(R.string.backup_total_items), getFileCount(PACKAGE_DIR)
-                    ));
+                    getString(R.string.backup_location), PACKAGE_DIR.toString(),
+                    getString(R.string.backup_last_backed_up), getLatestFilefromDir(backupDir),
+                    getString(R.string.backup_used), humanReadableByteCount(mSize, true),
+                    getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true),
+                    getString(R.string.backup_total_items), getFileCount(PACKAGE_DIR)
+            ));
             statsDialog.setCancelable(false);
             statsDialog.setPositiveButton(R.string.delete_button_text,
                     new DialogInterface.OnClickListener() {
@@ -85,7 +84,7 @@ public class Stats extends Activity {
                 deleteRecursive(child);
             }
         }
-        if(fileOrDirectory.delete()) {
+        if (fileOrDirectory.delete()) {
             Log.i(TAG, "deleteRecursive: Successfully deleted");
         }
     }
@@ -132,7 +131,7 @@ public class Stats extends Activity {
         return result;
     }
 
-    private String getLatestFilefromDir(String dirPath){
+    private String getLatestFilefromDir(String dirPath) {
         File dir = new File(dirPath);
         File[] files = dir.listFiles();
         if (files == null || files.length == 0) {

@@ -44,6 +44,7 @@ public class Common {
     public static final String PREF_RESTORE_PREFERENCES = "restore_preferences";
     public static final String PREF_RESET_PREFERENCES = "reset_preferences";
 
+    public static final String PREF_CONTINUE_BACKUP_ON_REBOOT = "continue_backup_on_reboot";
     public static final String PREF_DISABLE = "disable";
     public static final String PREF_DISABLE_AUTO_UPDATE_GOOGLE_PLAY = "disable_auto_update_google_play";
     public static final String PREF_DISABLE_CHECK_DUPLICATED_PERMISSION = "disable_check_duplicated_permissions";
@@ -67,6 +68,7 @@ public class Common {
     public static final String PREF_ENABLE_AUTO_ENABLE_CLEAR_BUTTON = "enable_auto_enable_clear_buttons";
     public static final String PREF_ENABLE_AUTO_HIDE_INSTALL = "enable_auto_hide_install";
     public static final String PREF_ENABLE_AUTO_INSTALL = "enable_auto_install";
+    public static final String PREF_ENABLE_AUTO_LAUNCH_INSTALL = "enable_auto_install_launch";
     public static final String PREF_ENABLE_AUTO_UNINSTALL = "enable_auto_uninstall";
     public static final String PREF_ENABLE_BACKUP_ALL_APPS = "enable_backup_all_apps";
     public static final String PREF_ENABLE_BACKUP_APK_FILE = "enable_backup_apk_files";
@@ -79,9 +81,10 @@ public class Common {
     public static final String PREF_ENABLE_DELETE_APK_FILE_INSTALL = "enable_delete_apk_files";
     public static final String PREF_ENABLE_DISABLE_SYSTEM_APP = "enable_disable_system_apps";
     public static final String PREF_ENABLE_DISABLE_USER_APPS = "enable_disable_user_apps";
-    public static final String PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS = "external_sdcard_full_access";
+    public static final String PREF_ENABLE_DOWNGRADE_APP = "enable_downgrade_apps";
     public static final String PREF_ENABLE_EXPERT_MODE = "enable_expert_mode";
     public static final String PREF_ENABLE_EXPORT_APP = "enable_export_apps";
+    public static final String PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS = "external_sdcard_full_access";
     public static final String PREF_ENABLE_FORCE_ENGLISH = "enable_force_english";
     public static final String PREF_ENABLE_HIDE_APP_CRASHES = "enable_hide_app_crashes";
     public static final String PREF_ENABLE_INSTALL_EXTERNAL_STORAGE = "enable_install_external_storage";
@@ -89,7 +92,6 @@ public class Common {
     public static final String PREF_ENABLE_INSTALL_UNSIGNED_APP = "enable_install_unsigned_apps";
     public static final String PREF_ENABLE_KEEP_APP_DATA = "enable_keep_apps_data";
     public static final String PREF_ENABLE_LAUNCH_APP = "enable_launch_app";
-    public static final String PREF_ENABLE_AUTO_LAUNCH_INSTALL = "enable_auto_install_launch";
     public static final String PREF_ENABLE_MODULE = "enable_module";
     public static final String PREF_ENABLE_MOVE_APP = "enable_move_apps";
     public static final String PREF_ENABLE_OPEN_APP_GOOGLE_PLAY = "enable_play_open";
@@ -102,10 +104,8 @@ public class Common {
     public static final String PREF_ENABLE_SHOW_VERSION_TOAST = "enable_version_toast";
     public static final String PREF_ENABLE_UNINSTALL_DEVICE_ADMIN = "enable_uninstall_device_admin";
     public static final String PREF_ENABLE_UNINSTALL_SYSTEM_APP = "enable_uninstall_system_apps";
-    public static final String PREF_ENABLE_DOWNGRADE_APP = "enable_downgrade_apps";
-    public static final String PREF_VERSION_CODE_KEY = "version_code";
-    public static final String PREF_CONTINUE_BACKUP_ON_REBOOT = "continue_backup_on_reboot";
     public static final String PREF_MAX_BACKUP_VERSIONS = "backup_apk_files_limit";
+    public static final String PREF_VERSION_CODE_KEY = "version_code";
 
 
     // Constants

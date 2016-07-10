@@ -79,7 +79,7 @@ public class Utils extends BroadcastReceiver {
         try {
             File f = new File(dir);
             if (!f.exists()) {
-                if(f.mkdir()) {
+                if (f.mkdir()) {
                     Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
                     Toast.makeText(ctx, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
                 }
@@ -111,7 +111,7 @@ public class Utils extends BroadcastReceiver {
                     deleteApkFile(oldest_file);
                     TmpList.remove(0);
                     Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
-                }while (TmpList.size() > maxBackupVersions);
+                } while (TmpList.size() > maxBackupVersions);
                 if (enableDebug) {
                     Toast.makeText(ctx, "Max backup limit reached, oldest backup file has been deleted",
                             Toast.LENGTH_LONG).show();

@@ -1,8 +1,13 @@
 <resources>
     <!--Strings-->
     <string name="about_menu">About</string>
+    <string name="advanced">Advanced</string>
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">App was uninstalled</string>
+    <string name="AppInfoPrefs">Application Info Preferences</string>
+    <string name="AppInstPrefs">Application Install Preferences</string>
+    <string name="AppPrefs">Application Preferences</string>
+    <string name="AppUninstPrefs">Application Uninstall Preferences</string>
     <string name="backup_free">\nBackup folder free:</string>
     <string name="backup_last_backed_up">\n\nLast backed up:\n</string>
     <string name="backup_location">Backup folder location:\n</string>
@@ -23,12 +28,13 @@
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
     <string name="manage_button_text">Manage</string>
+    <string name="MiscPrefs">Misc Preferences</string>
     <string name="move_backups_message">New backup folder differs from the old one, would you like to move your old backups to the new location?</string>
     <string name="move_complete_message">Move Completed Successfully</string>
-    <string name="move_file_title">Move old backups?</string>
     <string name="move_file_message">Moving file*</string>
     <string name="move_file_of_message">*of*</string>
     <string name="move_file_prepare_message">Preparing to move files to new backup location</string>
+    <string name="move_file_title">Move old backups?</string>
     <string name="new_version">New version:</string>
     <string name="new_version_code">New version code:</string>
     <string name="no_old_files_message">No files present in old backup folder</string>
@@ -36,17 +42,14 @@
     <string name="perm_denied">Oops, you just denied the permission to read/write to storage devices</string>
     <string name="perm_granted">Permission granted now you can read/write to storage devices</string>
     <string name="reboot">Reboot</string>
+    <string name="reboot_failed">Reboot operation failed, please do so manually!</string>
     <string name="reset">Resetting preferences to avoid conflicts</string>
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
     <string name="stats_menu">Backup Stats</string>
     <string name="updated">Module has been updated</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
+    <string name="yes">Yes</string>
     <!--Preferences-->
-    <string name="advanced">Advanced</string>
-    <string name="AppInfoPrefs">Application Info Preferences</string>
-    <string name="AppInstPrefs">Application Install Preferences</string>
-    <string name="AppPrefs">Application Preferences</string>
-    <string name="AppUninstPrefs">Application Uninstall Preferences</string>
     <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>
     <string name="backup_apk_files_limit_title">Backup Version Limit</string>
     <string name="disable_check_duplicated_permissions_summary">Allow installing applications with duplicate permissions</string>
@@ -110,7 +113,7 @@
     <string name="enable_install_unknown_apps_summary">Allow unknown applications to be installed</string>
     <string name="enable_install_unknown_apps_title">Unknown Apps</string>
     <string name="enable_keep_apps_data_summary">App data is not deleted when application is uninstalled</string>
-    <string name="enable_keep_apps_data_title">Keep App Data on Uninstall</string>
+    <string name="enable_keep_apps_data_title">Keep App Data</string>
     <string name="enable_launch_app_summary">Click application icon when viewing application info to launch application</string>
     <string name="enable_launch_app_title">Icon Application Launch</string>
     <string name="enable_package_name_summary">Click application name when viewing application info to see package name</string>
@@ -125,16 +128,13 @@
     <string name="enable_uninstall_system_apps_title">Uninstall System Applications</string>
     <string name="enable_version_code_summary">Shows current and new version code of application prior to installing</string>
     <string name="enable_version_code_title">Version Code Display</string>
-    <string name="enable_version_summary">Shows current and new version of application prior to installing</string>
-    <string name="enable_version_title">Version Display</string>
     <string name="enable_version_inline_summary">Shows version information inline with install dialog</string>
     <string name="enable_version_inline_title">Version Info Inline</string>
+    <string name="enable_version_summary">Shows current and new version of application prior to installing</string>
+    <string name="enable_version_title">Version Display</string>
     <string name="enable_version_toast_summary">Shows version information in a toast</string>
     <string name="enable_version_toast_title">Version Info Toast</string>
     <string name="external_sdcard_full_access_summary">Allows read/write to external SD Card(requires reboot)</string>
     <string name="external_sdcard_full_access_title">External SD Card Full Access</string>
-    <string name="MiscPrefs">Misc Preferences</string>
     <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
-    <string name="yes">Yes</string>
-    <string name="reboot_failed">Reboot operation failed, please do so manually!</string>
 </resources>

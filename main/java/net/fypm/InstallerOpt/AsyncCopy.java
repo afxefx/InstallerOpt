@@ -44,7 +44,7 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
     protected String doInBackground(String... urls) {
         File f = new File(savePath);
         if (!f.exists()) {
-            if(f.mkdir()) {
+            if (f.mkdir()) {
                 Log.i(TAG, "doInBackground: Backup directory created");
             } else {
                 Log.e(TAG, "doInBackground: Unable to create backup directory");

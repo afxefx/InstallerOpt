@@ -742,7 +742,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
 
                 //if (isModuleEnabled()) {
-                    param.args[id] = flags;
+                param.args[id] = flags;
                 //}
             }
         };
@@ -1159,7 +1159,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
 
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
-                        param.setResult(null);
+                    param.setResult(null);
                     if (enableDebug) {
                         Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG)
                                 .show();
