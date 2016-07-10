@@ -14,11 +14,11 @@ public class MoveBackups extends Activity {
         super.onCreate(savedInstanceState);
         AlertDialog.Builder moveBackupsDialog = new AlertDialog.Builder(
                 this, android.R.style.Theme_DeviceDefault_Dialog);
-        moveBackupsDialog.setTitle("Move old backups?");
+        moveBackupsDialog.setTitle(R.string.move_file_title);
         moveBackupsDialog
                 .setMessage(getText(R.string.move_backups_message));
         moveBackupsDialog.setCancelable(false);
-        moveBackupsDialog.setPositiveButton("Yes",
+        moveBackupsDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {

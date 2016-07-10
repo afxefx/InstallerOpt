@@ -25,6 +25,7 @@
     <string name="manage_button_text">Manage</string>
     <string name="move_backups_message">New backup folder differs from the old one, would you like to move your old backups to the new location?</string>
     <string name="move_complete_message">Move Completed Successfully</string>
+    <string name="move_file_title">Move old backups?</string>
     <string name="move_file_message">Moving file*</string>
     <string name="move_file_of_message">*of*</string>
     <string name="move_file_prepare_message">Preparing to move files to new backup location</string>
@@ -126,4 +127,6 @@
     <string name="external_sdcard_full_access_title">External SD Card Full Access</string>
     <string name="MiscPrefs">Misc Preferences</string>
     <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
+    <string name="yes">Yes</string>
+    <string name="reboot_failed">Reboot operation failed, please do so manually!</string>
 </resources>

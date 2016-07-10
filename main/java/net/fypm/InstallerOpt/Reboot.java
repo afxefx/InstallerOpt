@@ -19,7 +19,7 @@ public class Reboot extends Activity {
         rebootDialog
                 .setMessage(getText(R.string.sdcard_access_message));
         rebootDialog.setCancelable(false);
-        rebootDialog.setPositiveButton("Yes",
+        rebootDialog.setPositiveButton(R.string.yes,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -33,7 +33,7 @@ public class Reboot extends Activity {
                             proc.waitFor();
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            Toast.makeText(Reboot.this, "Reboot operation failed, please do so manually!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(Reboot.this, R.string.reboot_failed, Toast.LENGTH_LONG).show();
 
                         }
                         finish();

@@ -126,4 +126,7 @@
     <string name="enable_version_inline_summary">Shows version information inline with install dialog</string>
     <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
     <string name="backup_location_missing_message">Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???</string>
+    <string name="yes">Yes</string>
+    <string name="move_file_title">Move old backups?</string>
+    <string name="reboot_failed">Reboot operation failed, please do so manually!</string>
 </resources>
