@@ -54,6 +54,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook checkSdkVersionHook;
     public XC_MethodHook checkSignaturesHook;
     public XC_MethodHook debugAppsHook;
+    public XC_MethodHook deletePackageHook;
     public XC_MethodHook deviceAdminsHook;
     public XC_MethodHook disableChangerHook;
     public XC_MethodHook disableUserAppsHook;
@@ -115,7 +116,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installAppsOnExternal;
     public static boolean installBackground;
     public static boolean installUnknownApps;
+    public static boolean keepAppsData;
     public static boolean showButtons;
+    public static boolean uninstallBackground;
     public static boolean uninstallSystemApps;
     public static boolean verifyApps;
     public static boolean verifyJar;
@@ -711,6 +714,39 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
+        deletePackageHook = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param)
+                    throws Throwable {
+                /*mContext = AndroidAppHelper.currentApplication();
+                keepAppsData = getPref(Common.PREF_ENABLE_KEEP_APP_DATA, getInstallerOptContext());
+                uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, getInstallerOptContext());*/
+                enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                keepAppsData = prefs.getBoolean(
+                        Common.PREF_ENABLE_KEEP_APP_DATA, false);
+                uninstallBackground = prefs.getBoolean(
+                        Common.PREF_DISABLE_UNINSTALL_BACKGROUND, false);
+                int id = 3;
+                int flags = (Integer) param.args[id];
+
+                if (keepAppsData && (flags & Common.DELETE_KEEP_DATA) == 0) {
+                    flags |= Common.DELETE_KEEP_DATA;
+                }
+
+                if (uninstallBackground && Binder.getCallingUid() == Common.ROOT_UID) {
+                    param.setResult(null);
+                    if (enableDebug) {
+                        Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+
+                //if (isModuleEnabled()) {
+                    param.args[id] = flags;
+                //}
+            }
+        };
+
         deviceAdminsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param)
@@ -1122,9 +1158,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.args[id] = flags;
                 }
 
-                if (installBackground) {
-                    if (Binder.getCallingUid() == Common.ROOT_UID) {
+                if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                         param.setResult(null);
+                    if (enableDebug) {
+                        Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG)
+                                .show();
                     }
                 }
 
@@ -1474,6 +1512,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
+                // 5.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "deletePackage", deletePackageHook);
+
             }
 
             if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG)) {
@@ -1701,7 +1743,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         installAppsOnExternal = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, false);
         installBackground = prefs.getBoolean(Common.PREF_DISABLE_INSTALL_BACKGROUND, false);
         installUnknownApps = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false);
+        keepAppsData = prefs.getBoolean(Common.PREF_ENABLE_KEEP_APP_DATA, false);
         showButtons = prefs.getBoolean(Common.PREF_ENABLE_SHOW_BUTTON, false);
+        uninstallBackground = prefs.getBoolean(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, false);
         uninstallSystemApps = prefs.getBoolean(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, false);
         verifyApps = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_APP, false);
         verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);

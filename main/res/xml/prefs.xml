@@ -82,6 +82,11 @@
             android:title="@string/disable_verify_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="disable_install_background"
+            android:summary="@string/disable_install_background_summary"
+            android:title="@string/disable_install_background_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="disable_sig_check"
             android:summary="@string/enable_disable_sig_check_summary"
             android:title="@string/enable_disable_sig_check_title" />
@@ -122,6 +127,16 @@
             android:key="enable_auto_close_uninstall"
             android:summary="@string/enable_auto_close_uninstall_summary"
             android:title="@string/enable_auto_close_uninstall_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="disable_uninstall_background"
+            android:summary="@string/disable_uninstall_background_summary"
+            android:title="@string/disable_uninstall_background_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_keep_apps_data"
+            android:summary="@string/enable_keep_apps_data_summary"
+            android:title="@string/enable_keep_apps_data_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_uninstall_system_apps"

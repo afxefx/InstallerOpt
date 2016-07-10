@@ -55,6 +55,10 @@
     <string name="disable_check_permissions_title">Disable Permission Checks</string>
     <string name="disable_check_sdk_version_summary">Always returns the latest version of the SDK</string>
     <string name="disable_check_sdk_version_title">Disable SDK Check</string>
+    <string name="disable_install_background_summary">Disables installing applications in the background</string>
+    <string name="disable_install_background_title">Disable Background Install</string>
+    <string name="disable_uninstall_background_summary">Disables uninstalling applications in the background</string>
+    <string name="disable_uninstall_background_title">Disable Background Uninstall</string>
     <string name="disable_verify_apps_summary">Allow installing unverified applications</string>
     <string name="disable_verify_apps_title">Disable Application Verification</string>
     <string name="disable_verify_jar_summary">Mismatched certificates on JAR files will be allowed</string>
@@ -105,6 +109,8 @@
     <string name="enable_hide_icon_title">Application Icon</string>
     <string name="enable_install_unknown_apps_summary">Allow unknown applications to be installed</string>
     <string name="enable_install_unknown_apps_title">Unknown Apps</string>
+    <string name="enable_keep_apps_data_summary">App data is not deleted when application is uninstalled</string>
+    <string name="enable_keep_apps_data_title">Keep App Data on Uninstall</string>
     <string name="enable_launch_app_summary">Click application icon when viewing application info to launch application</string>
     <string name="enable_launch_app_title">Icon Application Launch</string>
     <string name="enable_package_name_summary">Click application name when viewing application info to see package name</string>

@@ -122,7 +122,6 @@ public class Common {
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
     public static final String SETTINGS_PKG = "com.android.settings";
     public static final String SYSTEM_UI = "com.android.systemui";
-    public static final String[] MTP_APPS = {"com.android.MtpApplication", "com.samsung.android.MtpApplication"};
 
     // Checks
     public static final int SDK = Build.VERSION.SDK_INT;
