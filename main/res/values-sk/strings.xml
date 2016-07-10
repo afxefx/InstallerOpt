@@ -39,6 +39,8 @@
     <string name="manage_button_text">Spravovať</string>
     <string name="non_writeable_message">Do zvoleného adresára nie je možné zapisovať, prosím, vyberte iný</string>
     <string name="backup_location_missing_message">Zálohovací adresár neexistoval a bol vytvorený, pravdepodobne bol vymazaný mimo InstallerOpt?!</string>
+    <string name="backup_apk_files_limit_title">Limit verzií v zálohe</string>
+    <string name="backup_apk_files_limit_summary">Určuje počet starých verzií ponechaných v zálohe</string>
 
     <!--Preferences-->
     <!--AppPrefs-->
@@ -91,6 +93,8 @@
     <string name="enable_version_toast_summary">Zobrazí informácie o verzii v toast upozornení</string>
     <string name="enable_install_unknown_apps_title">Neznáme aplikácie</string>
     <string name="enable_install_unknown_apps_summary">Povolí nainštalovanie neznámych aplikácií</string>
+    <string name="enable_keep_apps_data_title">Ponechať dáta aplikácie</string>
+    <string name="enable_keep_apps_data_summary">Dáta aplikácie nebudú vymazané pri odinštalovaní aplikácie</string>
 
     <!--AppUninstPrefs-->
     <string name="AppUninstPrefs">Predvoľby odinštalovania aplikácie</string>
@@ -142,6 +146,10 @@
     <string name="enable_debug_apps_summary">Povolí ladenie pre všetky aplikácie</string>
     <string name="disable_check_sdk_version_title">Zakázať kontrolu SDK</string>
     <string name="disable_check_sdk_version_summary">Vždy vráti najnovšiu verziu SDK</string>
+    <string name="disable_install_background_title">Zakázať inštalovanie na pozadí</string>
+    <string name="disable_install_background_summary">Zakáže inštalovanie aplikácií na pozadí</string>
+    <string name="disable_uninstall_background_title">Zakázať odinštalovanie na pozadí</string>
+    <string name="disable_uninstall_background_summary">Zakáže odinštalovanie aplikácií na pozadí</string>
     <string name="enable_disable_lucky_patcher_presence_title">Lucky Patcher</string>
     <string name="enable_disable_lucky_patcher_presence_summary">Pokúsi sa skryť prítomnosť Lucky Patcher pred ostatnými aplikáciami</string>
 
