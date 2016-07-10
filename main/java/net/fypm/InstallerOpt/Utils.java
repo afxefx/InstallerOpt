@@ -19,6 +19,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
@@ -28,10 +31,12 @@ public class Utils extends BroadcastReceiver {
     public Context ctx;
     public Resources resources;
     public static boolean enableDebug;
+    public static int maxBackupVersions = 3;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        //maxBackupVersions = MultiprocessPreferences.getDefaultSharedPreferences(context).getInt(Common.PREF_MAX_BACKUP_VERSIONS, 3);
         ctx = context;
         resources = ctx.getResources();
         String action = intent.getAction();
@@ -90,6 +95,30 @@ public class Utils extends BroadcastReceiver {
             String backupApkFile = dir + File.separator + fileName;
             File src = new File(apkFile);
             File dst = new File(backupApkFile);
+
+            ArrayList<String> TmpList = new ArrayList<String>();
+            File old_file = new File(dir);
+            ArrayList<String> old_files = new ArrayList<String>(Arrays.asList(old_file.list()));
+
+            for (int i = 0; i < old_files.size(); i++) {
+                if (old_files.get(i).contains(appName))
+                    TmpList.add(old_files.get(i));
+            }
+            if (TmpList.size() > maxBackupVersions) {
+                Collections.sort(TmpList);
+                do {
+                    String oldest_file = dir + File.separator + TmpList.get(0);
+                    deleteApkFile(oldest_file);
+                    TmpList.remove(0);
+                    Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
+                }while (TmpList.size() > maxBackupVersions);
+                if (enableDebug) {
+                    Toast.makeText(ctx, "Max backup limit reached, oldest backup file has been deleted",
+                            Toast.LENGTH_LONG).show();
+                }
+                //return;
+            }
+
             if (enableDebug) {
                 Log.i(TAG, "backupApkFile Debug Start");
                 Log.i(TAG, "Backup directory: " + dir);

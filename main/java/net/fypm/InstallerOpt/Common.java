@@ -105,6 +105,7 @@ public class Common {
     public static final String PREF_ENABLE_DOWNGRADE_APP = "enable_downgrade_apps";
     public static final String PREF_VERSION_CODE_KEY = "version_code";
     public static final String PREF_CONTINUE_BACKUP_ON_REBOOT = "continue_backup_on_reboot";
+    public static final String PREF_MAX_BACKUP_VERSIONS = "backup_apk_files_limit";
 
 
     // Constants

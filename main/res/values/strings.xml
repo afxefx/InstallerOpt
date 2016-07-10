@@ -47,6 +47,8 @@
     <string name="AppInstPrefs">Application Install Preferences</string>
     <string name="AppPrefs">Application Preferences</string>
     <string name="AppUninstPrefs">Application Uninstall Preferences</string>
+    <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>
+    <string name="backup_apk_files_limit_title">Backup Version Limit</string>
     <string name="disable_check_duplicated_permissions_summary">Allow installing applications with duplicate permissions</string>
     <string name="disable_check_duplicated_permissions_title">Disable Duplicate Permission Checks</string>
     <string name="disable_check_permissions_summary">Allow installing applications without doing permission checks</string>
