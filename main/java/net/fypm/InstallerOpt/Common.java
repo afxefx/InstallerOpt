@@ -41,6 +41,8 @@ public class Common {
     public static final String PREF_BACKUP_APK_LOCATION = "backup_apk_location";
     public static final String PREF_BACKUP_APK_LOCATION_OLD = "backup_apk_location_old";
     public static final String PREF_BACKUP_PREFERENCES = "backup_preferences";
+    public static final String PREF_MODIFIED_PREFERENCES = "modified_preferences";
+    public static final String PREF_MODIFIED_TIME = "preference_modified_time";
     public static final String PREF_RESTORE_PREFERENCES = "restore_preferences";
     public static final String PREF_RESET_PREFERENCES = "reset_preferences";
 
@@ -139,7 +141,8 @@ public class Common {
     public static final String DEVICEPOLICYMANAGERSERVICE = (LOLLIPOP_NEWER) ? "com.android.server.devicepolicy.DevicePolicyManagerService" : "com.android.server.DevicePolicyManagerService";
     public static final String INSTALLAPPPROGRESS = "com.android.packageinstaller.InstallAppProgress";
     public static final String INSTALLEDAPPDETAILS = "com.android.settings.applications.InstalledAppDetails";
-    public static final String INSTALLEROPTACTIVITY = "net.fypm.InstallerOpt.BootReceiver";
+    public static final String INSTALLEROPTBOOTRECEIVER = "net.fypm.InstallerOpt.BootReceiver";
+    public static final String INSTALLEROPTMAINACTIVITY = "net.fypm.InstallerOpt.MainActivity$PrefsFragment";
     public static final String JARVERIFIER = "java.util.jar.JarVerifier$VerifierEntry";
     public static final String PACKAGEINSTALLERACTIVITY = "com.android.packageinstaller.PackageInstallerActivity";
     public static final String PACKAGEMANAGERSERVICE = "com.android.server.pm.PackageManagerService";

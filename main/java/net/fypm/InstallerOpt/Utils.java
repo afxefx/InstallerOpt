@@ -52,7 +52,7 @@ public class Utils extends BroadcastReceiver {
         } else if (Common.ACTION_DELETE_APK_FILE.equals(action)) {
             if (hasExtras) {
                 String apkFile = extras.getString(Common.FILE);
-                deleteApkFile(apkFile);
+                deleteApkFile(apkFile, false);
             }
         } else if (Common.ACTION_UNINSTALL_SYSTEM_APP.equals(action)) {
             if (hasExtras) {
@@ -105,10 +105,11 @@ public class Utils extends BroadcastReceiver {
                     TmpList.add(old_files.get(i));
             }
             if (TmpList.size() > maxBackupVersions) {
-                Collections.sort(TmpList);
+                Collections.sort(TmpList, new NaturalOrderComparator());
+                //Collections.sort(TmpList);
                 do {
                     String oldest_file = dir + File.separator + TmpList.get(0);
-                    deleteApkFile(oldest_file);
+                    deleteApkFile(oldest_file, true);
                     TmpList.remove(0);
                     Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
                 } while (TmpList.size() > maxBackupVersions);
@@ -178,32 +179,46 @@ public class Utils extends BroadcastReceiver {
             out.close();
             return true;
         } catch (Throwable t) {
-            Log.e(TAG, "Error in copyFile: ", t);
+            Log.e(TAG, "Error caught in copyFile: " + t);
+            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+            }
             return false;
         }
     }
 
-    public void deleteApkFile(String apkFile) {
+    public void deleteApkFile(String apkFile, boolean force) {
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(ctx).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         File apk = new File(apkFile);
-        if (!apk.getPath().equals(backupDir)) {
-            if (apk.exists()) {
-                if (apk.delete()) {
-                    if (enableDebug) {
-                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    Log.i(TAG, "APK file " + apkFile + " successfully deleted");
-                } else {
+        String absolutePath = apk.getAbsolutePath();
+        String filePath = apkFile.
+                substring(0,absolutePath.lastIndexOf(File.separator));
+        if (filePath.equals(backupDir) && !force) {
+            Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
+            return;
+        } else {
+            try {
+                if (!apk.delete()) {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
                                 Toast.LENGTH_LONG).show();
                     }
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
+                    String message = apk.exists() ? "is in use by another app" : "does not exist";
+                    throw new IOException("Cannot delete file, because file " + message + ".");
+                } else {
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.i(TAG, "APK file " + apkFile + " successfully deleted");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error caught in copyFile: " + e);
+                for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                    Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
                 }
             }
-        } else {
-            Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
         }
     }
 

@@ -6,10 +6,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -39,6 +41,7 @@ public class MainActivity extends Activity {
     private static final int REQUEST_WRITE_STORAGE = 115;
 
     private static final String TAG = "InstallerOpt";
+    public static Activity activity;
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -84,7 +87,7 @@ public class MainActivity extends Activity {
     }
 
     @SuppressLint("ValidFragment")
-    public class PrefsFragment extends PreferenceFragment {
+    public class PrefsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
         boolean stateOfClose;
         boolean stateOfLaunch;
@@ -95,7 +98,7 @@ public class MainActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Activity activity = getActivity();
+            activity = getActivity();
             forceEnglish = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_FORCE_ENGLISH, false);
             stateOfClose = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);
             stateOfLaunch = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false);
@@ -132,6 +135,21 @@ public class MainActivity extends Activity {
         }
 
         @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            activity = getActivity();
+            long time = SystemClock.elapsedRealtime();
+            MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putLong(Common.PREF_MODIFIED_TIME, time).apply();
+            MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_MODIFIED_PREFERENCES, true).apply();
+            Log.i(TAG, "onSharedPreferenceChanged: Change detected");
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
         public void onPause() {
             super.onPause();
             File sharedPrefsDir = new File(getActivity().getApplicationInfo().dataDir, "shared_prefs");
@@ -139,6 +157,7 @@ public class MainActivity extends Activity {
             if (sharedPrefsFile.exists()) {
                 sharedPrefsFile.setReadable(true, false);
             }
+            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         }
 
         private void checkFirstRun() {
@@ -154,7 +173,7 @@ public class MainActivity extends Activity {
                 return;
             }
 
-            int savedVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(this.getActivity()).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
+            int savedVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(activity).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
 
             if (currentVersionCode == savedVersionCode) {
 
@@ -165,7 +184,7 @@ public class MainActivity extends Activity {
 
                 // New install or shared preferences cleared
                 Toast.makeText(getActivity(), getString(R.string.reset), Toast.LENGTH_LONG).show();
-                Activity activity = getActivity();
+                activity = getActivity();
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
                 activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
@@ -185,11 +204,11 @@ public class MainActivity extends Activity {
             } else if (currentVersionCode > savedVersionCode) {
 
                 // This is an upgrade
-                Toast.makeText(getActivity(), getString(R.string.updated), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, getString(R.string.updated), Toast.LENGTH_LONG).show();
 
             }
 
-            MultiprocessPreferences.getDefaultSharedPreferences(this.getActivity()).edit().putInt(Common.PREF_VERSION_CODE_KEY, currentVersionCode).apply();
+            MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putInt(Common.PREF_VERSION_CODE_KEY, currentVersionCode).apply();
 
         }
 
@@ -201,7 +220,7 @@ public class MainActivity extends Activity {
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
                 if (isLauncherIconVisible(alias)) {
@@ -225,7 +244,7 @@ public class MainActivity extends Activity {
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher3 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 if (newValue.equals(true)) {
                     findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setEnabled(false);
                     MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, false).apply();
@@ -238,7 +257,7 @@ public class MainActivity extends Activity {
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher4 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 if (newValue.equals(true)) {
                     findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setEnabled(false);
                     MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false).apply();
@@ -251,7 +270,7 @@ public class MainActivity extends Activity {
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher5 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 if (newValue.equals(true)) {
                     if (Build.VERSION.SDK_INT >= 23) {
                         if (isReadStorageAllowed()) {
@@ -275,7 +294,7 @@ public class MainActivity extends Activity {
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher6 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 if (newValue.equals(true)) {
                     startActivity(new Intent(activity, Reboot.class));
                 }
@@ -296,7 +315,7 @@ public class MainActivity extends Activity {
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
             super.onActivityResult(requestCode, resultCode, resultData);
-            Activity activity = getActivity();
+            activity = getActivity();
             if (requestCode == REQUEST_DIRECTORY) {
                 if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
                     String curBackupDir = MultiprocessPreferences.getDefaultSharedPreferences(activity).getString(Common.PREF_BACKUP_APK_LOCATION, null);
@@ -390,7 +409,7 @@ public class MainActivity extends Activity {
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
             //Checking the request code of our request
             if (requestCode == REQUEST_WRITE_STORAGE) {
-                Activity activity = getActivity();
+                activity = getActivity();
                 //If permission is granted
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -405,7 +424,7 @@ public class MainActivity extends Activity {
         }
 
         private void chooseBackupDir() {
-            Activity activity = getActivity();
+            activity = getActivity();
             final Intent chooserIntent = new Intent(activity, DirectoryChooserActivity.class);
 
             final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
@@ -423,7 +442,7 @@ public class MainActivity extends Activity {
 
         private boolean isReadStorageAllowed() {
             //Getting the permission status
-            Activity activity = getActivity();
+            activity = getActivity();
             int result = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             //If permission is granted returning true
@@ -436,7 +455,7 @@ public class MainActivity extends Activity {
 
         //Requesting permission
         private void requestStoragePermission() {
-            Activity activity = getActivity();
+            activity = getActivity();
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //Explain here why you need this permission
                 Toast.makeText(activity, R.string.write_permission_message, Toast.LENGTH_LONG).show();
