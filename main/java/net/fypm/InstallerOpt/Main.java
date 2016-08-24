@@ -1365,8 +1365,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         verifySignaturesHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
@@ -1375,8 +1374,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
                 if (disableCheckSignatures && checkSignatures) {
                     //xlog("Disable signature checking set to", checkSignatures);
-                    param.setResult(true);
-                    return;
+                    param.setResult(null);
                 }
             }
         };
