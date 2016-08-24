@@ -76,6 +76,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook verifyJarHook;
     public XC_MethodHook verifySignatureHook;
     public XC_MethodHook verifySignaturesHook;
+    public XC_MethodHook grantPermissionsBackButtonHook;
 
     public Class<?> disableChangerClass;
     public Context mContext;
@@ -159,6 +160,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             xlog("verifySignature status", verifySignature);
             xlog_end("Signature Checking and Verification Overview");
         }
+        
+        grantPermissionsBackButtonHook = = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param)
+                    throws Throwable {
+                //setResultAndFinish()
+                XposedHelpers.callMethod(param.thisObject, "setResultAndFinish");
+                
+            }
+        };
 
         appInfoHook = new XC_MethodHook() {
             @Override
@@ -1562,6 +1573,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isInstallingUnknownAppsAllowed", unknownAppsHook);
                 }
+                
+                XposedHelpers.findAndHookMethod("com.android.packageinstaller.permission.ui.GrantPermissionsActivity",
+                        lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
 
                 XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
                         lpparam.classLoader, "startInstallConfirm",
