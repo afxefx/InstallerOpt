@@ -152,6 +152,6 @@
     <string name="disable_uninstall_background_summary">Zakáže odinštalovanie aplikácií na pozadí</string>
     <string name="enable_disable_lucky_patcher_presence_title">Lucky Patcher</string>
     <string name="enable_disable_lucky_patcher_presence_summary">Pokúsi sa skryť prítomnosť Lucky Patcher pred ostatnými aplikáciami</string>
-    <string name="move_file_title">Move old backups?</string>
+    <string name="move_file_title">Presunúť staré zálohy?</string>
 
 </resources>
