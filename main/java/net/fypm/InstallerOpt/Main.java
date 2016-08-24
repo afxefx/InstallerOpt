@@ -161,7 +161,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             xlog_end("Signature Checking and Verification Overview");
         }
         
-        grantPermissionsBackButtonHook = = new XC_MethodHook() {
+        grantPermissionsBackButtonHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param)
                     throws Throwable {
@@ -182,7 +182,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enablePackageName = getPref(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, getInstallerOptContext());
                 enableLaunchApp = getPref(Common.PREF_ENABLE_LAUNCH_APP, getInstallerOptContext());
                 uninstallSystemApps = getPref(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, getInstallerOptContext());
-                Log.i(TAG, "Time to get prefs: " + (SystemClock.elapsedRealtime() - startTime));
+                Log.i(TAG, "Time to get prefs: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 /*prefsModifiedTime = getPrefLong("prefsModifiedTime", getInstallerOptContext());
                 if (prefsModifiedTime + 900000 > SystemClock.elapsedRealtime()) {
                     setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, true, 0, 0, null);
@@ -198,7 +198,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     view = XposedHelpers.getObjectField(param.thisObject, "mRootView");
                     mResources = ((View) view).getResources();
                 }
-
+                Log.i(TAG, "Time to get resources: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 View appSnippet;
                 TextView appVersion;
                 int iconId = 0;
@@ -217,7 +217,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     iconId = mResources.getIdentifier("app_icon", "id", Common.SETTINGS_PKG);
                     labelId = mResources.getIdentifier("app_name", "id", Common.SETTINGS_PKG);
                 }
-
+                Log.i(TAG, "Time to get resource identifiers: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 ImageView appIcon = (ImageView) appSnippet.findViewById(iconId);
                 final TextView appLabel = (TextView) appSnippet.findViewById(labelId);
                 String version = appVersion.getText().toString();
@@ -225,7 +225,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 final String apkFile = pkgInfo.applicationInfo.sourceDir;
                 final String packageName = pkgInfo.packageName;
                 final String appName = appLabel.getText().toString();
-
+                Log.i(TAG, "Time to set objects and variables: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 if (enableDebug) {
                     xlog_start("appInfoHook");
                     xlog("Hooked setAppLabelAndIcon", null);
@@ -251,6 +251,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             return true;
                         }
                     });
+                    Log.i(TAG, "Time to set enablePlay method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (enableLaunchApp) {
@@ -266,6 +267,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             }
                         }
                     });
+                    Log.i(TAG, "Time to set enableLaunchApp method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (enablePackageName) {
@@ -283,6 +285,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             }
                         }
                     });
+                    Log.i(TAG, "Time to set enablePackageName method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (uninstallSystemApps) {
@@ -310,6 +313,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     mUninstallButton.setOnLongClickListener(uninstallSystemApp);
                     /*mSpecialDisableButton
                             .setOnLongClickListener(uninstallSystemApp);*/
+                    Log.i(TAG, "Time to set uninstallSystemApps method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
+
                 }
             }
         };
@@ -732,9 +737,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         flags |= Common.DEBUG_ENABLE_DEBUGGER;
                     }
                 }
-                //if (isModuleEnabled()) {
                 param.args[id] = flags;
-                //}
             }
         };
 
@@ -963,7 +966,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                         XposedHelpers.setObjectField(param.thisObject,
                                 "DISMISS_TIMEOUT", 0);
-                        XposedHelpers.callMethod(param.thisObject, "dismiss");
+                        //XposedHelpers.callMethod(param.thisObject, "dismiss");
                     } catch (Throwable e) {
                         xlog_start("hideAppCrashesHook");
                         xlog("hideAppCrashes: ", e);

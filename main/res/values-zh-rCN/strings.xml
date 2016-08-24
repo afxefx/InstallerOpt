@@ -136,5 +136,4 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">完全的外部SD卡访问权限</string>
-    <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
 </resources>
