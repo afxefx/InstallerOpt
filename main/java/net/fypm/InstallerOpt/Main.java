@@ -1370,10 +1370,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
                 } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
                     checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
                 }
+                xlog("Disable signature checking set to ", checkSignatures); //false!
                 if (disableCheckSignatures && checkSignatures) {
-                    //xlog("Disable signature checking set to", checkSignatures);
                     param.setResult(null);
                 }
             }
