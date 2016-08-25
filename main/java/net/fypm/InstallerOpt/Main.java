@@ -1375,7 +1375,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
                 if (disableCheckSignatures && checkSignatures) {
                     //xlog("Disable signature checking set to", checkSignatures);
-                    param.setResult(true);
+                    param.setResult(null);
                     return;
                 }
             }
@@ -1576,9 +1576,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isInstallingUnknownAppsAllowed", unknownAppsHook);
                 }
-                
-                XposedHelpers.findAndHookMethod("com.android.packageinstaller.permission.ui.GrantPermissionsActivity",
-                        lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
+
+                try {
+                    XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
+                            lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
+                } catch (NoSuchMethodError nsme) {
+                    xlog_start("grantPermissionsBackButtonHook");
+                    xlog("Method not found", nsme);
+                    xlog_end("grantPermissionsBackButtonHook");
+                }
 
                 XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
                         lpparam.classLoader, "startInstallConfirm",

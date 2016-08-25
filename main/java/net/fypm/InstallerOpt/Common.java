@@ -145,6 +145,7 @@ public class Common {
     public static final String INSTALLEROPTMAINACTIVITY = "net.fypm.InstallerOpt.MainActivity$PrefsFragment";
     public static final String JARVERIFIER = "java.util.jar.JarVerifier$VerifierEntry";
     public static final String PACKAGEINSTALLERACTIVITY = "com.android.packageinstaller.PackageInstallerActivity";
+    public static final String PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY = "com.android.packageinstaller.permission.ui.GrantPermissionsActivity";
     public static final String PACKAGEMANAGERSERVICE = "com.android.server.pm.PackageManagerService";
     public static final String PACKAGEPARSER = "android.content.pm.PackageParser";
     public static final String CLASS_PACKAGE_PARSER_PACKAGE = "android.content.pm.PackageParser.Package";
