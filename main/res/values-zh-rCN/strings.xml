@@ -130,7 +130,7 @@
     <string name="enable_version_code_title">版本号展示</string>
     <string name="enable_version_inline_summary">在安装对话框内展示版本信息</string>
     <string name="enable_version_inline_title">内部版本信息</string>
-    <string name="enable_version_summary">在安装对话框内展示版本信息</string>
+    <string name="enable_version_summary">在安装前显示现有的和新的应用版本</string>
     <string name="enable_version_title">版本展示</string>
     <string name="enable_version_toast_summary">在消息框中展示版本信息</string>
     <string name="enable_version_toast_title">版本信息消息框</string>
