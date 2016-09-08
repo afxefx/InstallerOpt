@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -27,7 +26,6 @@ import org.xmlpull.v1.XmlPullParser;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
-import java.util.logging.Handler;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -136,6 +134,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
         disableCheckSignatures = true;
+        enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
         prefsChanged = false;
 
         try {
@@ -143,7 +142,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             prefs = new XSharedPreferences(Main.class.getPackage().getName());
             prefs.makeWorldReadable();
             prefs.reload();
-            updatePrefs();
+            //updatePrefs();
             xlog("Success", null);
             xlog_end("XSharedPreferences - Init");
         } catch (Throwable e) {
@@ -151,38 +150,24 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             xlog_end("XSharedPreferences - Init");
         }
 
-        enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
         if (enableDebug) {
             //xlog("bootCompleted value at initZygote", bootCompleted);
             xlog_start("Signature Checking and Verification Overview");
             xlog("disableCheckSignatures status", disableCheckSignatures);
             xlog("checkSignatures status ", checkSignatures);
-            xlog("verifySignature status", verifySignature);
+            xlog("verifySignature status ", verifySignature);
             xlog_end("Signature Checking and Verification Overview");
         }
-        
-        grantPermissionsBackButtonHook = new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
-                //setResultAndFinish()
-                XposedHelpers.callMethod(param.thisObject, "setResultAndFinish");
-                
-            }
-        };
 
         appInfoHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
-                long startTime = SystemClock.elapsedRealtime();
-                Log.i(TAG, "startTime: " + startTime);
                 mContext = AndroidAppHelper.currentApplication();
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enablePlay = getPref(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, getInstallerOptContext());
                 enablePackageName = getPref(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, getInstallerOptContext());
                 enableLaunchApp = getPref(Common.PREF_ENABLE_LAUNCH_APP, getInstallerOptContext());
                 uninstallSystemApps = getPref(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, getInstallerOptContext());
-                Log.i(TAG, "Time to get prefs: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 /*prefsModifiedTime = getPrefLong("prefsModifiedTime", getInstallerOptContext());
                 if (prefsModifiedTime + 900000 > SystemClock.elapsedRealtime()) {
                     setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, true, 0, 0, null);
@@ -198,7 +183,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     view = XposedHelpers.getObjectField(param.thisObject, "mRootView");
                     mResources = ((View) view).getResources();
                 }
-                Log.i(TAG, "Time to get resources: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 View appSnippet;
                 TextView appVersion;
                 int iconId = 0;
@@ -217,7 +201,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     iconId = mResources.getIdentifier("app_icon", "id", Common.SETTINGS_PKG);
                     labelId = mResources.getIdentifier("app_name", "id", Common.SETTINGS_PKG);
                 }
-                Log.i(TAG, "Time to get resource identifiers: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 ImageView appIcon = (ImageView) appSnippet.findViewById(iconId);
                 final TextView appLabel = (TextView) appSnippet.findViewById(labelId);
                 String version = appVersion.getText().toString();
@@ -225,7 +208,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 final String apkFile = pkgInfo.applicationInfo.sourceDir;
                 final String packageName = pkgInfo.packageName;
                 final String appName = appLabel.getText().toString();
-                Log.i(TAG, "Time to set objects and variables: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 if (enableDebug) {
                     xlog_start("appInfoHook");
                     xlog("Hooked setAppLabelAndIcon", null);
@@ -251,7 +233,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             return true;
                         }
                     });
-                    Log.i(TAG, "Time to set enablePlay method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (enableLaunchApp) {
@@ -267,7 +248,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             }
                         }
                     });
-                    Log.i(TAG, "Time to set enableLaunchApp method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (enablePackageName) {
@@ -285,7 +265,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             }
                         }
                     });
-                    Log.i(TAG, "Time to set enablePackageName method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
                 }
 
                 if (uninstallSystemApps) {
@@ -313,8 +292,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     mUninstallButton.setOnLongClickListener(uninstallSystemApp);
                     /*mSpecialDisableButton
                             .setOnLongClickListener(uninstallSystemApp);*/
-                    Log.i(TAG, "Time to set uninstallSystemApps method: " + (SystemClock.elapsedRealtime() - startTime) + " ms");
-
                 }
             }
         };
@@ -337,7 +314,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (msg != null) {
                     installedApp = (msg.arg1 == Common.INSTALL_SUCCEEDED);
                 }
-
                 if (enableAutoLaunchInstall) {
                     if (installedApp && mLaunch != null) {
                         mLaunch.performClick();
@@ -415,9 +391,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         autoHideInstallHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoHideInstall = getPref(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, getInstallerOptContext());
                 Activity packageInstaller = (Activity) param.thisObject;
                 if (!autoInstallCancelled && enableAutoHideInstall) {
@@ -569,9 +545,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     getInstallerOptContext().sendBroadcast(confirmSignatureCheck);
 
                 }
-
-
-
                 /*ScrollView mScrollView = (ScrollView) XposedHelpers.getObjectField(
                         param.thisObject, "mScrollView");
                 TextView label = (TextView) XposedHelpers.getObjectField(
@@ -588,6 +561,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         autoInstallHook2 = new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
+                mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 //versionCode = getPrefString("app_version", getInstallerOptContext());
                 //versionInfo = getPrefString("app_version_code", getInstallerOptContext());
 
@@ -607,9 +582,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         autoCloseUninstallHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoCloseUninstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_UNINSTALL, getInstallerOptContext());
                 if (enableAutoCloseUninstall) {
                     Button mOk = (Button) XposedHelpers.getObjectField(
@@ -619,13 +594,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
             }
-
         };
 
         autoUninstallHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, getInstallerOptContext());
                 if (enableAutoUninstall) {
                     if (Common.LOLLIPOP_NEWER) {
@@ -640,17 +615,22 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, getInstallerOptContext());
                 if (enableAutoUninstall) {
-                    Button mOk = (Button) XposedHelpers.getObjectField(
-                            param.thisObject, "mOk");
-                    if (mOk != null) {
-                        mOk.performClick();
+                    try {
+                        Button mOk = (Button) XposedHelpers.getObjectField(
+                                param.thisObject, "mOk");
+                        if (mOk != null) {
+                            mOk.performClick();
+                        }
+                    } catch (NoSuchFieldError nsfe) {
+                        xlog_start("autoUninstallHook");
+                        xlog("Error caught: ", nsfe);
+                        xlog_end("autoUninstallHook");
                     }
-
                 }
             }
-
         };
 
         bootCompletedHook = new XC_MethodHook() {
@@ -666,8 +646,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         checkDuplicatedPermissionsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
                 if (checkDuplicatedPermissions) {
@@ -680,11 +659,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         checkPermissionsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
-                if (/*isExpertModeEnabled() && */checkPermissions) {
+                if (checkPermissions) {
                     xlog("Disable check permissions set to", checkPermissions);
                     param.setResult(PackageManager.PERMISSION_GRANTED);
                     return;
@@ -694,8 +672,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         checkSdkVersionHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
                 if (checkSdkVersion) {
@@ -708,16 +685,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         checkSignaturesHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
                 } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
                     checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
                 }
-                if (disableCheckSignatures && checkSignatures) {
-                    //xlog("Disable signature checks set to", checkSignatures);
+                if (/*disableCheckSignatures && */checkSignatures) {
+                    /*xlog_start("checkSignaturesHook");
+                    xlog("Disable signature checks set to", checkSignatures);
+                    xlog_end("checkSignaturesHook");*/
                     param.setResult(PackageManager.SIGNATURE_MATCH);
                     return;
                 }
@@ -726,8 +705,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         debugAppsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, getInstallerOptContext());
                 int id = 5;
@@ -743,15 +721,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         deletePackageHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
+                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 keepAppsData = getPref(Common.PREF_ENABLE_KEEP_APP_DATA, getInstallerOptContext());
                 uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, getInstallerOptContext());
-                enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 int id = 3;
                 int flags = (Integer) param.args[id];
-
                 if (keepAppsData && (flags & Common.DELETE_KEEP_DATA) == 0) {
                     flags |= Common.DELETE_KEEP_DATA;
                 }
@@ -763,7 +739,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 .show();
                     }
                 }
-
                 //if (isModuleEnabled()) {
                 param.args[id] = flags;
                 //}
@@ -772,11 +747,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         deviceAdminsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 deviceAdmins = prefs.getBoolean(Common.PREF_ENABLE_UNINSTALL_DEVICE_ADMIN, false);
-                enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 if (deviceAdmins) {
                     if (enableDebug) {
                         xlog_start("deviceAdminsHook");
@@ -792,8 +765,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         disableChangerHook = new XC_MethodReplacement() {
             @Override
-            protected Object replaceHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
                 if (disableUserApps) {
@@ -842,8 +814,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         disableUserAppsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
                 if (disableUserApps) {
@@ -855,8 +826,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         externalSdCardAccessHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 externalSdCardFullAccess = prefs.getBoolean(
                         Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
@@ -895,8 +865,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         externalSdCardAccessHook2 = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 externalSdCardFullAccess = prefs.getBoolean(
                         Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
@@ -919,8 +888,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         getPackageInfoHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 /*try {
                     checkLuckyPatcher = getPref(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, getInstallerOptContext());
@@ -942,10 +910,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
+        grantPermissionsBackButtonHook = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                //setResultAndFinish()
+                XposedHelpers.callMethod(param.thisObject, "setResultAndFinish");
+
+            }
+        };
+
         hideAppCrashesHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     prefs.reload();
                     hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
@@ -978,8 +954,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         initAppStorageSettingsButtonsHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(final MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAppStorageSettingsButtons = getPref(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, getInstallerOptContext());
@@ -1007,8 +982,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         initUninstallButtonsHook = new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(final MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
@@ -1082,7 +1056,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             /*Toast.makeText(mContext, "App is disabled",
                                     Toast.LENGTH_LONG).show();*/
                         }
-
                         /*try {
                             View mMoreControlButtons = (View) XposedHelpers
                                     .getObjectField(param.thisObject,
@@ -1098,8 +1071,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         installPackageHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, getInstallerOptContext());
                 backupDir = getPrefString(Common.PREF_BACKUP_APK_LOCATION, getInstallerOptContext());
@@ -1217,22 +1189,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         scanPackageHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 disableCheckSignatures = false;
             }
 
             @Override
-            protected void afterHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 disableCheckSignatures = true;
             }
         };
 
         showButtonsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 showButtons = getPref(Common.PREF_ENABLE_SHOW_BUTTON, getInstallerOptContext());
                 if (showButtons) {
@@ -1244,8 +1213,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         systemAppsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 disableSystemApps = getPref(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, getInstallerOptContext());
                 if (disableSystemApps) {
@@ -1261,16 +1229,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 //mContext = AndroidAppHelper.currentApplication();
                 //updatePrefs(null);
-                prefsChanged = getPref(Common.PREF_MODIFIED_PREFERENCES, getInstallerOptContext());;
+                prefsChanged = getPref(Common.PREF_MODIFIED_PREFERENCES, getInstallerOptContext());
             }
         };
 
         unknownAppsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                //add below to prefs
                 installUnknownApps = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, getInstallerOptContext());
                 if (installUnknownApps) {
                     param.setResult(true);
@@ -1282,13 +1248,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         verifyAppsHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 //prefs.reload();
                 mContext = AndroidAppHelper.currentApplication();
                 verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, getInstallerOptContext());
-                if (disableCheckSignatures && verifyApps) {
+                if (verifyApps) {
+                    xlog_start("verifyAppsHook");
                     xlog("Disable app verification set to", verifyApps);
+                    xlog_end("verifyAppsHook");
                     param.setResult(false);
                     return;
                 }
@@ -1299,8 +1266,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         verifyJarHook = new XC_MethodHook() {
             @SuppressWarnings("unchecked")
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);
                 if (verifyJar) {
@@ -1350,12 +1316,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         verifySignatureHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
-                if (disableCheckSignatures && verifySignature) {
-                    //xlog("Disable signature verification set", verifySignature);
+                if (verifySignature) {
+                    /*xlog_start("verifySignatureHook");
+                    xlog("Disable signature verification set to: ", verifySignature);
+                    xlog_end("verifySignatureHook");*/
                     param.setResult(true);
                     return;
                 }
@@ -1365,16 +1332,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         verifySignaturesHook = new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param)
-                    throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
                 } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
                     checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
                 }
-                if (disableCheckSignatures && checkSignatures) {
-                    //xlog("Disable signature checking set to", checkSignatures);
+                if (checkSignatures) {
+                    /*xlog_start("verifySignaturesHook");
+                    xlog("Disable signature checking set to", checkSignatures);
+                    xlog_end("verifySignaturesHook");*/
                     param.setResult(null);
                     return;
                 }
@@ -1402,14 +1371,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
         try {
-            if (lpparam.packageName.equals(Common.INSTALLEROPT)) {
+            /*if (lpparam.packageName.equals(Common.INSTALLEROPT)) {
                 XposedHelpers.findAndHookMethod(
                         Common.INSTALLEROPTBOOTRECEIVER, lpparam.classLoader,
                         "onReceive", Context.class, Intent.class, bootCompletedHook);
                 XposedHelpers.findAndHookMethod(
                         Common.INSTALLEROPTMAINACTIVITY, lpparam.classLoader,
                         "onSharedPreferenceChanged", SharedPreferences.class, String.class, updatePrefsHook);
-            }
+            }*/
 
             if (Common.ANDROID_PKG.equals(lpparam.packageName)
                     && Common.ANDROID_PKG.equals(lpparam.processName)) {
