@@ -134,7 +134,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
         disableCheckSignatures = true;
-        enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
         prefsChanged = false;
 
         try {
@@ -142,6 +141,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             prefs = new XSharedPreferences(Main.class.getPackage().getName());
             prefs.makeWorldReadable();
             prefs.reload();
+            enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
             //updatePrefs();
             xlog("Success", null);
             xlog_end("XSharedPreferences - Init");
@@ -149,7 +149,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             xlog("", e);
             xlog_end("XSharedPreferences - Init");
         }
-
         if (enableDebug) {
             //xlog("bootCompleted value at initZygote", bootCompleted);
             xlog_start("Signature Checking and Verification Overview");
