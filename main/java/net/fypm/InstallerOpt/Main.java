@@ -1522,7 +1522,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
             }
 
-            if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
+            if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
                 if (Common.LOLLIPOP_MR1_NEWER) {
                     // 5.1 and newer
                     try {
