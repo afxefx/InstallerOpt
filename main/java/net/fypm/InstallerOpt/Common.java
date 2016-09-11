@@ -122,6 +122,7 @@ public class Common {
     public static final String PACKAGE_PREFERENCES = PACKAGE_NAME + "_preferences";
     public static final String PACKAGE_TAG = "InstallerOpt";
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
+    public static final String SAMSUNG_PACKAGE_INSTALLER_PKG = "com.samsung.android.packageinstaller";
     public static final String SETTINGS_PKG = "com.android.settings";
     public static final String SYSTEM_UI = "com.android.systemui";
 
