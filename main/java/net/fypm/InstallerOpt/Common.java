@@ -122,7 +122,7 @@ public class Common {
     public static final String PACKAGE_PREFERENCES = PACKAGE_NAME + "_preferences";
     public static final String PACKAGE_TAG = "InstallerOpt";
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
-    public static final String SAMSUNG_PACKAGE_INSTALLER_PKG = "com.samsung.android.packageinstaller";
+    public static final String SAMSUNG_PACKAGEINSTALLER_PKG = "com.samsung.android.packageinstaller";
     public static final String SETTINGS_PKG = "com.android.settings";
     public static final String SYSTEM_UI = "com.android.systemui";
 
@@ -137,6 +137,7 @@ public class Common {
     public static final boolean MARSHMALLOW_NEWER = SDK >= 23; // MARSHMALLOW
 
     // Classes
+    public static final String APPOPSDETAILS = "com.android.settings.applications.AppOpsDetails";
     public static final String APPSTORAGEDETAILS = "com.android.settings.applications.AppStorageSettings";
     public static final String APPERRORDIALOG = "com.android.server.am.AppErrorDialog";
     public static final String DEVICEPOLICYMANAGERSERVICE = (LOLLIPOP_NEWER) ? "com.android.server.devicepolicy.DevicePolicyManagerService" : "com.android.server.DevicePolicyManagerService";

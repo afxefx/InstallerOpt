@@ -13,7 +13,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,16 +27,16 @@ import java.security.cert.Certificate;
 import java.util.Hashtable;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
-import de.robv.android.xposed.callbacks.XC_InitPackageResources;
-import de.robv.android.xposed.callbacks.XC_LayoutInflated;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
+import de.robv.android.xposed.callbacks.XC_LayoutInflated;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
@@ -63,6 +62,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook getPackageInfoHook;
     public XC_MethodHook hideAppCrashesHook;
     public XC_MethodHook initAppStorageSettingsButtonsHook;
+    public XC_MethodHook initAppOpsDetailsHook;
     public XC_MethodHook initUninstallButtonsHook;
     public XC_MethodHook installPackageHook;
     public XC_MethodHook scanPackageHook;
@@ -153,8 +153,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             //xlog("bootCompleted value at initZygote", bootCompleted);
             xlog_start("Signature Checking and Verification Overview");
             xlog("disableCheckSignatures status", disableCheckSignatures);
-            xlog("checkSignatures status ", checkSignatures);
-            xlog("verifySignature status ", verifySignature);
+            xlog("checkSignatures status", checkSignatures);
+            xlog("verifySignature status", verifySignature);
             xlog_end("Signature Checking and Verification Overview");
         }
 
@@ -403,7 +403,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
         autoInstallHook = new XC_MethodHook() {
             @Override
-            public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+            public void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, getInstallerOptContext());
@@ -491,11 +491,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (enableDebug) {
                     xlog_start("autoInstallHook");
                     if (currentVersion != null) {
-                        xlog("Current version: ", currentVersion);
+                        xlog("Current version", currentVersion);
                     }
-                    xlog("New version: ", newVersion);
+                    xlog("New version", newVersion);
                     if (currentCode != 0) {
-                        xlog("Current version code: ", currentCode);
+                        xlog("Current version code", currentCode);
                     }
                     xlog("New version code", newCode);
                     xlog("Current application", mContext.toString());
@@ -625,7 +625,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     } catch (NoSuchFieldError nsfe) {
                         xlog_start("autoUninstallHook");
-                        xlog("Error caught: ", nsfe);
+                        xlog("Error caught", nsfe);
                         xlog_end("autoUninstallHook");
                     }
                 }
@@ -944,7 +944,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         //XposedHelpers.callMethod(param.thisObject, "dismiss");
                     } catch (Throwable e) {
                         xlog_start("hideAppCrashesHook");
-                        xlog("hideAppCrashes: ", e);
+                        xlog("hideAppCrashes", e);
                         xlog_end("hideAppCrashesHook");
                     }
                 }
@@ -976,6 +976,21 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     mClearDataButton.setEnabled(true);
                     mClearCacheButton.setEnabled(true);
                 }
+            }
+        };
+
+        initAppOpsDetailsHook = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                //mContext = AndroidAppHelper.currentApplication();
+                //verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, getInstallerOptContext());
+                //if (verifyApps) {
+                //xlog_start("initAppOpsDetailsHook");
+                //xlog("Disable app verification set to", verifyApps);
+                //xlog_end("initAppOpsDetailsHook");
+                param.setResult(false);
+                return;
+                //}
             }
         };
 
@@ -1173,7 +1188,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             backupApkFile(apkFile, backupDir);
                             if (enableDebug) {
                                 xlog_start("backupApkFilesHook");
-                                xlog("APK file: ", apkFile);
+                                xlog("APK file", apkFile);
                                 xlog_end("backupApkFilesHook");
                                 /*XposedBridge.log("Stacktrace follows:");
                                 for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
@@ -1320,7 +1335,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
                 if (verifySignature) {
                     /*xlog_start("verifySignatureHook");
-                    xlog("Disable signature verification set to: ", verifySignature);
+                    xlog("Disable signature verification set to", verifySignature);
                     xlog_end("verifySignatureHook");*/
                     param.setResult(true);
                     return;
@@ -1645,6 +1660,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     XposedHelpers.findAndHookMethod(Common.APPSTORAGEDETAILS,
                             lpparam.classLoader, "initDataButtons",
                             initAppStorageSettingsButtonsHook);
+                    try {
+                        XposedHelpers.findAndHookMethod(Common.APPOPSDETAILS,
+                                lpparam.classLoader, "isPlatformSigned",
+                                initAppOpsDetailsHook);
+                    } catch (NoSuchMethodError nsme) {
+                        xlog_start("initAppOpsDetailsHook");
+                        xlog("Method not found", nsme);
+                        xlog_end("initAppOpsDetailsHook");
+                    }
                 }
             }
         } catch (Throwable t) {
