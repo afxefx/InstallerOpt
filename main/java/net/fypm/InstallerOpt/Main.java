@@ -2,6 +2,7 @@ package net.fypm.InstallerOpt;
 
 import android.app.Activity;
 import android.app.AndroidAppHelper;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -13,6 +14,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
@@ -106,6 +109,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean enableAutoUninstall;
     public static boolean enableDebug;
     public static boolean enableLaunchApp;
+    public static boolean enableOpenAppOps;
     public static boolean enablePackageName;
     public static boolean enablePlay;
     public static boolean enableVersion;
@@ -120,6 +124,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installBackground;
     public static boolean installUnknownApps;
     public static boolean keepAppsData;
+    //public static boolean nsmeAppOpsDetails;
+    //public static boolean nsmeGrantPermissionsActivity;
     public static boolean prefsChanged;
     public static boolean showButtons;
     public static boolean uninstallBackground;
@@ -127,13 +133,24 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean verifyApps;
     public static boolean verifyJar;
     public static boolean verifySignature;
+    public static boolean rom_TW;
     public static long prefsModifiedTime;
     private static final String TAG = "InstallerOpt";
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
+        File frameworkTW = new File("/system/framework/twframework-res.apk");
+        if (frameworkTW.exists()) {
+            rom_TW = true;
+            xlog_start("ROM Detection");
+            xlog("TW based rom", rom_TW);
+            xlog_end("ROM Detection");
+        }
+
         disableCheckSignatures = true;
+        //nsmeAppOpsDetails = false;
+        //nsmeGrantPermissionsActivity = false;
         prefsChanged = false;
 
         try {
@@ -142,7 +159,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             prefs.makeWorldReadable();
             prefs.reload();
             enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
-            //updatePrefs();
+            updatePrefs();
             xlog("Success", null);
             xlog_end("XSharedPreferences - Init");
         } catch (Throwable e) {
@@ -257,9 +274,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             final int status = (Integer) v.getTag();
                             if (status == 0) {
                                 appLabel.setText(packageName);
+                                appLabel.setLines(1);
+                                appLabel.setHorizontallyScrolling(true);
+                                appLabel.setMarqueeRepeatLimit(-1);
+                                appLabel.setSelected(true);
                                 v.setTag(1);
                             } else {
                                 appLabel.setText(appName);
+                                appLabel.setLines(1);
+                                appLabel.setHorizontallyScrolling(true);
+                                appLabel.setMarqueeRepeatLimit(-1);
+                                appLabel.setSelected(true);
                                 v.setTag(0);
                             }
                         }
@@ -302,6 +327,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
                 enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, getInstallerOptContext());
+                enableOpenAppOps = getPref(Common.PREF_ENABLE_OPEN_APP_OPS, getInstallerOptContext());
                 deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
                 enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, getInstallerOptContext());
                 Button mLaunch = (Button) XposedHelpers.getObjectField(
@@ -374,6 +400,53 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         xlog("APK file: ", apkFile);
                         xlog_end("deleteApkFiles");
                     }
+                }
+
+                if (enableOpenAppOps && Common.JB_MR2_NEWER) {
+                    ApplicationInfo appInfo = (ApplicationInfo) XposedHelpers
+                            .getObjectField(XposedHelpers
+                                            .getSurroundingThis(param.thisObject),
+                                    "mAppInfo");
+                    if (appInfo == null) {
+                        return;
+                    }
+                    String packageName = appInfo.packageName;
+                    Intent openAppInAppOps = new Intent();
+                    boolean useSettingsApp = true;
+
+                    try {
+                        PackageInfo pkgInfo = mContext.getPackageManager()
+                                .getPackageInfo(Common.APPOPSXPOSED_PKG, 0);
+                        if (pkgInfo.versionCode >= 12100) {
+                            openAppInAppOps.setClassName(
+                                    Common.APPOPSXPOSED_PKG,
+                                    Common.APPOPSXPOSED_APPOPSACTIVITY);
+                            useSettingsApp = false;
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                    }
+
+                    if (useSettingsApp) {
+                        openAppInAppOps
+                                .setAction(Common.ACTION_APP_OPS_SETTINGS);
+                    }
+
+                    Bundle args = new Bundle();
+                    args.putString(Common.PACKAGE, packageName);
+
+                    openAppInAppOps.putExtra(
+                            PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                            Common.APPOPSDETAILS);
+                    openAppInAppOps
+                            .putExtra(
+                                    PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS,
+                                    args);
+                    openAppInAppOps.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    try {
+                        mContext.startActivity(openAppInAppOps);
+                    } catch (ActivityNotFoundException e) {
+                    }
+
                 }
 
                 if (enableDebug) {
@@ -1559,15 +1632,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isInstallingUnknownAppsAllowed", unknownAppsHook);
                 }
-
-                try {
-                    XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
-                            lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
-                } catch (NoSuchMethodError nsme) {
-                    xlog_start("grantPermissionsBackButtonHook");
-                    xlog("Method not found", nsme);
-                    xlog_end("grantPermissionsBackButtonHook");
-                }
+                //if (!nsmeGrantPermissionsActivity) {
+                    try {
+                        XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
+                                lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
+                    } catch (NoSuchMethodError nsme) {
+                        //nsmeGrantPermissionsActivity = true;
+                        xlog_start("grantPermissionsBackButtonHook");
+                        xlog("Method not found", nsme);
+                        //xlog("Disabling future checks for onBackPressed in GrantPermissionsActivity", null);
+                        xlog_end("grantPermissionsBackButtonHook");
+                    }
+                //}
 
                 XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
                         lpparam.classLoader, "startInstallConfirm",
@@ -1660,14 +1736,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     XposedHelpers.findAndHookMethod(Common.APPSTORAGEDETAILS,
                             lpparam.classLoader, "initDataButtons",
                             initAppStorageSettingsButtonsHook);
-                    try {
-                        XposedHelpers.findAndHookMethod(Common.APPOPSDETAILS,
-                                lpparam.classLoader, "isPlatformSigned",
-                                initAppOpsDetailsHook);
-                    } catch (NoSuchMethodError nsme) {
-                        xlog_start("initAppOpsDetailsHook");
-                        xlog("Method not found", nsme);
-                        xlog_end("initAppOpsDetailsHook");
+                    if (!rom_TW) {
+                        try {
+                            XposedHelpers.findAndHookMethod(Common.APPOPSDETAILS,
+                                    lpparam.classLoader, "isPlatformSigned",
+                                    initAppOpsDetailsHook);
+                        } catch (NoSuchMethodError nsme) {
+                            //nsmeAppOpsDetails = true;
+                            xlog_start("initAppOpsDetailsHook");
+                            xlog("Method not found", nsme);
+                            //xlog("Disabling future checks for isPlatformSigned in AppOpsDetails", null);
+                            xlog_end("initAppOpsDetailsHook");
+                        }
                     }
                 }
             }

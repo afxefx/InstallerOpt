@@ -116,6 +116,8 @@
     <string name="enable_keep_apps_data_title">Keep App Data</string>
     <string name="enable_launch_app_summary">Click application icon when viewing application info to launch application</string>
     <string name="enable_launch_app_title">Icon Application Launch</string>
+    <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
+    <string name="enable_open_app_ops_title">Open App Ops</string>
     <string name="enable_package_name_summary">Click application name when viewing application info to see package name</string>
     <string name="enable_package_name_title">Package Name Display</string>
     <string name="enable_play_open_summary">Long click application icon when viewing application info to open in Playstore</string>

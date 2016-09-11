@@ -113,6 +113,7 @@ public class Common {
     // Constants
     public static final int LATEST_ANDROID_RELEASE = 24; // Android N
     public static final String ANDROID_PKG = "android";
+    public static final String APPOPSXPOSED_PKG = "at.jclehner.appopsxposed";
     public static final String EMPTY_STRING = "";
     public static final String GOOGLE_PACKAGEINSTALLER_PKG = "com.google.android.packageinstaller";
     public static final String INSTALLEROPT = "net.fypm.InstallerOpt";
@@ -138,6 +139,7 @@ public class Common {
 
     // Classes
     public static final String APPOPSDETAILS = "com.android.settings.applications.AppOpsDetails";
+    public static final String APPOPSXPOSED_APPOPSACTIVITY = "at.jclehner.appopsxposed.AppOpsActivity";
     public static final String APPSTORAGEDETAILS = "com.android.settings.applications.AppStorageSettings";
     public static final String APPERRORDIALOG = "com.android.server.am.AppErrorDialog";
     public static final String DEVICEPOLICYMANAGERSERVICE = (LOLLIPOP_NEWER) ? "com.android.server.devicepolicy.DevicePolicyManagerService" : "com.android.server.DevicePolicyManagerService";

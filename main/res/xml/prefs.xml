@@ -92,6 +92,11 @@
             android:title="@string/enable_disable_sig_check_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="enable_open_app_ops"
+            android:summary="@string/enable_open_app_ops_summary"
+            android:title="@string/enable_open_app_ops_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="enable_version_code"
             android:summary="@string/enable_version_code_summary"
             android:title="@string/enable_version_code_title" />
