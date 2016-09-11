@@ -170,8 +170,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             //xlog("bootCompleted value at initZygote", bootCompleted);
             xlog_start("Signature Checking and Verification Overview");
             xlog("disableCheckSignatures status", disableCheckSignatures);
-            xlog("checkSignatures status", checkSignatures);
-            xlog("verifySignature status", verifySignature);
+            xlog("Disable signature check status", checkSignatures);
+            xlog("Verify applications status", verifySignature);
             xlog_end("Signature Checking and Verification Overview");
         }
 
@@ -424,6 +424,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             useSettingsApp = false;
                         }
                     } catch (PackageManager.NameNotFoundException e) {
+                        if (enableDebug) {
+                            xlog_start("enableOpenAppOps - NameNotFoundException");
+                            xlog("", e);
+                            xlog_end("enableOpenAppOps - NameNotFoundException");
+                        }
                     }
 
                     if (useSettingsApp) {
@@ -445,6 +450,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     try {
                         mContext.startActivity(openAppInAppOps);
                     } catch (ActivityNotFoundException e) {
+                        if (enableDebug) {
+                            xlog_start("enableOpenAppOps - ActivityNotFoundException");
+                            xlog("", e);
+                            xlog_end("enableOpenAppOps - ActivityNotFoundException");
+                        }
                     }
 
                 }
@@ -575,7 +585,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     xlog("Current button", mOk.toString());
                     xlog("Current package info", mPkgInfo.toString());
                     xlog("Current package name", packageName);
-                    xlog("checkSignatures", checkSignatures);
+                    xlog("Disable signature check status", checkSignatures);
                     xlog_end("autoInstallHook");
                 }
 
