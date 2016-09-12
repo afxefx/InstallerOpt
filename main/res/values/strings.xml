@@ -60,6 +60,8 @@
     <string name="disable_check_sdk_version_title">Disable SDK Check</string>
     <string name="disable_install_background_summary">Disables installing applications in the background</string>
     <string name="disable_install_background_title">Disable Background Install</string>
+    <string name="disable_install_shell_summary">Disables installing applications through shell</string>
+    <string name="disable_install_shell_title">Disable Shell Install</string>
     <string name="disable_uninstall_background_summary">Disables uninstalling applications in the background</string>
     <string name="disable_uninstall_background_title">Disable Background Uninstall</string>
     <string name="disable_verify_apps_summary">Allow installing unverified applications</string>
