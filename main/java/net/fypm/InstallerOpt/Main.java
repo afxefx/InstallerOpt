@@ -1178,6 +1178,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, getInstallerOptContext());
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
                 installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
+                installShell = getpref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
                 mContext = (Context) XposedHelpers.getObjectField(
                         param.thisObject, "mContext");
                 boolean isInstallStage = "installStage".equals(param.method
