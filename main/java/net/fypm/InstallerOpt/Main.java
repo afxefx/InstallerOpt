@@ -122,6 +122,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean hideAppCrashes;
     public static boolean installAppsOnExternal;
     public static boolean installBackground;
+    public static boolean installShell;
     public static boolean installUnknownApps;
     public static boolean keepAppsData;
     //public static boolean nsmeAppOpsDetails;
@@ -1259,7 +1260,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
-	           if (installBackground && Binder.getCallingUid() == Common.SHELL_UID) {
+	        if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
                     param.setResult(null);
                     if (enableDebug) {
                         Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG)
