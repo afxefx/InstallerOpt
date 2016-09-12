@@ -1258,6 +1258,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
+	           if (installBackground && Binder.getCallingUid() == Common.SHELL_UID) {
+                    param.setResult(null);
+                    if (enableDebug) {
+                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+                
                 if (backupApkFiles && backupDir != null) {
                     if (!isInstallStage) {
                         String apkFile = null;
