@@ -1204,7 +1204,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, getInstallerOptContext());
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
                 installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
-                installShell = getpref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
+                installShell = getPref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
                 mContext = (Context) XposedHelpers.getObjectField(
                         param.thisObject, "mContext");
                 boolean isInstallStage = "installStage".equals(param.method
@@ -1218,10 +1218,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         flags = (Integer) XposedHelpers.getObjectField(
                                 param.args[id], "installFlags");
                         if (enableDebug) {
-                            xlog_start("isInstallStage");
+                            xlog_start("installPackageHook - isInstallStage");
                             xlog("isInstallStage equals", isInstallStage);
                             xlog("flags", flags);
-                            xlog_end("isInstallStage");
+                            xlog_end("installPackageHook - isInstallStage");
                         }
                     } catch (Exception e) {
                         XposedBridge.log(e);
@@ -1235,11 +1235,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         id = Common.JB_MR1_NEWER ? 2 : 1;
                         flags = (Integer) param.args[id];
                         if (enableDebug) {
-                            xlog_start("isInstallStage");
+                            xlog_start("installPackageHook - isInstallStage");
                             xlog("isInstallStage equals", isInstallStage);
                             xlog("id", id);
                             xlog("flags", flags);
-                            xlog_end("isInstallStage");
+                            xlog_end("installPackageHook - isInstallStage");
                         }
                     } catch (Exception e) {
                         XposedBridge.log(e);
@@ -1280,19 +1280,25 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        xlog_start("installPackageHook - installBackground");
+                        xlog("Background install attempt blocked", null);
+                        xlog_end("installPackageHook - installBackground");
                     }
+                    return;
                 }
 
-	        if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
+                if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        xlog_start("installPackageHook - installShell");
+                        xlog("ADB install attempt blocked", null);
+                        xlog_end("installPackageHook - installShell");
                     }
+                    return;
                 }
-                
+
                 if (backupApkFiles && backupDir != null) {
                     if (!isInstallStage) {
                         String apkFile = null;
@@ -1893,10 +1899,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if(reader != null) {
-                try { reader.close(); } catch (IOException e) { }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
             }
         }
 
