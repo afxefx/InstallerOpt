@@ -90,8 +90,9 @@ public class Utils extends BroadcastReceiver {
             pi.applicationInfo.publicSourceDir = apkFile;
             ApplicationInfo ai = pi.applicationInfo;
             String appName = (String) pm.getApplicationLabel(ai);
+            int versionCode = pi.versionCode;
             String versionName = pi.versionName;
-            String fileName = appName + " " + versionName + ".apk";
+            String fileName = appName + " " + versionName + "-" + versionCode + ".apk";
             String backupApkFile = dir + File.separator + fileName;
             File src = new File(apkFile);
             File dst = new File(backupApkFile);

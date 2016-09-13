@@ -22,12 +22,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.xmlpull.v1.XmlPullParser;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -124,8 +127,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installBackground;
     public static boolean installUnknownApps;
     public static boolean keepAppsData;
-    //public static boolean nsmeAppOpsDetails;
-    //public static boolean nsmeGrantPermissionsActivity;
     public static boolean prefsChanged;
     public static boolean showButtons;
     public static boolean uninstallBackground;
@@ -133,6 +134,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean verifyApps;
     public static boolean verifyJar;
     public static boolean verifySignature;
+    public static boolean rom_CM;
     public static boolean rom_TW;
     public static long prefsModifiedTime;
     private static final String TAG = "InstallerOpt";
@@ -140,40 +142,41 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
+        xlog_start("ROM Detection");
         File frameworkTW = new File("/system/framework/twframework-res.apk");
         if (frameworkTW.exists()) {
             rom_TW = true;
-            xlog_start("ROM Detection");
-            xlog("TW based rom", rom_TW);
-            xlog_end("ROM Detection");
+            xlog("TW rom", rom_TW);
+        } else {
+            rom_CM = isCyanogenMod();
+            if (rom_CM) {
+                xlog("CM rom", rom_CM);
+            } else {
+                xlog("Neither TW nor CM rom detected", null);
+            }
         }
+        xlog_end("ROM Detection");
 
         disableCheckSignatures = true;
-        //nsmeAppOpsDetails = false;
-        //nsmeGrantPermissionsActivity = false;
-        prefsChanged = false;
+        //prefsChanged = false;
 
+        xlog_start("XSharedPreferences - Init");
         try {
-            xlog_start("XSharedPreferences - Init");
             prefs = new XSharedPreferences(Main.class.getPackage().getName());
             prefs.makeWorldReadable();
             prefs.reload();
-            enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
             updatePrefs();
             xlog("Success", null);
-            xlog_end("XSharedPreferences - Init");
         } catch (Throwable e) {
-            xlog("", e);
-            xlog_end("XSharedPreferences - Init");
+            xlog("Error initializing shared preferences", e);
         }
-        if (enableDebug) {
-            //xlog("bootCompleted value at initZygote", bootCompleted);
-            xlog_start("Signature Checking and Verification Overview");
-            xlog("disableCheckSignatures status", disableCheckSignatures);
-            xlog("Disable signature check status", checkSignatures);
-            xlog("Disable application verification status", verifySignature);
-            xlog_end("Signature Checking and Verification Overview");
-        }
+        xlog_end("XSharedPreferences - Init");
+
+        xlog_start("Signature Checking and Verification Overview");
+        xlog("Disable signature check status", checkSignatures);
+        xlog("Disable application verification status", verifySignature);
+        xlog_end("Signature Checking and Verification Overview");
+
 
         appInfoHook = new XC_MethodHook() {
             @Override
@@ -1677,18 +1680,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isInstallingUnknownAppsAllowed", unknownAppsHook);
                 }
-                //if (!nsmeGrantPermissionsActivity) {
+                if (Common.MARSHMALLOW_NEWER && !rom_TW && !rom_CM) {
                     try {
                         XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
                                 lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
                     } catch (NoSuchMethodError nsme) {
-                        //nsmeGrantPermissionsActivity = true;
                         xlog_start("grantPermissionsBackButtonHook");
                         xlog("Method not found", nsme);
-                        //xlog("Disabling future checks for onBackPressed in GrantPermissionsActivity", null);
                         xlog_end("grantPermissionsBackButtonHook");
                     }
-                //}
+                }
 
                 XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
                         lpparam.classLoader, "startInstallConfirm",
@@ -1787,10 +1788,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                     lpparam.classLoader, "isPlatformSigned",
                                     initAppOpsDetailsHook);
                         } catch (NoSuchMethodError nsme) {
-                            //nsmeAppOpsDetails = true;
                             xlog_start("initAppOpsDetailsHook");
                             xlog("Method not found", nsme);
-                            //xlog("Disabling future checks for isPlatformSigned in AppOpsDetails", null);
                             xlog_end("initAppOpsDetailsHook");
                         }
                     }
@@ -1799,6 +1798,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         } catch (Throwable t) {
             xlog_start("handleLoadPackage");
             xlog("handleLoadPackage error caught: ", t);
+            XposedBridge.log("Stacktrace follows:");
+            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+            }
             xlog_end("handleLoadPackage");
         }
     }
@@ -1858,6 +1861,38 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         return MultiprocessPreferences.getDefaultSharedPreferences(context).getLong(pref, 0);
     }
 
+    public boolean isCyanogenMod() {
+        boolean isCyanogenMod = false;
+        String host = android.os.Build.HOST;
+        String version = System.getProperty("os.version");
+        BufferedReader reader = null;
+
+        try {
+            if (host.contains("cyanogenmod")) {
+                isCyanogenMod = true;
+            } else if (version.contains("cyanogenmod")) {
+                isCyanogenMod = true;
+            } else {
+                // This does not require root
+                reader = new BufferedReader(new FileReader("/proc/version"), 256);
+                version = reader.readLine();
+
+                if (version.contains("cyanogenmod")) {
+                    isCyanogenMod = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(reader != null) {
+                try { reader.close(); } catch (IOException e) { }
+            }
+        }
+
+        return isCyanogenMod;
+    }
+
     public boolean isExpertModeEnabled() {
         mContext = AndroidAppHelper.currentApplication();
         //Add below to prefs
@@ -1871,12 +1906,22 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         //return enabled;
     }
 
+    public static void setPref(Context context, String pref, Boolean value, int value2, long value3, String value4) {
+        if (value != null) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putBoolean(pref, value).apply();
+        }
+        if (value2 != 0) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putInt(pref, value2).apply();
+        }
+        if (value3 != 0) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putLong(pref, value3).apply();
+        }
+        if (value4 != null) {
+            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(pref, value4).apply();
+        }
+    }
+
     public void updatePrefs() {
-        //if (context == null) {
-        //prefs.reload();
-        xlog_start("updatePrefs");
-        xlog("Preferences reloaded via sharedpreferences", null);
-        xlog_end("updatePrefs");
         backupApkFiles = prefs.getBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false);
         checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
         checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
@@ -1898,6 +1943,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         enableAutoUninstall = prefs.getBoolean(Common.PREF_ENABLE_AUTO_UNINSTALL, false);
         enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
         enableLaunchApp = prefs.getBoolean(Common.PREF_ENABLE_LAUNCH_APP, false);
+        enableOpenAppOps = prefs.getBoolean(Common.PREF_ENABLE_OPEN_APP_OPS, false);
         enablePackageName = prefs.getBoolean(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, false);
         enablePlay = prefs.getBoolean(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, false);
         enableVersion = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION, false);
@@ -1917,71 +1963,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         verifyApps = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_APP, false);
         verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);
         verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
-        /*} else {
-            xlog_start("updatePrefs");
-            xlog("Preferences reloaded via context", null);
-            xlog_end("updatePrefs");
-            backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, context);
-            checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, context);
-            checkLuckyPatcher = getPref(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, context);
-            checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, context);
-            checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, context);
-            checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, context);
-            debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, context);
-            deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, context);
-            deviceAdmins = getPref(Common.PREF_ENABLE_UNINSTALL_DEVICE_ADMIN, context);
-            disableSystemApps = getPref(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, context);
-            disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, context);
-            downgradeApps = getPref(Common.PREF_ENABLE_DOWNGRADE_APP, context);
-            enableAppStorageSettingsButtons = getPref(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, context);
-            enableAutoHideInstall = getPref(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, context);
-            enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, context);
-            enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, context);
-            enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, context);
-            enableAutoCloseUninstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_UNINSTALL, context);
-            enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, context);
-            enableDebug = getPref(Common.PREF_ENABLE_DEBUG, context);
-            enableLaunchApp = getPref(Common.PREF_ENABLE_LAUNCH_APP, context);
-            enablePackageName = getPref(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, context);
-            enablePlay = getPref(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, context);
-            enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, context);
-            enableVersionCode = getPref(Common.PREF_ENABLE_SHOW_VERSION_CODE, context);
-            enableVersionInline = getPref(Common.PREF_ENABLE_SHOW_VERSION_INLINE, context);
-            enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, context);
-            enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, context);
-            forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, context);
-            hideAppCrashes = getPref(Common.PREF_ENABLE_HIDE_APP_CRASHES, context);
-            installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, context);
-            installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, context);
-            installUnknownApps = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, context);
-            keepAppsData = getPref(Common.PREF_ENABLE_KEEP_APP_DATA, context);
-            showButtons = getPref(Common.PREF_ENABLE_SHOW_BUTTON, context);
-            uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, context);
-            uninstallSystemApps = getPref(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, context);
-            verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, context);
-            verifyJar = getPref(Common.PREF_DISABLE_VERIFY_JAR, context);
-            verifySignature = getPref(Common.PREF_DISABLE_VERIFY_SIGNATURE, context);
-        }*/
-
-        /*public static boolean autoInstallCancelled;
-        public static boolean bootCompleted;
-        public static boolean confirmCheckSignatures;
-        public static boolean disableCheckSignatures;*/
-    }
-
-    public static void setPref(Context context, String pref, Boolean value, int value2, long value3, String value4) {
-        if (value != null) {
-            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putBoolean(pref, value).apply();
-        }
-        if (value2 != 0) {
-            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putInt(pref, value2).apply();
-        }
-        if (value3 != 0) {
-            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putLong(pref, value3).apply();
-        }
-        if (value4 != null) {
-            MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(pref, value4).apply();
-        }
     }
 
     public void vibrateDevice(int duration) {
