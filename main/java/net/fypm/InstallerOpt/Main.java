@@ -1396,7 +1396,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     verifyJar = getPref(Common.PREF_DISABLE_VERIFY_JAR, getInstallerOptContext());
                 }
                 if (verifyJar) {
-                    xlog("Disable JAR verification set to", verifyJar);
+                    //xlog("Disable JAR verification set to", verifyJar);
                     String name = (String) XposedHelpers.getObjectField(
                             param.thisObject, "name");
                     if (Common.LOLLIPOP_NEWER) {
