@@ -137,4 +137,7 @@
     <string name="enable_version_toast_title">Informacja o wersji w powiadomieniu</string>
     <string name="external_sdcard_full_access_summary">Zezwala na odczyt/zapis na zewnętrznej karcie SD (wymaga ponownego uruchomienia)</string>
     <string name="external_sdcard_full_access_title">Pełny dostęp do zewnętrznej karty SD</string>
+    <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
+    <string name="enable_open_app_ops_title">Open App Ops</string>
+    <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
 </resources>

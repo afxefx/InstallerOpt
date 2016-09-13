@@ -137,4 +137,7 @@
     <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>
     <string name="enable_keep_apps_data_summary">App data is not deleted when application is uninstalled</string>
     <string name="enable_keep_apps_data_title">Keep App Data</string>
+    <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
+    <string name="enable_open_app_ops_title">Open App Ops</string>
+    <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
 </resources>

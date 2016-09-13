@@ -136,4 +136,7 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">完全的外部SD卡访问权限</string>
+    <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
+    <string name="enable_open_app_ops_title">Open App Ops</string>
+    <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
 </resources>

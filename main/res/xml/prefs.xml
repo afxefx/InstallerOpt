@@ -77,19 +77,9 @@
             android:title="@string/enable_delete_apk_files_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="disable_verify_apps"
-            android:summary="@string/disable_verify_apps_summary"
-            android:title="@string/disable_verify_apps_title" />
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="disable_install_background"
             android:summary="@string/disable_install_background_summary"
             android:title="@string/disable_install_background_title" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="disable_sig_check"
-            android:summary="@string/enable_disable_sig_check_summary"
-            android:title="@string/enable_disable_sig_check_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_open_app_ops"
@@ -153,44 +143,48 @@
             android:summary="@string/enable_uninstall_device_admin_summary"
             android:title="@string/enable_uninstall_device_admin_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/MiscPrefs">
-        <!--<CheckBoxPreference
-            android:defaultValue="false"
-            android:enabled="false"
-            android:key="enable_disable_verify_signatures"
-            android:summary="@string/enable_disable_verify_signatures_summary"
-            android:title="@string/enable_disable_verify_signatures_title" />
+    <PreferenceCategory android:title="@string/ExpertPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:enabled="false"
-            android:key="disable_verify_jar"
-            android:summary="@string/disable_verify_jar_summary"
-            android:title="@string/disable_verify_jar_title" />
+            android:key="enable_debug_apps"
+            android:summary="@string/enable_debug_apps_summary"
+            android:title="@string/enable_debug_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:enabled="false"
+            android:key="disable_verify_apps"
+            android:summary="@string/disable_verify_apps_summary"
+            android:title="@string/disable_verify_apps_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="disable_check_duplicated_permissions"
             android:summary="@string/disable_check_duplicated_permissions_summary"
             android:title="@string/disable_check_duplicated_permissions_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:enabled="false"
+            android:key="enable_disable_verify_signatures"
+            android:summary="@string/enable_disable_verify_signatures_summary"
+            android:title="@string/enable_disable_verify_signatures_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="disable_verify_jar"
+            android:summary="@string/disable_verify_jar_summary"
+            android:title="@string/disable_verify_jar_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="disable_check_permissions"
             android:summary="@string/disable_check_permissions_summary"
             android:title="@string/disable_check_permissions_title" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_debug_apps"
-            android:enabled="false"
-            android:summary="@string/enable_debug_apps_summary"
-            android:title="@string/enable_debug_apps_title" />
+            android:key="disable_sig_check"
+            android:summary="@string/enable_disable_sig_check_summary"
+            android:title="@string/enable_disable_sig_check_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="disable_check_sdk_version"
-            android:enabled="false"
             android:summary="@string/disable_check_sdk_version_summary"
             android:title="@string/disable_check_sdk_version_title" />
-        <CheckBoxPreference
+        <!--<CheckBoxPreference
             android:defaultValue="false"
             android:key="disable_lucky_patcher_presence"
             android:enabled="false"
@@ -206,6 +200,8 @@
             android:key="external_sdcard_full_access"
             android:summary="@string/external_sdcard_full_access_summary"
             android:title="@string/external_sdcard_full_access_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/MiscPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_show_buttons"

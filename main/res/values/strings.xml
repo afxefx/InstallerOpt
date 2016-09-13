@@ -25,6 +25,7 @@
     <string name="enable">Enable</string>
     <string name="enable_backup_message">Please enable backup APK option and choose your backup folder to see stats</string>
     <string name="enable_reboot_message">Enable and Reboot?</string>
+    <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
     <string name="manage_button_text">Manage</string>
@@ -52,8 +53,8 @@
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>
     <string name="backup_apk_files_limit_title">Backup Version Limit</string>
-    <string name="disable_check_duplicated_permissions_summary">Allow installing applications with duplicate permissions</string>
-    <string name="disable_check_duplicated_permissions_title">Disable Duplicate Permission Checks</string>
+    <string name="disable_check_duplicated_permissions_summary">Ignore duplicate permissions declared by applications</string>
+    <string name="disable_check_duplicated_permissions_title">Disable Duplicate Permissions Check</string>
     <string name="disable_check_permissions_summary">Allow installing applications without doing permission checks</string>
     <string name="disable_check_permissions_title">Disable Permission Checks</string>
     <string name="disable_check_sdk_version_summary">Always returns the latest version of the SDK</string>

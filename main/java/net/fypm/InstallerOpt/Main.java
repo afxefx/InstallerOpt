@@ -171,7 +171,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             xlog_start("Signature Checking and Verification Overview");
             xlog("disableCheckSignatures status", disableCheckSignatures);
             xlog("Disable signature check status", checkSignatures);
-            xlog("Verify applications status", verifySignature);
+            xlog("Disable application verification status", verifySignature);
             xlog_end("Signature Checking and Verification Overview");
         }
 
@@ -729,10 +729,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         checkDuplicatedPermissionsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                prefs.reload();
-                checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
+                try {
+                    prefs.reload();
+                    checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, getInstallerOptContext());
+                }
                 if (checkDuplicatedPermissions) {
-                    xlog("Disable check duplicate permissions set to", checkDuplicatedPermissions);
+                    xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
                     param.setResult(true);
                     return;
                 }
@@ -742,8 +747,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         checkPermissionsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                prefs.reload();
-                checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
+                try {
+                    prefs.reload();
+                    checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, getInstallerOptContext());
+                }
                 if (checkPermissions) {
                     xlog("Disable check permissions set to", checkPermissions);
                     param.setResult(PackageManager.PERMISSION_GRANTED);
@@ -755,8 +765,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         checkSdkVersionHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                prefs.reload();
-                checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
+                try {
+                    prefs.reload();
+                    checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, getInstallerOptContext());
+                }
                 if (checkSdkVersion) {
                     xlog("checkSdkVersion set to", checkSdkVersion);
                     XposedHelpers.setObjectField(param.thisObject,
@@ -775,7 +790,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     mContext = AndroidAppHelper.currentApplication();
                     checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
                 }
-                if (/*disableCheckSignatures && */checkSignatures) {
+                //xlog("disableCheckSignatures value in checkSignaturesHook", disableCheckSignatures);
+                //xlog("checkSignatures value in checkSignaturesHook", checkSignatures);
+                if (disableCheckSignatures && checkSignatures) {
                     /*xlog_start("checkSignaturesHook");
                     xlog("Disable signature checks set to", checkSignatures);
                     xlog_end("checkSignaturesHook");*/
@@ -788,8 +805,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         debugAppsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                mContext = AndroidAppHelper.currentApplication();
-                debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, getInstallerOptContext());
+                try {
+                    prefs.reload();
+                    debugApps = prefs.getBoolean(Common.PREF_ENABLE_DEBUG_APP, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, getInstallerOptContext());
+                }
                 int id = 5;
                 int flags = (Integer) param.args[id];
                 if (debugApps) {
@@ -1287,11 +1309,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         scanPackageHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                //xlog("disableCheckSignatures value before scanPackageLI", disableCheckSignatures);
                 disableCheckSignatures = false;
             }
 
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                //xlog("disableCheckSignatures value after scanPackageLI", disableCheckSignatures);
                 disableCheckSignatures = true;
             }
         };
@@ -1364,9 +1388,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @SuppressWarnings("unchecked")
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                prefs.reload();
-                verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);
+                try {
+                    prefs.reload();
+                    verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    verifyJar = getPref(Common.PREF_DISABLE_VERIFY_JAR, getInstallerOptContext());
+                }
                 if (verifyJar) {
+                    xlog("Disable JAR verification set to", verifyJar);
                     String name = (String) XposedHelpers.getObjectField(
                             param.thisObject, "name");
                     if (Common.LOLLIPOP_NEWER) {
@@ -1414,8 +1444,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         verifySignatureHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                prefs.reload();
-                verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
+                try {
+                    prefs.reload();
+                    verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
+                } catch (Throwable e) {
+                    mContext = AndroidAppHelper.currentApplication();
+                    verifySignature = getPref(Common.PREF_DISABLE_VERIFY_SIGNATURE, getInstallerOptContext());
+                }
                 if (verifySignature) {
                     /*xlog_start("verifySignatureHook");
                     xlog("Disable signature verification set to", verifySignature);
