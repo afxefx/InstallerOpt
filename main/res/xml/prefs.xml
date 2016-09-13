@@ -81,6 +81,11 @@
             android:summary="@string/disable_install_background_summary"
             android:title="@string/disable_install_background_title" />
         <CheckBoxPreference
+             android:defaultValue="false"
++            android:key="disable_install_shell"
++            android:summary="@string/disable_install_shell_summary"
++            android:title="@string/disable_install_shell_title" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_open_app_ops"
             android:summary="@string/enable_open_app_ops_summary"

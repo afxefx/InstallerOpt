@@ -57,6 +57,7 @@ public class Common {
     public static final String PREF_DISABLE_CHECK_SIGNATURE_FDROID = "disable_check_signatures_fdroid";
     public static final String PREF_DISABLE_FORWARD_LOCK = "disable_forward_lock";
     public static final String PREF_DISABLE_INSTALL_BACKGROUND = "disable_install_background";
+    public static final String PREF_DISABLE_INSTALL_SHELL = "disable_install_shell";
     public static final String PREF_DISABLE_UNINSTALL_BACKGROUND = "disable_uninstall_background";
     public static final String PREF_DISABLE_VERIFY_APP = "disable_verify_apps";
     public static final String PREF_DISABLE_VERIFY_JAR = "disable_verify_jar";

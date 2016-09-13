@@ -125,6 +125,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean hideAppCrashes;
     public static boolean installAppsOnExternal;
     public static boolean installBackground;
+    public static boolean installShell;
     public static boolean installUnknownApps;
     public static boolean keepAppsData;
     public static boolean prefsChanged;
@@ -1203,6 +1204,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, getInstallerOptContext());
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
                 installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
+                installShell = getpref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
                 mContext = (Context) XposedHelpers.getObjectField(
                         param.thisObject, "mContext");
                 boolean isInstallStage = "installStage".equals(param.method
@@ -1283,6 +1285,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
+	        if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
+                    param.setResult(null);
+                    if (enableDebug) {
+                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+                
                 if (backupApkFiles && backupDir != null) {
                     if (!isInstallStage) {
                         String apkFile = null;
@@ -1955,6 +1965,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
         installAppsOnExternal = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, false);
         installBackground = prefs.getBoolean(Common.PREF_DISABLE_INSTALL_BACKGROUND, false);
+        installShell = prefs.getBoolean(Common.PREF_DISABLE_INSTALL_SHELL, false);
         installUnknownApps = prefs.getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false);
         keepAppsData = prefs.getBoolean(Common.PREF_ENABLE_KEEP_APP_DATA, false);
         showButtons = prefs.getBoolean(Common.PREF_ENABLE_SHOW_BUTTON, false);
