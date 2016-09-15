@@ -149,6 +149,7 @@ public class Common {
     public static final String INSTALLEROPTBOOTRECEIVER = "net.fypm.InstallerOpt.BootReceiver";
     public static final String INSTALLEROPTMAINACTIVITY = "net.fypm.InstallerOpt.MainActivity$PrefsFragment";
     public static final String JARVERIFIER = "java.util.jar.JarVerifier$VerifierEntry";
+    public static final String OPENSSLSIGNATURE = "com.android.org.conscrypt.OpenSSLSignature";
     public static final String PACKAGEINSTALLERACTIVITY = "com.android.packageinstaller.PackageInstallerActivity";
     public static final String PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY = "com.android.packageinstaller.permission.ui.GrantPermissionsActivity";
     public static final String PACKAGEMANAGERSERVICE = "com.android.server.pm.PackageManagerService";
