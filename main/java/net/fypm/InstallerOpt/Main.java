@@ -736,12 +736,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkDuplicatedPermissions) {
-                    xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
+                    if (enableDebug) {
+                        xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
+                    }
                     param.setResult(true);
                     return;
                 }
@@ -754,12 +758,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkPermissions) {
-                    xlog("Disable check permissions set to", checkPermissions);
+                    if (enableDebug) {
+                        xlog("Disable check permissions set to", checkPermissions);
+                    }
                     param.setResult(PackageManager.PERMISSION_GRANTED);
                     return;
                 }
@@ -772,12 +780,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkSdkVersion) {
-                    xlog("checkSdkVersion set to", checkSdkVersion);
+                    if (enableDebug) {
+                        xlog("checkSdkVersion set to", checkSdkVersion);
+                    }
                     XposedHelpers.setObjectField(param.thisObject,
                             "SDK_VERSION", Common.LATEST_ANDROID_RELEASE);
                 }
@@ -836,6 +848,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, getInstallerOptContext());
                 int id = 3;
                 int flags = (Integer) param.args[id];
+
                 if (keepAppsData && (flags & Common.DELETE_KEEP_DATA) == 0) {
                     flags |= Common.DELETE_KEEP_DATA;
                 }
@@ -843,8 +856,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (uninstallBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG).show();
+                        xlog_start("deletePackageHook - uninstallBackground");
+                        xlog("Background uninstall attempt blocked", null);
+                        xlog_end("deletePackageHook - uninstallBackground");
                     }
                 }
                 //if (isModuleEnabled()) {

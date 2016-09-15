@@ -118,6 +118,8 @@
     <string name="enable_keep_apps_data_title">保留应用数据</string>
     <string name="enable_launch_app_summary">在查看应用信息时点击应用图标以打开应用</string>
     <string name="enable_launch_app_title">应用图标打开</string>
+    <string name="enable_open_app_ops_summary">在应用安装后打开 App Ops</string>
+    <string name="enable_open_app_ops_title">打开 App Ops</string>
     <string name="enable_package_name_summary">在查看应用信息时长按应用名以显示包名</string>
     <string name="enable_package_name_title">包名显示</string>
     <string name="enable_play_open_summary">在查看应用信息时长按应用图标以在Play商店中打开应用</string>
@@ -136,9 +138,7 @@
     <string name="enable_version_title">版本展示</string>
     <string name="enable_version_toast_summary">在消息框中展示版本信息</string>
     <string name="enable_version_toast_title">版本信息消息框</string>
+    <string name="ExpertPrefs">专家设置 - 继续前注意！</string>
     <string name="external_sdcard_full_access_summary">允许读写外部 SD 卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">完全的外部 SD 卡访问权限</string>
-    <string name="ExpertPrefs">专家设置 - 继续前注意！</string>
-    <string name="enable_open_app_ops_title">打开 App Ops</string>
-    <string name="enable_open_app_ops_summary">在应用安装后打开 App Ops</string>
 </resources>
