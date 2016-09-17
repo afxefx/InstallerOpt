@@ -736,12 +736,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkDuplicatedPermissions) {
-                    xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
+                    if (enableDebug) {
+                        xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
+                    }
                     param.setResult(true);
                     return;
                 }
@@ -754,12 +758,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkPermissions) {
-                    xlog("Disable check permissions set to", checkPermissions);
+                    if (enableDebug) {
+                        xlog("Disable check permissions set to", checkPermissions);
+                    }
                     param.setResult(PackageManager.PERMISSION_GRANTED);
                     return;
                 }
@@ -772,12 +780,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
+                    enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
                     checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, getInstallerOptContext());
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkSdkVersion) {
-                    xlog("checkSdkVersion set to", checkSdkVersion);
+                    if (enableDebug) {
+                        xlog("checkSdkVersion set to", checkSdkVersion);
+                    }
                     XposedHelpers.setObjectField(param.thisObject,
                             "SDK_VERSION", Common.LATEST_ANDROID_RELEASE);
                 }
@@ -836,6 +848,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, getInstallerOptContext());
                 int id = 3;
                 int flags = (Integer) param.args[id];
+
                 if (keepAppsData && (flags & Common.DELETE_KEEP_DATA) == 0) {
                     flags |= Common.DELETE_KEEP_DATA;
                 }
@@ -843,8 +856,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (uninstallBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG).show();
+                        xlog_start("deletePackageHook - uninstallBackground");
+                        xlog("Background uninstall attempt blocked", null);
+                        xlog_end("deletePackageHook - uninstallBackground");
                     }
                 }
                 //if (isModuleEnabled()) {
@@ -1477,7 +1492,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.setResult(true);
                     return;
                 }
-                //}
             }
         };
 
@@ -1495,7 +1509,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     /*xlog_start("verifySignaturesHook");
                     xlog("Disable signature checking set to", checkSignatures);
                     xlog_end("verifySignaturesHook");*/
-                    param.setResult(null);
+                    param.setResult(true);
                     return;
                 }
             }
@@ -1508,8 +1522,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         try {
             if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
                 resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
-        /*} else if (resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)) {
-            resparam.res.hookLayout(Common.GOOGLE_PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);*/
             }
         } catch (Throwable t) {
             xlog_start("handleInitPackageResources");
@@ -1533,18 +1545,68 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
             if (Common.ANDROID_PKG.equals(lpparam.packageName)
                     && Common.ANDROID_PKG.equals(lpparam.processName)) {
-                Class<?> packageManagerClass = XposedHelpers.findClass(
-                        Common.PACKAGEMANAGERSERVICE, lpparam.classLoader);
-                Class<?> devicePolicyManagerClass = XposedHelpers.findClass(
-                        Common.DEVICEPOLICYMANAGERSERVICE, lpparam.classLoader);
-                Class<?> packageParserClass = XposedHelpers.findClass(
-                        Common.PACKAGEPARSER, lpparam.classLoader);
-                Class<?> jarVerifierClass = XposedHelpers.findClass(
-                        Common.JARVERIFIER, lpparam.classLoader);
-                Class<?> signatureClass = XposedHelpers.findClass(Common.SIGNATURE,
-                        lpparam.classLoader);
                 Class<?> appErrorDialogClass = XposedHelpers.findClass(
                         Common.APPERRORDIALOG, lpparam.classLoader);
+                Class<?> devicePolicyManagerClass = XposedHelpers.findClass(
+                        Common.DEVICEPOLICYMANAGERSERVICE, lpparam.classLoader);
+                Class<?> jarVerifierClass = XposedHelpers.findClass(
+                        Common.JARVERIFIER, lpparam.classLoader);
+                Class<?> openSSLSignatureClass = XposedHelpers.findClass(
+                        Common.OPENSSLSIGNATURE, lpparam.classLoader);
+                Class<?> packageManagerClass = XposedHelpers.findClass(
+                        Common.PACKAGEMANAGERSERVICE, lpparam.classLoader);
+                Class<?> packageParserClass = XposedHelpers.findClass(
+                        Common.PACKAGEPARSER, lpparam.classLoader);
+                Class<?> signatureClass = XposedHelpers.findClass(
+                        Common.SIGNATURE, lpparam.classLoader);
+
+                if (Common.LOLLIPOP_NEWER) {
+                    // 5.0 and newer
+                    XposedBridge.hookAllMethods(packageManagerClass,
+                            "checkUpgradeKeySetLP", checkDuplicatedPermissionsHook);
+                }
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass, "checkPermission",
+                        checkPermissionsHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "checkUidPermission", checkPermissionsHook);
+
+                if (Common.LOLLIPOP_NEWER) {
+                    // 5.0 and newer
+                    XposedBridge.hookAllMethods(packageParserClass, "parseBaseApk",
+                            checkSdkVersionHook);
+                } else {
+                    // 4.0 - 4.4
+                    XposedBridge.hookAllMethods(packageParserClass, "parsePackage",
+                            checkSdkVersionHook);
+                }
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "compareSignatures", checkSignaturesHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "checkUidSignatures", checkSignaturesHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "checkSignatures", checkSignaturesHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(Process.class, "start",
+                        debugAppsHook);
+
+                // 5.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "deletePackage", deletePackageHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(devicePolicyManagerClass,
+                        "packageHasActiveAdmins", deviceAdminsHook);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     XposedHelpers.findAndHookMethod(XposedHelpers.findClass(
@@ -1566,92 +1628,18 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             externalSdCardAccessHook);
                 }
 
-                if (Common.LOLLIPOP_NEWER) {
-                    // 5.0 and newer
-                    XposedBridge.hookAllMethods(packageParserClass, "parseBaseApk",
-                            checkSdkVersionHook);
-                } else {
-                    // 4.0 - 4.4
-                    XposedBridge.hookAllMethods(packageParserClass, "parsePackage",
-                            checkSdkVersionHook);
-                }
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(Process.class, "start",
-                        debugAppsHook);
+                /*// 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass, "getPackageInfo",
+                    getPackageInfoHook);*/
 
                 // 4.0 and newer
                 XposedBridge.hookAllConstructors(appErrorDialogClass,
                         hideAppCrashesHook);
 
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(View.class,
-                        "onFilterTouchEventForSecurity", showButtonsHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(devicePolicyManagerClass,
-                        "packageHasActiveAdmins", deviceAdminsHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(jarVerifierClass, "verify",
-                        verifyJarHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(MessageDigest.class, "isEqual",
-                        verifySignatureHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(signatureClass, "verify",
-                        verifySignatureHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "verifySignaturesLP", verifySignaturesHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "isVerificationEnabled", verifyAppsHook);
-
-            /*// 4.0 and newer
-            XposedBridge.hookAllMethods(packageManagerClass, "getPackageInfo",
-                    getPackageInfoHook);*/
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "compareSignatures", checkSignaturesHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "checkUidSignatures", checkSignaturesHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "checkSignatures", checkSignaturesHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass, "scanPackageLI",
-                        scanPackageHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass, "checkPermission",
-                        checkPermissionsHook);
-
-                // 4.0 and newer
-                XposedBridge.hookAllMethods(packageManagerClass,
-                        "checkUidPermission", checkPermissionsHook);
-
-                if (Common.LOLLIPOP_NEWER) {
-                    // 5.0 and newer
-                    XposedBridge.hookAllMethods(packageManagerClass,
-                            "checkUpgradeKeySetLP", checkDuplicatedPermissionsHook);
-                }
-
                 if (Common.LOLLIPOP_NEWER) {
                     // 5.0 and newer
                     XposedBridge.hookAllMethods(packageManagerClass,
                             "installPackageAsUser", installPackageHook);
-                /*XposedBridge.hookAllMethods(packageManagerClass,
-                        "installPackageLI", installPackageHook);*/
                     XposedBridge.hookAllMethods(packageManagerClass,
                             "installStage", installPackageHook);
                 } else {
@@ -1668,13 +1656,89 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
-                // 5.0 and newer
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass, "scanPackageLI",
+                        scanPackageHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(View.class,
+                        "onFilterTouchEventForSecurity", showButtonsHook);
+
+                // 4.0 and newer
                 XposedBridge.hookAllMethods(packageManagerClass,
-                        "deletePackage", deletePackageHook);
+                        "isVerificationEnabled", verifyAppsHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(jarVerifierClass, "verify",
+                        verifyJarHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(MessageDigest.class, "isEqual",
+                        verifySignatureHook);
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(signatureClass, "verify",
+                        verifySignatureHook);
+
+                // 4.4 and newer
+                if (Common.KITKAT_NEWER) {
+                    XposedBridge.hookAllMethods(openSSLSignatureClass, "engineVerify",
+                            verifySignatureHook);
+                }
+
+                // 4.0 and newer
+                XposedBridge.hookAllMethods(packageManagerClass,
+                        "verifySignaturesLP", verifySignaturesHook);
 
             }
 
             if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
+                XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS + "$1",
+                        lpparam.classLoader, "handleMessage", Message.class,
+                        autoCloseInstallHook);
+
+                // 4.0 - 4.4
+                XposedHelpers.findAndHookMethod(Common.UNINSTALLAPPPROGRESS,
+                        lpparam.classLoader, "initView", autoCloseUninstallHook);
+
+                // 4.0 and newer
+                XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS,
+                        lpparam.classLoader, "initView", autoHideInstallHook);
+
+                XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
+                        lpparam.classLoader, "startInstallConfirm",
+                        autoInstallHook);
+
+                if (Common.LOLLIPOP_NEWER) {
+                    try {
+                        // 5.0 and newer
+                        XposedHelpers.findAndHookMethod(Common.UNINSTALLERACTIVITY,
+                                lpparam.classLoader, "showConfirmationDialog",
+                                autoUninstallHook);
+                    } catch (NoSuchMethodError nsme) {
+                        // Samsung 5.0
+                        XposedBridge.hookAllMethods(XposedHelpers.findClass(
+                                Common.UNINSTALLERACTIVITY, lpparam.classLoader),
+                                "onCreate", autoUninstallHook);
+                    }
+                } else {
+                    // 4.0 and newer
+                    XposedHelpers.findAndHookMethod(Common.UNINSTALLERACTIVITY,
+                            lpparam.classLoader, "onCreate", Bundle.class,
+                            autoUninstallHook);
+                }
+
+                if (Common.MARSHMALLOW_NEWER && !rom_TW && !rom_CM) {
+                    try {
+                        XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
+                                lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
+                    } catch (NoSuchMethodError nsme) {
+                        xlog_start("grantPermissionsBackButtonHook");
+                        xlog("Method not found", nsme);
+                        xlog_end("grantPermissionsBackButtonHook");
+                    }
+                }
+
                 if (Common.LOLLIPOP_MR1_NEWER) {
                     // 5.1 and newer
                     try {
@@ -1696,57 +1760,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isInstallingUnknownAppsAllowed", unknownAppsHook);
                 }
-                if (Common.MARSHMALLOW_NEWER && !rom_TW && !rom_CM) {
-                    try {
-                        XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERGRANTPERMISSIONSACTIVITY,
-                                lpparam.classLoader, "onBackPressed", grantPermissionsBackButtonHook);
-                    } catch (NoSuchMethodError nsme) {
-                        xlog_start("grantPermissionsBackButtonHook");
-                        xlog("Method not found", nsme);
-                        xlog_end("grantPermissionsBackButtonHook");
-                    }
-                }
-
-                XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
-                        lpparam.classLoader, "startInstallConfirm",
-                        autoInstallHook);
-
-                XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS + "$1",
-                        lpparam.classLoader, "handleMessage", Message.class,
-                        autoCloseInstallHook);
-
-                // 4.0 and newer
-                XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS,
-                        lpparam.classLoader, "initView", autoHideInstallHook);
-
-                // 4.0 - 4.4
-                XposedHelpers.findAndHookMethod(Common.UNINSTALLAPPPROGRESS,
-                        lpparam.classLoader, "initView", autoCloseUninstallHook);
 
                 if (Common.KITKAT_NEWER) {
                     // 4.4 and newer
                     XposedHelpers.findAndHookMethod(
                             Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                             "isVerifyAppsEnabled", verifyAppsHook);
-                }
-
-                if (Common.LOLLIPOP_NEWER) {
-                    try {
-                        // 5.0 and newer
-                        XposedHelpers.findAndHookMethod(Common.UNINSTALLERACTIVITY,
-                                lpparam.classLoader, "showConfirmationDialog",
-                                autoUninstallHook);
-                    } catch (NoSuchMethodError nsme) {
-                        // Samsung 5.0
-                        XposedBridge.hookAllMethods(XposedHelpers.findClass(
-                                Common.UNINSTALLERACTIVITY, lpparam.classLoader),
-                                "onCreate", autoUninstallHook);
-                    }
-                } else {
-                    // 4.0 and newer
-                    XposedHelpers.findAndHookMethod(Common.UNINSTALLERACTIVITY,
-                            lpparam.classLoader, "onCreate", Bundle.class,
-                            autoUninstallHook);
                 }
             }
 
@@ -1755,27 +1774,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         Common.INSTALLEDAPPDETAILS + ".DisableChanger",
                         lpparam.classLoader);
 
-                if (Common.JB_NEWER) {
-                    if (Common.LOLLIPOP_NEWER) {
-                        // 5.0 and newer
-                        XposedHelpers.findAndHookMethod(Common.UTILS,
-                                lpparam.classLoader, "isSystemPackage",
-                                PackageManager.class, PackageInfo.class,
-                                systemAppsHook);
-                    } else {
-                        // 4.1 - 4.4
-                        XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
-                                lpparam.classLoader, "isThisASystemPackage",
-                                systemAppsHook);
-                    }
-                }
-
-                // 4.2 and newer
-                if (Common.JB_MR1_NEWER) {
-                    XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
-                            lpparam.classLoader, "initUninstallButtons",
-                            initUninstallButtonsHook);
-                }
+                XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
+                        lpparam.classLoader, "setAppLabelAndIcon",
+                        PackageInfo.class, appInfoHook);
 
                 // 4.0 and newer
                 XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
@@ -1788,10 +1789,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             lpparam.classLoader, "showDialogInner", int.class,
                             int.class, disableUserAppsHook);
                 }
-
-                XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
-                        lpparam.classLoader, "setAppLabelAndIcon",
-                        PackageInfo.class, appInfoHook);
 
                 // 4.2 and newer
                 if (Common.JB_MR1_NEWER) {
@@ -1808,6 +1805,28 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             xlog("Method not found", nsme);
                             xlog_end("initAppOpsDetailsHook");
                         }
+                    }
+                }
+
+                // 4.2 and newer
+                if (Common.JB_MR1_NEWER) {
+                    XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
+                            lpparam.classLoader, "initUninstallButtons",
+                            initUninstallButtonsHook);
+                }
+
+                if (Common.JB_NEWER) {
+                    if (Common.LOLLIPOP_NEWER) {
+                        // 5.0 and newer
+                        XposedHelpers.findAndHookMethod(Common.UTILS,
+                                lpparam.classLoader, "isSystemPackage",
+                                PackageManager.class, PackageInfo.class,
+                                systemAppsHook);
+                    } else {
+                        // 4.1 - 4.4
+                        XposedHelpers.findAndHookMethod(Common.INSTALLEDAPPDETAILS,
+                                lpparam.classLoader, "isThisASystemPackage",
+                                systemAppsHook);
                     }
                 }
             }
@@ -1984,20 +2003,20 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
     }
 
-    public void vibrateDevice(int duration) {
-        Intent vibrateDevice = new Intent(
-                Common.ACTION_VIBRATE_DEVICE);
-        //uninstallSystemApp.setPackage(Common.PACKAGE_NAME);
-        vibrateDevice.putExtra(Common.DURATION, duration);
-        getInstallerOptContext().sendBroadcast(vibrateDevice);
-    }
-
     public void uninstallSystemApp(String packageName) {
         Intent uninstallSystemApp = new Intent(
                 Common.ACTION_UNINSTALL_SYSTEM_APP);
         uninstallSystemApp.setPackage(Common.PACKAGE_NAME);
         uninstallSystemApp.putExtra(Common.PACKAGE, packageName);
         getInstallerOptContext().sendBroadcast(uninstallSystemApp);
+    }
+
+    public void vibrateDevice(int duration) {
+        Intent vibrateDevice = new Intent(
+                Common.ACTION_VIBRATE_DEVICE);
+        //uninstallSystemApp.setPackage(Common.PACKAGE_NAME);
+        vibrateDevice.putExtra(Common.DURATION, duration);
+        getInstallerOptContext().sendBroadcast(vibrateDevice);
     }
 
     public static void xlog(String description, Object object) {

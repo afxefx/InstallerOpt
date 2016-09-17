@@ -140,4 +140,6 @@
     <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
     <string name="enable_open_app_ops_title">Open App Ops</string>
     <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
+    <string name="disable_install_shell_summary">Disables installing applications through shell</string>
+    <string name="disable_install_shell_title">Disable Shell Install</string>
 </resources>
