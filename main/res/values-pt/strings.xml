@@ -138,6 +138,6 @@
   <string name="updated">Módulo foi atualizado</string>
   <string name="write_permission_message">permissão de gravação externa é necessária para a funcionalidade de backup de APK funcione</string>
   <string name="yes">Sim</string>
-  <string name="disable_install_shell_summary">"Disables installing applications through "</string>
-  <string name="disable_install_shell_title">Disable Shell Install</string>
+	<string name="disable_install_shell_summary">Desativa a instalação de aplicativos através de shell</string>
+	<string name="disable_install_shell_title">Desativar instalação Shell</string>
 </resources>
