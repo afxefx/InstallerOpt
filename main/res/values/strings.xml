@@ -26,7 +26,7 @@
     <string name="confirm_check_signatures_message">Disable signatures check for this installation?</string>
     <string name="current_version">\nCurrent version:</string>
     <string name="current_version_code">\nCurrent version code:</string>
-    <string name="delete_button_text">Delete</string>
+    <string name="delete_button_text">Delete All</string>
     <string name="dialog_message">XDA support thread: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Disable</string>
     <string name="enable">Enable</string>

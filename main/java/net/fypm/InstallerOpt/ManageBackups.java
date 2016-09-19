@@ -26,6 +26,10 @@ public class ManageBackups extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean enableDark = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DARK_THEME, false);
+        if (enableDark) {
+            setTheme(R.style.AppThemeDark);
+        }
         setContentView(R.layout.activity_main);
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
@@ -36,7 +40,7 @@ public class ManageBackups extends ListActivity {
         ListView listview = getListView();
         listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
 
-        la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, filesInFolder);
+        la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, filesInFolder);
         setListAdapter(la);
 
     }
