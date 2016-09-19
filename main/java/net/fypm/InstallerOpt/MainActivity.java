@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(this, About.class));
                 return true;
             case R.id.stats:
-                startActivity(new Intent(this, Stats.class));
+                startActivity(new Intent(this, ManageBackups.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

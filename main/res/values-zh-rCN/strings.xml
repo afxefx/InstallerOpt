@@ -141,4 +141,12 @@
     <string name="ExpertPrefs">专家设置 - 继续前注意！</string>
     <string name="external_sdcard_full_access_summary">允许读写外部 SD 卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">完全的外部 SD 卡访问权限</string>
+    <string name="backup_delete_complete_message">Backup Deletion Completed Successfully</string>
+    <string name="backup_delete_menu">Delete Selected Backups</string>
+    <string name="backup_delete_file_prepare_message">Preparing to delete files from backup location</string>
+    <string name="manage_menu">Manage Backups</string>
+    <string name="backup_selection_empty">No backups selected</string>
+    <string name="backup_restore_menu">Restore Selected Backups</string>
+    <string name="backup_restore_file_prepare_message">Preparing to restore files from backup location</string>
+    <string name="backup_restore_complete_message">Backup Restore Completed Successfully</string>
 </resources>

@@ -140,4 +140,12 @@
   <string name="yes">Sim</string>
 	<string name="disable_install_shell_summary">Desativa a instalação de aplicativos através de shell</string>
 	<string name="disable_install_shell_title">Desativar instalação Shell</string>
+  <string name="backup_delete_complete_message">Backup Deletion Completed Successfully</string>
+  <string name="backup_delete_menu">Delete Selected Backups</string>
+  <string name="backup_delete_file_prepare_message">Preparing to delete files from backup location</string>
+  <string name="manage_menu">Manage Backups</string>
+  <string name="backup_selection_empty">No backups selected</string>
+  <string name="backup_restore_menu">Restore Selected Backups</string>
+  <string name="backup_restore_file_prepare_message">Preparing to restore files from backup location</string>
+  <string name="backup_restore_complete_message">Backup Restore Completed Successfully</string>
 </resources>
