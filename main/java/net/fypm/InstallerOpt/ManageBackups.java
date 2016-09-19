@@ -21,6 +21,7 @@ public class ManageBackups extends ListActivity {
     public ArrayList<String> filesInFolder;
     public ArrayList<String> selectedItems;
     public String backupDir;
+    public ArrayAdapter la;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +36,8 @@ public class ManageBackups extends ListActivity {
         ListView listview = getListView();
         listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
 
-        setListAdapter(new ArrayAdapter<String>(
-                this, android.R.layout.simple_list_item_checked,
-                filesInFolder));
+        la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked, filesInFolder);
+        setListAdapter(la);
 
     }
 
@@ -55,6 +55,7 @@ public class ManageBackups extends ListActivity {
             case R.id.backup_delete_menu:
                 if (selectedItems.size() > 0) {
                     new AsyncDelete(this, backupDir, selectedItems).execute("");
+                    this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
                 }
@@ -62,6 +63,7 @@ public class ManageBackups extends ListActivity {
             case R.id.backup_restore_menu:
                 if (selectedItems.size() > 0) {
                     new AsyncRestore(this, backupDir, selectedItems).execute("");
+                    this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
                 }
@@ -81,6 +83,12 @@ public class ManageBackups extends ListActivity {
         /*Toast.makeText(this, FilesInFolder.get(position) + " checked : " +
                 item.isChecked(), Toast.LENGTH_SHORT).show();*/
         //Toast.makeText(this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        la.notifyDataSetChanged();
     }
 
     public ArrayList<String> GetFiles(String DirectoryPath) {
