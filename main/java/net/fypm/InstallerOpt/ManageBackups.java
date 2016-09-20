@@ -30,7 +30,7 @@ public class ManageBackups extends ListActivity {
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.backup_list);
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         filesInFolder = GetFiles(backupDir);
@@ -42,7 +42,6 @@ public class ManageBackups extends ListActivity {
 
         la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, filesInFolder);
         setListAdapter(la);
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
