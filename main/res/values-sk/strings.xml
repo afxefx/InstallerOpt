@@ -153,10 +153,18 @@
     <string name="enable_disable_lucky_patcher_presence_title">Lucky Patcher</string>
     <string name="enable_disable_lucky_patcher_presence_summary">Pokúsi sa skryť prítomnosť Lucky Patcher pred ostatnými aplikáciami</string>
     <string name="move_file_title">Presunúť staré zálohy?</string>
-    <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
-    <string name="enable_open_app_ops_title">Open App Ops</string>
-    <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>
-    <string name="disable_install_shell_summary">Disables installing applications through shell</string>
-    <string name="disable_install_shell_title">Disable Shell Install</string>
+    <string name="ExpertPrefs">Expertné predvoľby - POSTUPUJTE OPATRNE!</string>
+    <string name="enable_open_app_ops_title">Otvoriť App Ops</string>
+    <string name="enable_open_app_ops_summary">Otvorí App Ops po nainštalovaní aplikácie</string>
+    <string name="disable_install_shell_summary">Zakáže inštalovanie aplikácií pomocou Shell</string>
+    <string name="disable_install_shell_title">Zakázať inštalovanie pomocou Shell</string>
+    <string name="backup_delete_file_prepare_message">Pripravuje sa odstránenie súborov zo zálohovacieho adresára</string>
+    <string name="backup_delete_complete_message">Vymazanie zálohy prebehlo úspešne</string>
+    <string name="backup_delete_menu">Vymazať vybrané zálohy</string>
+    <string name="manage_menu">Spravovať zálohy</string>
+    <string name="backup_selection_empty">Nie sú vybrané žiadne zálohy</string>
+    <string name="backup_restore_menu">Obnoviť vybrané zálohy</string>
+    <string name="backup_restore_file_prepare_message">Pripravuje sa obnovenie súborov zo zálohovacieho adresára</string>
+    <string name="backup_restore_complete_message">Obnovenie zálohy prebehlo úspešne</string>
 
 </resources>

@@ -215,7 +215,7 @@ public class Utils extends BroadcastReceiver {
                     Log.i(TAG, "APK file " + apkFile + " successfully deleted");
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error caught in copyFile: " + e);
+                Log.e(TAG, "Error caught in deleteApkFile: " + e);
                 for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                     Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
                 }

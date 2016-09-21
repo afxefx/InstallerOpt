@@ -44,7 +44,7 @@ public class Stats extends Activity {
                     getString(R.string.backup_total_items), getFileCount(PACKAGE_DIR)
             ));
             statsDialog.setCancelable(false);
-            statsDialog.setPositiveButton(R.string.delete_button_text,
+            statsDialog.setPositiveButton(R.string.delete_all_button_text,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {

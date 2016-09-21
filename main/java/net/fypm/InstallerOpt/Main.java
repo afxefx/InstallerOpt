@@ -1885,15 +1885,36 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     }
 
     public static Boolean getPref(String pref, Context context) {
-        return MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(pref, false);
+        try {
+            return MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(pref, false);
+        } catch (Throwable t) {
+            xlog_start("getPref Error");
+            xlog("", t);
+            xlog_end("getPref Error");
+        }
+        return false;
     }
 
     public static String getPrefString(String pref, Context context) {
-        return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(pref, null);
+        try {
+            return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(pref, null);
+        } catch (Throwable t) {
+            xlog_start("getPrefString Error");
+            xlog("", t);
+            xlog_end("getPrefString Error");
+        }
+        return null;
     }
 
     public static long getPrefLong(String pref, Context context) {
-        return MultiprocessPreferences.getDefaultSharedPreferences(context).getLong(pref, 0);
+        try {
+            return MultiprocessPreferences.getDefaultSharedPreferences(context).getLong(pref, 0);
+        } catch (Throwable t) {
+            xlog_start("getPrefLong Error");
+            xlog("", t);
+            xlog_end("getPrefLong Error");
+        }
+        return 0;
     }
 
     public boolean isCyanogenMod() {

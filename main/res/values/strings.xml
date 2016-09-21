@@ -8,10 +8,17 @@
     <string name="AppInstPrefs">Application Install Preferences</string>
     <string name="AppPrefs">Application Preferences</string>
     <string name="AppUninstPrefs">Application Uninstall Preferences</string>
+    <string name="backup_delete_complete_message">Backup Deletion Completed Successfully</string>
+    <string name="backup_delete_file_prepare_message">Preparing to delete files from backup location</string>
+    <string name="backup_delete_menu">Delete Selected Backups</string>
     <string name="backup_free">\nBackup folder free:</string>
     <string name="backup_last_backed_up">\n\nLast backed up:\n</string>
     <string name="backup_location">Backup folder location:\n</string>
     <string name="backup_location_missing_message">Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???</string>
+    <string name="backup_restore_complete_message">Backup Restore Completed Successfully</string>
+    <string name="backup_restore_file_prepare_message">Preparing to restore files from backup location</string>
+    <string name="backup_restore_menu">Restore Selected Backups</string>
+    <string name="backup_selection_empty">No backups selected</string>
     <string name="backup_total_items">\n\nTotal backed up:</string>
     <string name="backup_used">\n\nBackup folder used:</string>
     <string name="check_signatures">Checking signatures</string>
@@ -20,6 +27,7 @@
     <string name="current_version">\nCurrent version:</string>
     <string name="current_version_code">\nCurrent version code:</string>
     <string name="delete_button_text">Delete</string>
+    <string name="delete_all_button_text">Delete All</string>
     <string name="dialog_message">XDA support thread: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Disable</string>
     <string name="enable">Enable</string>
@@ -29,6 +37,7 @@
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
     <string name="manage_button_text">Manage</string>
+    <string name="manage_menu">Manage Backups</string>
     <string name="MiscPrefs">Misc Preferences</string>
     <string name="move_backups_message">New backup folder differs from the old one, would you like to move your old backups to the new location?</string>
     <string name="move_complete_message">Move Completed Successfully</string>
@@ -45,6 +54,7 @@
     <string name="reboot">Reboot</string>
     <string name="reboot_failed">Reboot operation failed, please do so manually!</string>
     <string name="reset">Resetting preferences to avoid conflicts</string>
+    <string name="restore_button_text">Restore</string>
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
     <string name="stats_menu">Backup Stats</string>
     <string name="updated">Module has been updated</string>
@@ -112,7 +122,7 @@
     <string name="enable_hide_app_crashes_summary">Hide the dialog when an app force closes</string>
     <string name="enable_hide_app_crashes_title">Disable FC Dialog</string>
     <string name="enable_hide_icon_summary">Removes application icon from launcher</string>
-    <string name="enable_hide_icon_title">Application Icon</string>
+    <string name="enable_hide_icon_title">Application Icon Hide</string>
     <string name="enable_install_unknown_apps_summary">Allow unknown applications to be installed</string>
     <string name="enable_install_unknown_apps_title">Unknown Apps</string>
     <string name="enable_keep_apps_data_summary">App data is not deleted when application is uninstalled</string>

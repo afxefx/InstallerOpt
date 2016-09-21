@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/stats"
+        android:title="@string/stats_menu" />
+    <item android:id="@+id/backup_delete_menu"
+        android:title="@string/backup_delete_menu" />
+    <item android:id="@+id/backup_restore_menu"
+        android:title="@string/backup_restore_menu" />
+</menu>
