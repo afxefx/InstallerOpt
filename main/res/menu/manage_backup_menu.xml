@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/stats"
-        android:title="@string/stats_menu" />
+    <item android:id="@+id/sort"
+        android:title="@string/sort_menu" >
+    <menu>
+        <item android:id="@+id/sort_name_asc"
+            android:title="@string/sort_name_asc" />
+        <item android:id="@+id/sort_name_dec"
+            android:title="@string/sort_name_des" />
+    </menu>
+    </item>
     <item android:id="@+id/backup_delete_menu"
         android:title="@string/backup_delete_menu" />
     <item android:id="@+id/backup_restore_menu"
         android:title="@string/backup_restore_menu" />
+    <item android:id="@+id/stats"
+        android:title="@string/stats_menu" />
 </menu>

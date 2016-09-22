@@ -63,7 +63,7 @@ public class AsyncRestore extends AsyncTask<String, String, String> {
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.move_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
+        pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.restore_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
     }
 
     void Restore(String apkFile) {

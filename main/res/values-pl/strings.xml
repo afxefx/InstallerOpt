@@ -150,4 +150,14 @@
     <string name="backup_restore_menu">Przywróć wybrane kopie zapasowe</string>
     <string name="backup_restore_file_prepare_message">Przygotowanie do przywracania plików z lokalizacji kopii zapasowej</string>
     <string name="backup_restore_complete_message">Przywracanie kopii zapasowej zakończono pomyślnie</string>
+    <string name="backup_file_title">File Info</string>
+    <string name="delete_all_button_text">File Info</string>
+    <string name="delete_file_message">Deleting file*</string>
+    <string name="ok">OK</string>
+    <string name="restore_button_text">Restore</string>
+    <string name="restore_file_message">Restoring file*</string>
+    <string name="backup_file_date">\\n\\nFile backup date:\\n</string>
+    <string name="backup_file_md5">\\n\\nMD5 checksum:\\n</string>
+    <string name="backup_file_name">File Name:\\n</string>
+    <string name="backup_file_size">\\n\\nFile Size:\\n</string>
 </resources>
