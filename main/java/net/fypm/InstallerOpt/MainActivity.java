@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
     private static final int REQUEST_WRITE_STORAGE = 115;
 
     private static final String TAG = "InstallerOpt";
-    public static Activity activity;
+    private Activity activity;
 
     @SuppressWarnings({"deprecation"})
     @Override

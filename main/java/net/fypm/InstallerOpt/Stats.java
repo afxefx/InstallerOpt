@@ -23,44 +23,47 @@ public class Stats extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-        File f = new File(backupDir);
-        if (!f.exists()) {
-            if (f.mkdir()) {
-                Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
-                Toast.makeText(this, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
-            }
-        }
         AlertDialog.Builder statsDialog = new AlertDialog.Builder(
                 this, android.R.style.Theme_DeviceDefault_Dialog);
         statsDialog.setTitle(R.string.stats_menu);
-        if (!backupDir.equals(null)) {
+        if (backupDir != null) {
+            File f = new File(backupDir);
+            if (!f.exists()) {
+                if (f.mkdir()) {
+                    Log.e(TAG, "Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???");
+                    Toast.makeText(this, R.string.backup_location_missing_message, Toast.LENGTH_LONG).show();
+                }
+            }
             final File PACKAGE_DIR = new File(backupDir + File.separator);
             long mSize = getFileSize(PACKAGE_DIR);
-            statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
-                    getString(R.string.backup_location), PACKAGE_DIR.toString(),
-                    getString(R.string.backup_last_backed_up), getLatestFilefromDir(backupDir),
-                    getString(R.string.backup_used), humanReadableByteCount(mSize, true),
-                    getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true),
-                    getString(R.string.backup_total_items), getFileCount(PACKAGE_DIR)
-            ));
-            statsDialog.setCancelable(false);
-            statsDialog.setPositiveButton(R.string.delete_all_button_text,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                            deleteRecursive(PACKAGE_DIR);
-                            finish();
-                        }
-                    });
-            statsDialog.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
+            String fileCount = getFileCount(PACKAGE_DIR);
+            if (fileCount != null) {
+                statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
+                        getString(R.string.backup_location), PACKAGE_DIR.toString(),
+                        getString(R.string.backup_last_backed_up), getLatestFilefromDir(backupDir),
+                        getString(R.string.backup_used), humanReadableByteCount(mSize, true),
+                        getString(R.string.backup_free), humanReadableByteCount(getAvailableSpaceInBytes(backupDir), true),
+                        getString(R.string.backup_total_items), fileCount
+                ));
+                statsDialog.setCancelable(false);
+                statsDialog.setPositiveButton(R.string.delete_all_button_text,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                deleteRecursive(PACKAGE_DIR);
+                                finish();
+                            }
+                        });
+                statsDialog.setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        });
+            }
         } else {
             statsDialog
                     .setMessage(R.string.enable_backup_message);

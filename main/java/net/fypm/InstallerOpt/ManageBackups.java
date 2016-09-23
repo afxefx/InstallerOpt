@@ -48,46 +48,47 @@ public class ManageBackups extends ListActivity {
         setContentView(R.layout.backup_list);
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-        filesInFolder = GetFiles(backupDir);
+        filesInFolder = getFiles(backupDir);
         selectedItems = new ArrayList<String>();
-        Collections.sort(filesInFolder, new NaturalOrderComparator());
+        if (filesInFolder != null) {
+            Collections.sort(filesInFolder, new NaturalOrderComparator());
 
-        ListView listview = getListView();
-        listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
+            ListView listview = getListView();
+            listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
 
-        la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, filesInFolder);
-        setListAdapter(la);
+            la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, filesInFolder);
+            setListAdapter(la);
 
-        this.getListView().setLongClickable(true);
-        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-                File item = new File(backupDir + File.separator + filesInFolder.get(position));
-                String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
-                Date itemModified = new Date(item.lastModified());
-                String formattedDate = dateFormat.format(itemModified);
-                String calculatedDigest = calculateMD5(item);
-                if (calculatedDigest == null) {
-                    Log.e(TAG, "calculatedDigest null");
-                    return false;
-                }
-
-
-                AlertDialog.Builder fileInfo = new AlertDialog.Builder(ManageBackups.this, android.R.style.Theme_DeviceDefault_Dialog);
-                fileInfo.setTitle(getString(R.string.backup_file_title));
-                fileInfo.setMessage(String.format("%s %s %s %s %s %s %s %s",
-                        getString(R.string.backup_file_name), filesInFolder.get(position),
-                        getString(R.string.backup_file_size), itemSize,
-                        getString(R.string.backup_file_date), formattedDate,
-                        getString(R.string.backup_file_md5), calculatedDigest
-                ));
-                fileInfo.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+            this.getListView().setLongClickable(true);
+            this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+                    File item = new File(backupDir + File.separator + filesInFolder.get(position));
+                    String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
+                    Date itemModified = new Date(item.lastModified());
+                    String formattedDate = dateFormat.format(itemModified);
+                    String calculatedDigest = calculateMD5(item);
+                    if (calculatedDigest == null) {
+                        Log.e(TAG, "calculatedDigest null");
+                        return false;
                     }
-                });
+
+
+                    AlertDialog.Builder fileInfo = new AlertDialog.Builder(ManageBackups.this, android.R.style.Theme_DeviceDefault_Dialog);
+                    fileInfo.setTitle(getString(R.string.backup_file_title));
+                    fileInfo.setMessage(String.format("%s %s %s %s %s %s %s %s",
+                            getString(R.string.backup_file_name), filesInFolder.get(position),
+                            getString(R.string.backup_file_size), itemSize,
+                            getString(R.string.backup_file_date), formattedDate,
+                            getString(R.string.backup_file_md5), calculatedDigest
+                    ));
+                    fileInfo.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
                 /*alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
 
                     @Override
@@ -97,11 +98,12 @@ public class ManageBackups extends ListActivity {
                     }
                 });*/
 
-                fileInfo.show();
+                    fileInfo.show();
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
+        }
 
     }
 
@@ -203,11 +205,10 @@ public class ManageBackups extends ListActivity {
         }
     }
 
-    public ArrayList<String> GetFiles(String DirectoryPath) {
+    public ArrayList<String> getFiles(String DirectoryPath) {
         ArrayList<String> arrayFiles = new ArrayList<String>();
         File f = new File(DirectoryPath);
 
-        f.mkdirs();
         File[] files = f.listFiles();
         if (files.length == 0) {
             return null;

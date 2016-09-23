@@ -55,8 +55,10 @@ public class AsyncDelete extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String unused) {
         Toast.makeText(ctx, R.string.backup_delete_complete_message, Toast.LENGTH_LONG).show();
-        //pDialog.hide();
-        pDialog.dismiss();
+        if(pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
+        //pDialog = null;
     }
 
     @Override

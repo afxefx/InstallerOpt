@@ -67,7 +67,10 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
         } else {
             Toast.makeText(ctx, R.string.folder_size_error_message, Toast.LENGTH_LONG).show();
         }
-        pDialog.hide();
+        if(pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
+        //pDialog = null;
     }
 
     @Override
