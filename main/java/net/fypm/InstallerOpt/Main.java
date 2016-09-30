@@ -1597,7 +1597,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         "checkSignatures", checkSignaturesHook);
 
                 // 4.0 and newer
-                XposedBridge.hookAllMethods(Process.class, "start",
+                XposedBridge.hookAllMethods(android.os.Process.class, "start",
                         debugAppsHook);
 
                 // 5.0 and newer
