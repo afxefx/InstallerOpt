@@ -27,13 +27,15 @@ public class AsyncRestore extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPreExecute() {
-        pDialog = new ProgressDialog(ctx);
-        pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
-        //pDialog.setProgress(0);
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
         super.onPreExecute();
+        if (pDialog == null) {
+            pDialog = new ProgressDialog(ctx);
+            pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
+            //pDialog.setProgress(0);
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
     }
 
     @Override
@@ -56,10 +58,10 @@ public class AsyncRestore extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String unused) {
         Toast.makeText(ctx, R.string.backup_restore_complete_message, Toast.LENGTH_LONG).show();
-        if(pDialog != null && pDialog.isShowing()) {
+        if (pDialog != null && pDialog.isShowing()) {
             pDialog.dismiss();
         }
-        //pDialog = null;
+        pDialog = null;
     }
 
     @Override

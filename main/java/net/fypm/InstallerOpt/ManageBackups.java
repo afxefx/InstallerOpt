@@ -1,9 +1,9 @@
 package net.fypm.InstallerOpt;
 
-import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,9 +32,11 @@ public class ManageBackups extends ListActivity {
     private static final String TAG = "InstallerOpt";
 
     public ArrayList<String> filesInFolder;
+    public ArrayList<PInfo> filesInFolderPackageInfo;
     public ArrayList<String> selectedItems;
     public String backupDir;
     public ArrayAdapter la;
+    public ArrayAdapter<PInfo> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,62 +49,29 @@ public class ManageBackups extends ListActivity {
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         filesInFolder = getFiles(backupDir);
+        filesInFolderPackageInfo = getFilesPackageInfo(false, backupDir, filesInFolder);
         selectedItems = new ArrayList<String>();
-        if (filesInFolder != null) {
-            Collections.sort(filesInFolder, new NaturalOrderComparator());
+        if (filesInFolderPackageInfo != null) {
+            Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
 
-            ListView listview = getListView();
-            listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
+            adapter = new CustomBackupListArrayAdapter(this, filesInFolderPackageInfo);
+            setListAdapter(adapter);
 
-            la = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, filesInFolder);
-            setListAdapter(la);
-
-            this.getListView().setLongClickable(true);
-            this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-                    File item = new File(backupDir + File.separator + filesInFolder.get(position));
-                    String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
-                    Date itemModified = new Date(item.lastModified());
-                    String formattedDate = dateFormat.format(itemModified);
-                    String calculatedDigest = calculateMD5(item);
-                    if (calculatedDigest == null) {
-                        Log.e(TAG, "calculatedDigest null");
-                        return false;
+            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    CheckableLinearLayout item = (CheckableLinearLayout) view;
+                    if (item.isChecked()) {
+                        String selected = filesInFolderPackageInfo.get(position).getApkName();
+                        selectedItems.add(selected);
+                    } else {
+                        String selected = filesInFolderPackageInfo.get(position).getApkName();
+                        selectedItems.remove(selected);
                     }
-
-
-                    AlertDialog.Builder fileInfo = new AlertDialog.Builder(ManageBackups.this, android.R.style.Theme_DeviceDefault_Dialog);
-                    fileInfo.setTitle(getString(R.string.backup_file_title));
-                    fileInfo.setMessage(String.format("%s %s %s %s %s %s %s %s",
-                            getString(R.string.backup_file_name), filesInFolder.get(position),
-                            getString(R.string.backup_file_size), itemSize,
-                            getString(R.string.backup_file_date), formattedDate,
-                            getString(R.string.backup_file_md5), calculatedDigest
-                    ));
-                    fileInfo.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                /*alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                });*/
-
-                    fileInfo.show();
-
-                    return true;
+                    //Toast.makeText(ManageBackups.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -135,34 +102,45 @@ public class ManageBackups extends ListActivity {
                 }
                 return true;
             case R.id.sort_name_asc:
-                Collections.sort(filesInFolder, new NaturalOrderComparator());
-                la.notifyDataSetChanged();
+                Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
+                adapter.notifyDataSetChanged();
                 return true;
             case R.id.sort_name_dec:
-                Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
-                la.notifyDataSetChanged();
+                Collections.sort(filesInFolderPackageInfo, Collections.reverseOrder(PInfo.COMPARE_BY_APKNAME));
+                //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.sort_size_asc:
+                Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_SIZE);
+                //Collections.sort(filesInFolder, new NaturalOrderComparator());
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.sort_size_dec:
+                Collections.sort(filesInFolderPackageInfo, Collections.reverseOrder(PInfo.COMPARE_BY_SIZE));
+                //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
+                adapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void onListItemClick(ListView parent, View v, int position, long id) {
+    /*public void onListItemClick(ListView parent, View v, int position, long id) {
         CheckedTextView item = (CheckedTextView) v;
         if (item.isChecked()) {
             selectedItems.add(filesInFolder.get(position));
         } else {
             selectedItems.remove(filesInFolder.get(position));
         }
-        /*Toast.makeText(this, FilesInFolder.get(position) + " checked : " +
-                item.isChecked(), Toast.LENGTH_SHORT).show();*/
-        //Toast.makeText(this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
-    }
+        *//*Toast.makeText(this, FilesInFolder.get(position) + " checked : " +
+                item.isChecked(), Toast.LENGTH_SHORT).show();*//*
+        Toast.makeText(this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+    }*/
 
     @Override
     public void onResume() {
         super.onResume();
-        la.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     public static String calculateMD5(File updateFile) {
@@ -220,4 +198,44 @@ public class ManageBackups extends ListActivity {
 
         return arrayFiles;
     }
+
+    private ArrayList<PInfo> getFilesPackageInfo(boolean getSysPackages, String DirectoryPath, ArrayList files) {
+        ArrayList<PInfo> res = new ArrayList<PInfo>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+
+        for (int i = 0; i < files.size(); i++) {
+            PackageInfo p = getPackageManager().getPackageArchiveInfo(DirectoryPath + File.separator + files.get(i).toString(), 0);
+
+            if (p != null) {
+                //packs.add(p);
+                if ((!getSysPackages) && (p.versionName == null)) {
+                    continue;
+                }
+
+                p.applicationInfo.sourceDir = DirectoryPath + File.separator + files.get(i).toString();
+                p.applicationInfo.publicSourceDir = DirectoryPath + File.separator + files.get(i).toString();
+
+                String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                String pname = p.packageName;
+                //int uid = p.applicationInfo.uid;
+                String versionName = p.versionName;
+                int versionCode = p.versionCode;
+                Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
+
+                File item = new File(DirectoryPath + File.separator + files.get(i).toString());
+                String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
+                Date itemModified = new Date(item.lastModified());
+                String formattedDate = dateFormat.format(itemModified);
+                //String calculatedDigest = calculateMD5(item);
+                String apkName = files.get(i).toString();
+
+                PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName);
+                res.add(newInfo);
+
+            }
+        }
+        return res;
+    }
+
 }

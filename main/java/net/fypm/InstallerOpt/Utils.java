@@ -30,8 +30,8 @@ public class Utils extends BroadcastReceiver {
     private static final String TAG = "InstallerOpt";
     public Context ctx;
     public Resources resources;
-    private boolean enableDebug;
-    private static int maxBackupVersions = 3;
+    public boolean enableDebug;
+    public static int maxBackupVersions = 3;
 
     @Override
     public void onReceive(Context context, Intent intent) {

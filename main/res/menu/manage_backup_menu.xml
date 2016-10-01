@@ -7,6 +7,10 @@
             android:title="@string/sort_name_asc" />
         <item android:id="@+id/sort_name_dec"
             android:title="@string/sort_name_des" />
+        <item android:id="@+id/sort_size_asc"
+            android:title="@string/sort_size_asc" />
+        <item android:id="@+id/sort_size_dec"
+            android:title="@string/sort_size_des" />
     </menu>
     </item>
     <item android:id="@+id/backup_delete_menu"

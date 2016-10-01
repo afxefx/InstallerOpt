@@ -32,22 +32,31 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="net.fypm.InstallerOpt.ManageBackups"
-            android:label="@string/manage_menu">
+        <activity android:name="net.fypm.InstallerOpt.BackgroundInstallPrompt">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="net.fypm.InstallerOpt.MoveBackups"
-            android:label="@string/about_menu">
+        <activity android:name="net.fypm.InstallerOpt.ManageBackgroundInstallExceptions">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="net.fypm.InstallerOpt.Reboot"
-                  android:label="@string/reboot">
+        <activity android:name="net.fypm.InstallerOpt.ManageBackups">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="net.fypm.InstallerOpt.MoveBackups">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="net.fypm.InstallerOpt.Reboot">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />

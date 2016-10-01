@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
     private static final int REQUEST_WRITE_STORAGE = 115;
 
     private static final String TAG = "InstallerOpt";
-    private Activity activity;
+    public Activity activity;
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -132,6 +132,7 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE).setOnPreferenceChangeListener(changeListenerLauncher5);
             findPreference(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS).setOnPreferenceChangeListener(changeListenerLauncher6);
             findPreference(Common.PREF_ENABLE_FORCE_ENGLISH).setOnPreferenceChangeListener(changeListenerLauncher7);
+            findPreference(Common.PREF_DISABLE_INSTALL_BACKGROUND).setOnPreferenceChangeListener(changeListenerLauncher8);
         }
 
         @Override
@@ -204,7 +205,7 @@ public class MainActivity extends Activity {
             } else if (currentVersionCode > savedVersionCode) {
 
                 // This is an upgrade
-                Toast.makeText(activity, getString(R.string.updated), Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, getString(R.string.updated), Toast.LENGTH_SHORT).show();
 
             }
 
@@ -308,6 +309,16 @@ public class MainActivity extends Activity {
                         .getClass());
                 startActivity(refresh);
                 getActivity().finish();
+                return true;
+            }
+        };
+
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher8 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity = getActivity();
+                if (newValue.equals(true)) {
+                    startActivity(new Intent(activity, BackgroundInstallPrompt.class));
+                }
                 return true;
             }
         };

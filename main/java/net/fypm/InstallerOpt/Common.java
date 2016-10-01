@@ -41,6 +41,7 @@ public class Common {
     public static final String PREF_BACKUP_APK_LOCATION = "backup_apk_location";
     public static final String PREF_BACKUP_APK_LOCATION_OLD = "backup_apk_location_old";
     public static final String PREF_BACKUP_PREFERENCES = "backup_preferences";
+    public static final String PREF_INSTALL_BACKGROUND_EXCEPTIONS = "install_background_exceptions";
     public static final String PREF_MODIFIED_PREFERENCES = "modified_preferences";
     public static final String PREF_MODIFIED_TIME = "preference_modified_time";
     public static final String PREF_RESTORE_PREFERENCES = "restore_preferences";
