@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceActivity;
 import android.util.Log;
@@ -1295,7 +1296,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.prepare();
+                        Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.loop();
                         xlog_start("installPackageHook - installBackground");
                         xlog("Background install attempt blocked", null);
                         xlog_end("installPackageHook - installBackground");
@@ -1306,7 +1309,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.prepare();
+                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.loop();
                         xlog_start("installPackageHook - installShell");
                         xlog("ADB install attempt blocked", null);
                         xlog_end("installPackageHook - installShell");
