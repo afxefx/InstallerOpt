@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceActivity;
 import android.util.Log;
@@ -400,9 +401,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     String apkFile = packageUri.getPath();
                     deleteApkFile(apkFile);
                     if (enableDebug) {
-                        xlog_start("deleteApkFiles");
+                        xlog_start("autoCloseInstallHook - deleteApkFiles");
                         xlog("APK file: ", apkFile);
-                        xlog_end("deleteApkFiles");
+                        xlog_end("autoCloseInstallHook - deleteApkFiles");
                     }
                 }
 
@@ -1047,8 +1048,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
                     prefs.reload();
-                    hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                    hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
                     if (enableDebug) {
                         Log.i(TAG, "hideAppCrashes set via shared prefs");
                     }
@@ -1220,13 +1221,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
                 installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
                 installShell = getPref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
+                int uid = Binder.getCallingUid();
+                xlog("Calling UID: ", uid);
                 mContext = (Context) XposedHelpers.getObjectField(
                         param.thisObject, "mContext");
                 boolean isInstallStage = "installStage".equals(param.method
                         .getName());
                 int flags = 0;
                 int id = 0;
-
                 if (isInstallStage) {
                     try {
                         id = 4;
@@ -1250,11 +1252,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         id = Common.JB_MR1_NEWER ? 2 : 1;
                         flags = (Integer) param.args[id];
                         if (enableDebug) {
-                            xlog_start("installPackageHook - isInstallStage");
+                            xlog_start("installPackageHook - isNotInstallStage");
                             xlog("isInstallStage equals", isInstallStage);
                             xlog("id", id);
                             xlog("flags", flags);
-                            xlog_end("installPackageHook - isInstallStage");
+                            xlog_end("installPackageHook - isNotInstallStage");
                         }
                     } catch (Exception e) {
                         XposedBridge.log(e);
@@ -1295,7 +1297,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.prepare();
+                        Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.loop();
                         xlog_start("installPackageHook - installBackground");
                         xlog("Background install attempt blocked", null);
                         xlog_end("installPackageHook - installBackground");
@@ -1306,7 +1310,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
                     param.setResult(null);
                     if (enableDebug) {
-                        //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.prepare();
+                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        Looper.loop();
                         xlog_start("installPackageHook - installShell");
                         xlog("ADB install attempt blocked", null);
                         xlog_end("installPackageHook - installShell");
@@ -1326,9 +1332,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (apkFile != null) {
                             backupApkFile(apkFile, backupDir);
                             if (enableDebug) {
-                                xlog_start("backupApkFilesHook");
+                                xlog_start("installPackageHook - backupApkFiles");
                                 xlog("APK file", apkFile);
-                                xlog_end("backupApkFilesHook");
+                                xlog_end("installPackageHook - backupApkFiles");
                                 /*XposedBridge.log("Stacktrace follows:");
                                 for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                                     XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
@@ -1597,7 +1603,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         "checkSignatures", checkSignaturesHook);
 
                 // 4.0 and newer
-                XposedBridge.hookAllMethods(Process.class, "start",
+                XposedBridge.hookAllMethods(android.os.Process.class, "start",
                         debugAppsHook);
 
                 // 5.0 and newer

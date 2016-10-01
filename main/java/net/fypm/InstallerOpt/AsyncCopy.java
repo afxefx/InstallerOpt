@@ -31,13 +31,15 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPreExecute() {
-        pDialog = new ProgressDialog(ctx);
-        pDialog.setMessage(ctx.getString(R.string.move_file_prepare_message));
-        //pDialog.setProgress(0);
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
         super.onPreExecute();
+        if (pDialog == null) {
+            pDialog = new ProgressDialog(ctx);
+            pDialog.setMessage(ctx.getString(R.string.move_file_prepare_message));
+            //pDialog.setProgress(0);
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
     }
 
     @Override
@@ -67,7 +69,10 @@ public class AsyncCopy extends AsyncTask<String, String, String> {
         } else {
             Toast.makeText(ctx, R.string.folder_size_error_message, Toast.LENGTH_LONG).show();
         }
-        pDialog.hide();
+        if(pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
+        pDialog = null;
     }
 
     @Override

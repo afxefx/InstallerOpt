@@ -27,13 +27,15 @@ public class AsyncRestore extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPreExecute() {
-        pDialog = new ProgressDialog(ctx);
-        pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
-        //pDialog.setProgress(0);
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
         super.onPreExecute();
+        if (pDialog == null) {
+            pDialog = new ProgressDialog(ctx);
+            pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
+            //pDialog.setProgress(0);
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
     }
 
     @Override
@@ -56,14 +58,16 @@ public class AsyncRestore extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String unused) {
         Toast.makeText(ctx, R.string.backup_restore_complete_message, Toast.LENGTH_LONG).show();
-        //pDialog.hide();
-        pDialog.dismiss();
+        if (pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
+        pDialog = null;
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.move_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
+        pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.restore_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
     }
 
     void Restore(String apkFile) {

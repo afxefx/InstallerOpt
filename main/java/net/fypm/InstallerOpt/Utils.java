@@ -30,7 +30,7 @@ public class Utils extends BroadcastReceiver {
     private static final String TAG = "InstallerOpt";
     public Context ctx;
     public Resources resources;
-    public static boolean enableDebug;
+    public boolean enableDebug;
     public static int maxBackupVersions = 3;
 
     @Override
