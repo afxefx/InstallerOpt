@@ -3,6 +3,7 @@ package net.fypm.InstallerOpt;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +36,6 @@ public class ManageBackups extends ListActivity {
     public ArrayList<PInfo> filesInFolderPackageInfo;
     public ArrayList<String> selectedItems;
     public String backupDir;
-    public ArrayAdapter la;
     public ArrayAdapter<PInfo> adapter;
 
     @Override
@@ -200,6 +200,8 @@ public class ManageBackups extends ListActivity {
     }
 
     private ArrayList<PInfo> getFilesPackageInfo(boolean getSysPackages, String DirectoryPath, ArrayList files) {
+        boolean enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+
         ArrayList<PInfo> res = new ArrayList<PInfo>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
@@ -221,8 +223,31 @@ public class ManageBackups extends ListActivity {
                 //int uid = p.applicationInfo.uid;
                 String versionName = p.versionName;
                 int versionCode = p.versionCode;
-                Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
 
+                String currentVersion = "";
+                int currentCode = 0;
+                String state = "";
+                try {
+                    PackageInfo pi   = getPackageManager().getPackageInfo(pname, 0);
+                    currentVersion = pi.versionName;
+                    currentCode = pi.versionCode;
+                    if (versionName.equals(currentVersion) && versionCode == currentCode) {
+                        state = "Installed";
+                    } else if (versionName.compareTo(currentVersion) < 0 || versionCode < currentCode) {
+                        state = "Older";
+                    } else if (versionName.compareTo(currentVersion) > 0 || versionCode > currentCode) {
+                        state = "Newer";
+                    }
+
+                } catch (PackageManager.NameNotFoundException e) {
+                    if (enableDebug) {
+                        Log.e(TAG, appname + " is not installed.");
+                    }
+                    state = "Not Installed";
+                }
+
+
+                Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
                 File item = new File(DirectoryPath + File.separator + files.get(i).toString());
                 String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
                 Date itemModified = new Date(item.lastModified());
@@ -230,7 +255,7 @@ public class ManageBackups extends ListActivity {
                 //String calculatedDigest = calculateMD5(item);
                 String apkName = files.get(i).toString();
 
-                PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName);
+                PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, state);
                 res.add(newInfo);
 
             }

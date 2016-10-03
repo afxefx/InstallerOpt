@@ -19,6 +19,7 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
         protected TextView appname;
         protected TextView backupdate;
         protected TextView filesize;
+        protected TextView state;
         protected ImageView appicon;
     }
 
@@ -39,6 +40,7 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
             viewHolder.appname = (TextView) view.findViewById(R.id.appname);
             viewHolder.backupdate = (TextView) view.findViewById(R.id.backupdate);
             viewHolder.filesize = (TextView) view.findViewById(R.id.filesize);
+            viewHolder.state = (TextView) view.findViewById(R.id.state);
             viewHolder.appicon = (ImageView) view.findViewById(R.id.appicon);
             view.setTag(viewHolder);
         } else {
@@ -49,6 +51,7 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
         holder.appname.setText(list.get(position).getName() + " " + list.get(position).getVersionName() + "-" + list.get(position).getVersionCode());
         holder.backupdate.setText("Date: " + list.get(position).getItemModified());
         holder.filesize.setText("  Size: " + list.get(position).getItemSize());
+        holder.state.setText("  " + list.get(position).getState());
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;

@@ -15,8 +15,9 @@ public class PInfo implements Comparable<PInfo> {
     private String formattedDate;
     private String calculatedDigest;
     private String apkName;
+    private String state;
 
-    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName) {
+    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String state) {
         this.appname = appname;
         this.pname = pname;
         this.uid = uid;
@@ -27,6 +28,7 @@ public class PInfo implements Comparable<PInfo> {
         this.formattedDate = formattedDate;
         this.calculatedDigest = calculatedDigest;
         this.apkName = apkName;
+        this.state = state;
     }
 
     public int compareTo(PInfo other) {
@@ -89,5 +91,9 @@ public class PInfo implements Comparable<PInfo> {
 
     public String getApkName() {
         return apkName;
+    }
+
+    public String getState() {
+        return state;
     }
 }

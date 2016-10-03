@@ -24,7 +24,6 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
 
     public ArrayList<PInfo> installedApps;
     public ArrayList<String> selectedItems;
-    public ArrayAdapter la;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +103,7 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
             //String versionName = p.versionName;
             //int versionCode = p.versionCode;
             Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-            PInfo newInfo = new PInfo(appname, pname, uid, "", 0, appicon, "", "", "", "");
+            PInfo newInfo = new PInfo(appname, pname, uid, "", 0, appicon, "", "", "", "", "");
             res.add(newInfo);
         }
         return res;

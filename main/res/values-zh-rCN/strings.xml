@@ -170,4 +170,6 @@
     <string name="sort_name_des">Name - Descending</string>
     <string name="sort_size_asc">Size - Ascending</string>
     <string name="sort_size_des">Size - Descending</string>
+    <string name="enable_install_external_storage_summary">Applications install to external storage if enabled, internal storage if disabled</string>
+    <string name="enable_install_external_storage_title">Install to External Storage</string>
 </resources>
