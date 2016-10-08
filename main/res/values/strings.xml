@@ -48,6 +48,8 @@
     <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
+    <string name="loading_backup_message">Loading backups...</string>
+    <string name="loading_applications_message">Loading applications...</string>
     <string name="manage_button_text">Manage</string>
     <string name="manage_menu">Manage Backups</string>
     <string name="MiscPrefs">Misc Preferences</string>

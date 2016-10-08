@@ -214,7 +214,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog == null) {
                 pDialog = new ProgressDialog(ManageBackups.this);
                 //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
-                pDialog.setMessage("Loading backups...");
+                pDialog.setMessage(ManageBackups.this.getString(R.string.loading_backup_message));
                 //pDialog.setProgress(0);
                 pDialog.setIndeterminate(true);
                 pDialog.setCancelable(false);

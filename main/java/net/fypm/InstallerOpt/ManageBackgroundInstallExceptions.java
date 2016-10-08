@@ -88,7 +88,7 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
             if (pDialog == null) {
                 pDialog = new ProgressDialog(ManageBackgroundInstallExceptions.this);
                 //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
-                pDialog.setMessage("Loading applications...");
+                pDialog.setMessage(ManageBackgroundInstallExceptions.this.getString(R.string.loading_applications_message));
                 //pDialog.setProgress(0);
                 pDialog.setIndeterminate(true);
                 pDialog.setCancelable(false);
