@@ -1,9 +1,11 @@
 package net.fypm.InstallerOpt;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,8 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
 
     public ArrayList<PInfo> installedApps;
     public ArrayList<String> selectedItems;
+    public ArrayAdapter<PInfo> adapter;
+    public List<PackageInfo> packs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,21 +37,10 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
             setTheme(R.style.AppThemeDark);
         }
         setContentView(R.layout.backup_list);
-
-        //installedApps = getPackages();
-        installedApps = getInstalledApps(false);
+        new Task().execute();
         selectedItems = new ArrayList<String>();
-        if (installedApps != null) {
-            Collections.sort(installedApps, new Comparator<PInfo>() {
-                public int compare(PInfo one, PInfo other) {
-                    return one.getName().compareTo(other.getName());
-                }
-            });
 
-            ArrayAdapter<PInfo> adapter = new CustomExceptionListArrayAdapter(this, installedApps);
-            setListAdapter(adapter);
-
-            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     CheckableLinearLayout item = (CheckableLinearLayout) view;
@@ -61,8 +54,6 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
                     Toast.makeText(ManageBackgroundInstallExceptions.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
-
-        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,23 +80,67 @@ public class ManageBackgroundInstallExceptions extends ListActivity {
         }
     }
 
-    private ArrayList<PInfo> getInstalledApps(boolean getSysPackages) {
-        ArrayList<PInfo> res = new ArrayList<PInfo>();
-        List<PackageInfo> packs = getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA);
-        for (int i = 0; i < packs.size(); i++) {
-            PackageInfo p = packs.get(i);
-            if ((!getSysPackages) && (p.versionName == null)) {
-                continue;
+    class Task extends AsyncTask<String, String, Boolean> {
+        private ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            if (pDialog == null) {
+                pDialog = new ProgressDialog(ManageBackgroundInstallExceptions.this);
+                //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
+                pDialog.setMessage("Loading applications...");
+                //pDialog.setProgress(0);
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
             }
-            String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
-            String pname = p.packageName;
-            int uid = p.applicationInfo.uid;
-            //String versionName = p.versionName;
-            //int versionCode = p.versionCode;
-            Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-            PInfo newInfo = new PInfo(appname, pname, uid, "", 0, appicon, "", "", "", "", "");
-            res.add(newInfo);
+            super.onPreExecute();
         }
-        return res;
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+            pDialog = null;
+            Collections.sort(installedApps, new Comparator<PInfo>() {
+                public int compare(PInfo one, PInfo other) {
+                    return one.getName().compareTo(other.getName());
+                }
+            });
+            adapter = new CustomExceptionListArrayAdapter(ManageBackgroundInstallExceptions.this, installedApps);
+            setListAdapter(adapter);
+            //adapter.notifyDataSetChanged();
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            pDialog.setMessage(String.format("%-12s %s %s %d", ManageBackgroundInstallExceptions.this.getString(R.string.parse_application_message).replace('*', ' '), String.valueOf(values[0]), ManageBackgroundInstallExceptions.this.getString(R.string.parse_application_of_message).replace('*', ' '), packs.size()));
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            boolean getSysPackages = false;
+            installedApps = new ArrayList<PInfo>();
+            packs = getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA);
+            for (int i = 0; i < packs.size(); i++) {
+                PackageInfo p = packs.get(i);
+                if ((!getSysPackages) && (p.versionName == null)) {
+                    continue;
+                }
+                String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                String pname = p.packageName;
+                int uid = p.applicationInfo.uid;
+                //String versionName = p.versionName;
+                //int versionCode = p.versionCode;
+                Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
+                PInfo newInfo = new PInfo(appname, pname, uid, "", 0, appicon, "", "", "", "", "");
+                installedApps.add(newInfo);
+                publishProgress(String.valueOf(i));
+            }
+            return null;
+        }
     }
 }

@@ -15,9 +15,9 @@ public class PInfo implements Comparable<PInfo> {
     private String formattedDate;
     private String calculatedDigest;
     private String apkName;
-    private String state;
+    private String status;
 
-    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String state) {
+    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String status) {
         this.appname = appname;
         this.pname = pname;
         this.uid = uid;
@@ -28,7 +28,7 @@ public class PInfo implements Comparable<PInfo> {
         this.formattedDate = formattedDate;
         this.calculatedDigest = calculatedDigest;
         this.apkName = apkName;
-        this.state = state;
+        this.status = status;
     }
 
     public int compareTo(PInfo other) {
@@ -41,15 +41,21 @@ public class PInfo implements Comparable<PInfo> {
         }
     };
 
+    public static Comparator<PInfo> COMPARE_BY_DATE = new Comparator<PInfo>() {
+        public int compare(PInfo one, PInfo other) {
+            return one.formattedDate.compareTo(other.formattedDate);
+        }
+    };
+
     public static Comparator<PInfo> COMPARE_BY_SIZE = new Comparator<PInfo>() {
         public int compare(PInfo one, PInfo other) {
             return one.itemSize.compareTo(other.itemSize);
         }
     };
 
-    public static Comparator<PInfo> COMPARE_BY_DATE = new Comparator<PInfo>() {
+    public static Comparator<PInfo> COMPARE_BY_STATUS = new Comparator<PInfo>() {
         public int compare(PInfo one, PInfo other) {
-            return one.formattedDate.compareTo(other.formattedDate);
+            return one.status.compareTo(other.status);
         }
     };
 
@@ -93,7 +99,7 @@ public class PInfo implements Comparable<PInfo> {
         return apkName;
     }
 
-    public String getState() {
-        return state;
+    public String getStatus() {
+        return status;
     }
 }

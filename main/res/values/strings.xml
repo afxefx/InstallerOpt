@@ -29,8 +29,10 @@
     <string name="check_signatures">Checking signatures</string>
     <string name="confirm_check_signatures">Confirming signatures check</string>
     <string name="confirm_check_signatures_message">Disable signatures check for this installation?</string>
-    <string name="current_version">\nCurrent version:</string>
-    <string name="current_version_code">\nCurrent version code:</string>
+    <string name="current_version">Current version:</string>
+    <string name="current_version_code">Current version code:</string>
+    <string name="current_version_inline">\nCurrent version:</string>
+    <string name="current_version_code_inline">\nCurrent version code:</string>
     <string name="delete_all_button_text">Delete All</string>
     <string name="delete_button_text">Delete</string>
     <string name="delete_file_message">Deleting file*</string>
@@ -61,6 +63,10 @@
     <string name="no_old_files_message">No files present in old backup folder</string>
     <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
     <string name="ok">Ok</string>
+    <string name="parse_application_message">Parsing application*</string>
+    <string name="parse_application_of_message">*of*</string>
+    <string name="parse_backup_message">Parsing backup*</string>
+    <string name="parse_backup_of_message">*of*</string>
     <string name="perm_denied">Oops, you just denied the permission to read/write to storage devices</string>
     <string name="perm_granted">Permission granted now you can read/write to storage devices</string>
     <string name="reboot">Reboot</string>
@@ -75,6 +81,8 @@
     <string name="sort_name_des">Name - Descending</string>
     <string name="sort_size_asc">Size - Ascending</string>
     <string name="sort_size_des">Size - Descending</string>
+    <string name="sort_status_asc">Status - Ascending</string>
+    <string name="sort_status_des">Status - Descending</string>
     <string name="stats_menu">Backup Stats</string>
     <string name="updated">Module has been updated</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>

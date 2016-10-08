@@ -1,10 +1,12 @@
 package net.fypm.InstallerOpt;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -37,27 +39,23 @@ public class ManageBackups extends ListActivity {
     public ArrayList<String> selectedItems;
     public String backupDir;
     public ArrayAdapter<PInfo> adapter;
+    public boolean enableDebug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean enableDark = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DARK_THEME, false);
+        enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
         setContentView(R.layout.backup_list);
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-        filesInFolder = getFiles(backupDir);
-        filesInFolderPackageInfo = getFilesPackageInfo(false, backupDir, filesInFolder);
+        new Task().execute();
         selectedItems = new ArrayList<String>();
-        if (filesInFolderPackageInfo != null) {
-            Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
 
-            adapter = new CustomBackupListArrayAdapter(this, filesInFolderPackageInfo);
-            setListAdapter(adapter);
-
-            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     CheckableLinearLayout item = (CheckableLinearLayout) view;
@@ -71,7 +69,6 @@ public class ManageBackups extends ListActivity {
                     //Toast.makeText(ManageBackups.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,6 +117,16 @@ public class ManageBackups extends ListActivity {
                 //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
                 adapter.notifyDataSetChanged();
                 return true;
+            case R.id.sort_status_asc:
+                Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_STATUS);
+                //Collections.sort(filesInFolder, new NaturalOrderComparator());
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.sort_status_dec:
+                Collections.sort(filesInFolderPackageInfo, Collections.reverseOrder(PInfo.COMPARE_BY_STATUS));
+                //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
+                adapter.notifyDataSetChanged();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -140,7 +147,7 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
     }
 
     public static String calculateMD5(File updateFile) {
@@ -199,68 +206,97 @@ public class ManageBackups extends ListActivity {
         return arrayFiles;
     }
 
-    private ArrayList<PInfo> getFilesPackageInfo(boolean getSysPackages, String DirectoryPath, ArrayList files) {
-        boolean enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+    class Task extends AsyncTask<String, String, Boolean> {
+        private ProgressDialog pDialog;
 
-        ArrayList<PInfo> res = new ArrayList<PInfo>();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-
-        for (int i = 0; i < files.size(); i++) {
-            PackageInfo p = getPackageManager().getPackageArchiveInfo(DirectoryPath + File.separator + files.get(i).toString(), 0);
-
-            if (p != null) {
-                //packs.add(p);
-                if ((!getSysPackages) && (p.versionName == null)) {
-                    continue;
-                }
-
-                p.applicationInfo.sourceDir = DirectoryPath + File.separator + files.get(i).toString();
-                p.applicationInfo.publicSourceDir = DirectoryPath + File.separator + files.get(i).toString();
-
-                String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
-                String pname = p.packageName;
-                //int uid = p.applicationInfo.uid;
-                String versionName = p.versionName;
-                int versionCode = p.versionCode;
-
-                String currentVersion = "";
-                int currentCode = 0;
-                String state = "";
-                try {
-                    PackageInfo pi   = getPackageManager().getPackageInfo(pname, 0);
-                    currentVersion = pi.versionName;
-                    currentCode = pi.versionCode;
-                    if (versionName.equals(currentVersion) && versionCode == currentCode) {
-                        state = "Installed";
-                    } else if (versionName.compareTo(currentVersion) < 0 || versionCode < currentCode) {
-                        state = "Older";
-                    } else if (versionName.compareTo(currentVersion) > 0 || versionCode > currentCode) {
-                        state = "Newer";
-                    }
-
-                } catch (PackageManager.NameNotFoundException e) {
-                    if (enableDebug) {
-                        Log.e(TAG, appname + " is not installed.");
-                    }
-                    state = "Not Installed";
-                }
-
-
-                Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-                File item = new File(DirectoryPath + File.separator + files.get(i).toString());
-                String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
-                Date itemModified = new Date(item.lastModified());
-                String formattedDate = dateFormat.format(itemModified);
-                //String calculatedDigest = calculateMD5(item);
-                String apkName = files.get(i).toString();
-
-                PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, state);
-                res.add(newInfo);
-
+        @Override
+        protected void onPreExecute() {
+            if (pDialog == null) {
+                pDialog = new ProgressDialog(ManageBackups.this);
+                //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
+                pDialog.setMessage("Loading backups...");
+                //pDialog.setProgress(0);
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
             }
+            super.onPreExecute();
         }
-        return res;
-    }
 
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+            pDialog = null;
+            Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
+            adapter = new CustomBackupListArrayAdapter(ManageBackups.this, filesInFolderPackageInfo);
+            setListAdapter(adapter);
+            //adapter.notifyDataSetChanged();
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            pDialog.setMessage(String.format("%-12s %s %s %d", ManageBackups.this.getString(R.string.parse_backup_message).replace('*', ' '), String.valueOf(values[0]), ManageBackups.this.getString(R.string.parse_backup_of_message).replace('*', ' '), filesInFolder.size()));
+            }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            filesInFolder = getFiles(backupDir);
+            filesInFolderPackageInfo = new ArrayList<PInfo>();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy");
+
+            for (int i = 0; i < filesInFolder.size(); i++) {
+                PackageInfo p = getPackageManager().getPackageArchiveInfo(backupDir + File.separator + filesInFolder.get(i).toString(), 0);
+
+                if (p != null) {
+                    p.applicationInfo.sourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
+                    p.applicationInfo.publicSourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
+
+                    String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                    String pname = p.packageName;
+                    //int uid = p.applicationInfo.uid;
+                    String versionName = p.versionName;
+                    int versionCode = p.versionCode;
+
+                    String currentVersion = "";
+                    int currentCode = 0;
+                    String status = "";
+                    try {
+                        PackageInfo pi = getPackageManager().getPackageInfo(pname, 0);
+                        currentVersion = pi.versionName;
+                        currentCode = pi.versionCode;
+                        if (versionName.equals(currentVersion) && versionCode == currentCode) {
+                            status = "Installed";
+                        } else if (versionName.compareTo(currentVersion) < 0 || versionCode < currentCode) {
+                            status = "Older";
+                        } else if (versionName.compareTo(currentVersion) > 0 || versionCode > currentCode) {
+                            status = "Newer";
+                        }
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        if (enableDebug) {
+                            Log.e(TAG, appname + " is not installed.");
+                        }
+                        status = "Not Installed";
+                    }
+
+                    Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
+                    File item = new File(backupDir + File.separator + filesInFolder.get(i).toString());
+                    String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
+                    Date itemModified = new Date(item.lastModified());
+                    String formattedDate = dateFormat.format(itemModified);
+                    //String calculatedDigest = calculateMD5(item);
+                    String apkName = filesInFolder.get(i).toString();
+
+                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, status);
+                    filesInFolderPackageInfo.add(newInfo);
+                    publishProgress(String.valueOf(i));
+                }
+            }
+            return null;
+        }
+    }
 }

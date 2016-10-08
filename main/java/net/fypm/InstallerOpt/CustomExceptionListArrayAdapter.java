@@ -47,8 +47,8 @@ public class CustomExceptionListArrayAdapter extends ArrayAdapter<PInfo> {
 
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
-        holder.pname.setText(list.get(position).getPackageName());
-        holder.uid.setText("  UID: " + list.get(position).getUid());
+        holder.pname.setText("Package: " + list.get(position).getPackageName());
+        holder.uid.setText("UID: " + list.get(position).getUid());
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;

@@ -29,10 +29,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal">-->
 
             <TextView
                 android:id="@+id/pname"
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="10sp" />
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
     </LinearLayout>
 
