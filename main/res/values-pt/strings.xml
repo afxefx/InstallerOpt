@@ -169,4 +169,16 @@
   <string name="sort_name_des">Nome - Decrescente</string>
   <string name="sort_size_asc">Tamanho - Crescente</string>
   <string name="sort_size_des">Tamanho - Decrescente</string>
+  <string name="enable_install_external_storage_summary">Applications install to external storage if enabled, internal storage if disabled</string>
+  <string name="enable_install_external_storage_title">Install to External Storage</string>
+  <string name="parse_application_message">Parsing application*</string>
+  <string name="parse_application_of_message">*of*</string>
+  <string name="parse_backup_message">Parsing backup*</string>
+  <string name="parse_backup_of_message">*of*</string>
+  <string name="sort_status_asc">Status - Ascending</string>
+  <string name="sort_status_des">Status - Descending</string>
+  <string name="current_version_inline">\\nCurrent version:</string>
+  <string name="current_version_code_inline">\\nCurrent version code:</string>
+  <string name="loading_applications_message">Loading applications...</string>
+  <string name="loading_backup_message">Loading backups...</string>
 </resources>

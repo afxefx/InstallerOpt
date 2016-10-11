@@ -17,11 +17,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,8 +34,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
-
-import org.xmlpull.v1.XmlPullParser;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -517,13 +519,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 PackageInfo mPkgInfo = (PackageInfo) XposedHelpers
                         .getObjectField(param.thisObject, "mPkgInfo");
                 Resources res = getInstallerOptContext().getResources();
+                LayoutInflater inflater = LayoutInflater.from(getInstallerOptContext());
+                GridLayout layoutVersion = (GridLayout)inflater.inflate(res.getLayout(R.layout.version_layout), null);
+                Toast toast = new Toast(mContext);
+                toast.setDuration(Toast.LENGTH_LONG);
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = String.format("%s %20s", res.getString(R.string.new_version), newVersion);
+                versionInfo = String.format("%s %27s", res.getString(R.string.new_version), newVersion);
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += String.format("%s %20s", res.getString(R.string.current_version), currentVersion);
+                    versionInfo += String.format("%s %22s", res.getString(R.string.current_version_inline), currentVersion);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -541,16 +547,23 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
 
                     if (enableVersionToast) {
-                        Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG).show();
+                        if (currentVersion != null) {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
+                        } else {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
+                        }
+                        ((TextView)layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                        toast.setView(layoutVersion);
+                        toast.show();
                     }
                 }
                 newCode = mPkgInfo.versionCode;
-                versionCode = String.format("%s %10d", res.getString(R.string.new_version_code), newCode);
+                versionCode = String.format("%10s %21d", res.getString(R.string.new_version_code), newCode);
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += String.format("%s %10d", res.getString(R.string.current_version_code), currentCode);
+                    versionCode += String.format("%10s %16d", res.getString(R.string.current_version_code_inline), currentCode);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
@@ -571,8 +584,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
 
                     if (enableVersionToast) {
-                        Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG).show();
+                        if (currentCode != 0) {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
+                        } else {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
+                        }
+                        ((TextView)layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                        toast.setView(layoutVersion);
+                        toast.show();
                     }
                 }
 
@@ -605,8 +625,23 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
 
                     if (enableVersionToast) {
-                        Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG)
-                                .show();
+                        //Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG).show();
+                        if (currentVersion != null) {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
+                        } else {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
+                            //((TextView) layoutVersion.findViewById(R.id.current_version)).setVisibility(View.VISIBLE);
+                        }
+                        ((TextView)layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                        if (currentCode != 0) {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
+                        } else {
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
+                        }
+                        ((TextView)layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                        toast.setView(layoutVersion);
+                        toast.show();
+
                     }
                 }
 
@@ -625,14 +660,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
-                if (confirmCheckSignatures && !checkSignatures) {
+                /*if (confirmCheckSignatures && !checkSignatures) {
                     Intent confirmSignatureCheck = new Intent(
                             Common.ACTION_CONFIRM_CHECK_SIGNATURE);
                     confirmSignatureCheck.setPackage(Common.PACKAGE_NAME);
                     getInstallerOptContext().sendBroadcast(confirmSignatureCheck);
 
                 }
-                /*ScrollView mScrollView = (ScrollView) XposedHelpers.getObjectField(
+                ScrollView mScrollView = (ScrollView) XposedHelpers.getObjectField(
                         param.thisObject, "mScrollView");
                 TextView label = (TextView) XposedHelpers.getObjectField(
                         param.thisObject, "label");
@@ -1221,11 +1256,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
                 installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
                 installShell = getPref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
-                int uid = Binder.getCallingUid();
-                xlog("Calling UID: ", uid);
                 mContext = (Context) XposedHelpers.getObjectField(
                         param.thisObject, "mContext");
                 boolean isInstallStage = "installStage".equals(param.method
+                        .getName());
+                boolean isInstallPackageAsUser = "installPackageAsUser".equals(param.method
                         .getName());
                 int flags = 0;
                 int id = 0;
@@ -1292,6 +1327,27 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 } else {
                     param.args[id] = flags;
+                }
+
+                if (isInstallPackageAsUser) {
+                    int uid = Binder.getCallingUid();
+                    xlog("Calling UID: ", uid);
+                    int total = param.args.length;
+                    xlog("Total arguments: ", total);
+                    for (int i = 0; i < total; i++) {
+                        if (param.args[i] != null) {
+                            try {
+                                xlog("Argument " + i, param.args[i]);
+                            } catch (Throwable t) {
+                                xlog("Error caught", t);
+                            }
+                        }
+                    }
+                }
+
+                if (isInstallStage) {
+                    int installerUid = (int) XposedHelpers.getObjectField(param.thisObject, "installUid");
+                    xlog("installerUid: ", installerUid);
                 }
 
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {

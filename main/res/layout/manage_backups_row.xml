@@ -29,10 +29,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal">-->
 
             <TextView
                 android:id="@+id/backupdate"
@@ -47,7 +47,14 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="10sp" />
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="10sp" />
+        <!--</LinearLayout>-->
 
     </LinearLayout>
 
@@ -55,8 +62,6 @@
         android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/listPreferredItemHeightSmall"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:gravity="right|center_vertical"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <net.fypm.InstallerOpt.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="4dp">
@@ -10,9 +10,9 @@
         android:id="@+id/appicon"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="8dp"
-        android:layout_centerHorizontal="true"
         android:scaleType="fitStart" />
 
 
@@ -27,12 +27,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
+        <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">-->
 
             <TextView
                 android:id="@+id/pname"
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="10sp" />
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
     </LinearLayout>
 
@@ -61,8 +61,6 @@
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:paddingRight="?android:attr/listPreferredItemPaddingRight"
         android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"/>
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
 
 </net.fypm.InstallerOpt.CheckableLinearLayout>
