@@ -163,7 +163,7 @@
     <string name="enable_open_app_ops_summary">应用安装后打开App Ops</string>
     <string name="enable_open_app_ops_title">打开App Ops</string>
     <string name="enable_package_name_summary">在查看应用信息时长按应用名以显示包名</string>
-    <string name="enable_package_name_title">包名显示</string>
+    <string name="enable_package_name_title">显示包名</string>
     <string name="enable_play_open_summary">在查看应用信息时长按应用图标以在Play商店中打开应用</string>
     <string name="enable_play_open_title">在Play商店打开</string>
     <string name="enable_show_buttons_summary">允许点击消息框下的按钮</string>
@@ -172,13 +172,13 @@
     <string name="enable_uninstall_device_admin_title">卸载设备管理器</string>
     <string name="enable_uninstall_system_apps_summary">启用长按卸载系统应用</string>
     <string name="enable_uninstall_system_apps_title">卸载系统应用</string>
-    <string name="enable_version_code_summary">在安装前展示新旧版本号</string>
-    <string name="enable_version_code_title">版本号展示</string>
-    <string name="enable_version_inline_summary">在安装对话框内展示版本信息</string>
+    <string name="enable_version_code_summary">在安装前显示新旧版本号</string>
+    <string name="enable_version_code_title">显示版本号</string>
+    <string name="enable_version_inline_summary">在安装对话框内显示版本信息</string>
     <string name="enable_version_inline_title">内部版本信息</string>
     <string name="enable_version_summary">在安装前显示现有的和新的应用版本</string>
-    <string name="enable_version_title">版本展示</string>
-    <string name="enable_version_toast_summary">在消息框中展示版本信息</string>
+    <string name="enable_version_title">显示版本</string>
+    <string name="enable_version_toast_summary">在消息框中显示版本信息</string>
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
