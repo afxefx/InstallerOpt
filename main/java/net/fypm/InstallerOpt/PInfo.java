@@ -3,6 +3,7 @@ package net.fypm.InstallerOpt;
 import android.graphics.drawable.Drawable;
 
 import java.util.Comparator;
+import java.util.StringTokenizer;
 
 public class PInfo implements Comparable<PInfo> {
     private String appname;
@@ -16,8 +17,9 @@ public class PInfo implements Comparable<PInfo> {
     private String calculatedDigest;
     private String apkName;
     private String status;
+    private String sourceDir;
 
-    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String status) {
+    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String status, String sourceDir) {
         this.appname = appname;
         this.pname = pname;
         this.uid = uid;
@@ -29,6 +31,7 @@ public class PInfo implements Comparable<PInfo> {
         this.calculatedDigest = calculatedDigest;
         this.apkName = apkName;
         this.status = status;
+        this.sourceDir = sourceDir;
     }
 
     public int compareTo(PInfo other) {
@@ -101,5 +104,9 @@ public class PInfo implements Comparable<PInfo> {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getSourceDir() {
+        return sourceDir;
     }
 }

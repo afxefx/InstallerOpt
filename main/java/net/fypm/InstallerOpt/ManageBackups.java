@@ -1,11 +1,13 @@
 package net.fypm.InstallerOpt;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +41,7 @@ public class ManageBackups extends ListActivity {
     public ArrayList<PInfo> filesInFolderPackageInfo;
     public ArrayList<String> selectedItems;
     public String backupDir;
-    public ArrayAdapter<PInfo> adapter;
+    public static ArrayAdapter<PInfo> adapter;
     public boolean enableDebug;
 
     @Override
@@ -66,7 +69,7 @@ public class ManageBackups extends ListActivity {
                         String selected = filesInFolderPackageInfo.get(position).getApkName();
                         selectedItems.remove(selected);
                     }
-                    //Toast.makeText(ManageBackups.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ManageBackups.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -85,7 +88,7 @@ public class ManageBackups extends ListActivity {
             case R.id.backup_delete_menu:
                 if (selectedItems.size() > 0) {
                     new AsyncDelete(this, backupDir, selectedItems).execute("");
-                    this.finish();
+                    //this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
                 }
@@ -93,7 +96,7 @@ public class ManageBackups extends ListActivity {
             case R.id.backup_restore_menu:
                 if (selectedItems.size() > 0) {
                     new AsyncRestore(this, backupDir, selectedItems).execute("");
-                    this.finish();
+                    //this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
                 }
@@ -147,7 +150,12 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        //adapter.notifyDataSetChanged();
+        new Task().execute();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+            selectedItems.clear();
+        }
+
     }
 
     public static String calculateMD5(File updateFile) {
@@ -291,12 +299,169 @@ public class ManageBackups extends ListActivity {
                     //String calculatedDigest = calculateMD5(item);
                     String apkName = filesInFolder.get(i).toString();
 
-                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, status);
+                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, status, "");
                     filesInFolderPackageInfo.add(newInfo);
                     publishProgress(String.valueOf(i));
                 }
             }
             return null;
+        }
+    }
+
+    class AsyncDelete extends AsyncTask<String, String, String> {
+
+        private static final String TAG = "InstallerOpt";
+        String savePath;
+        Activity ctx;
+        private ProgressDialog pDialog;
+        ArrayList<String> arr;
+
+        AsyncDelete(Activity _ctx, String _savePath, ArrayList<String> Files) {
+            this.ctx = _ctx;
+            this.savePath = _savePath;
+            this.arr = Files;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (pDialog == null) {
+                pDialog = new ProgressDialog(ctx);
+                pDialog.setMessage(ctx.getString(R.string.backup_delete_file_prepare_message));
+                //pDialog.setProgress(0);
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            File f = new File(savePath);
+            if (!f.exists()) {
+                if (f.mkdir()) {
+                    Log.i(TAG, "doInBackground: Backup directory created");
+                } else {
+                    Log.e(TAG, "doInBackground: Unable to create backup directory");
+                }
+            }
+            for (int i = 0; i < arr.size(); i++) {
+                Delete(arr.get(i));
+                publishProgress(String.valueOf(i));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            Toast.makeText(ctx, R.string.backup_delete_complete_message, Toast.LENGTH_LONG).show();
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+            pDialog = null;
+            new Task().execute();
+            adapter.notifyDataSetChanged();
+            selectedItems.clear();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.delete_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
+        }
+
+        void Delete(String apkFile) {
+            File apk = new File(savePath + File.separator + apkFile);
+            try {
+                if (!apk.delete()) {
+                    Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
+                            Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
+                    String message = apk.exists() ? "is in use by another app" : "does not exist";
+                    throw new IOException("Cannot delete file, because file " + message + ".");
+                } else {
+                    Log.i(TAG, "APK file " + apkFile + " successfully deleted");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error caught in deleteApkFile: " + e);
+                for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                    Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                }
+            }
+        }
+    }
+
+    class AsyncRestore extends AsyncTask<String, String, String> {
+
+        private static final String TAG = "InstallerOpt";
+        String savePath;
+        Activity ctx;
+        private ProgressDialog pDialog;
+        ArrayList<String> arr;
+
+        AsyncRestore(Activity _ctx, String _savePath, ArrayList<String> Files) {
+            this.ctx = _ctx;
+            this.savePath = _savePath;
+            this.arr = Files;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (pDialog == null) {
+                pDialog = new ProgressDialog(ctx);
+                pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
+                //pDialog.setProgress(0);
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            File f = new File(savePath);
+            if (!f.exists()) {
+                if (f.mkdir()) {
+                    Log.i(TAG, "doInBackground: Backup directory created");
+                } else {
+                    Log.e(TAG, "doInBackground: Unable to create backup directory");
+                }
+            }
+            for (int i = 0; i < arr.size(); i++) {
+                Restore(arr.get(i));
+                publishProgress(String.valueOf(i));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            Toast.makeText(ctx, R.string.backup_restore_complete_message, Toast.LENGTH_LONG).show();
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+            pDialog = null;
+            new Task().execute();
+            adapter.notifyDataSetChanged();
+            selectedItems.clear();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.restore_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
+        }
+
+        void Restore(String apkFile) {
+            try {
+                File apk = new File(savePath + File.separator + apkFile);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
+                ctx.startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "Restore file error: ", e);
+            }
         }
     }
 }

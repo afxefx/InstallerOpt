@@ -2,6 +2,7 @@ package net.fypm.InstallerOpt;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -29,6 +31,10 @@ import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -77,6 +83,9 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.about:
                 startActivity(new Intent(this, About.class));
+                return true;
+            case R.id.backup_installed_menu:
+                startActivity(new Intent(this, BackupInstalledApps.class));
                 return true;
             case R.id.stats:
                 startActivity(new Intent(this, ManageBackups.class));
@@ -132,7 +141,6 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE).setOnPreferenceChangeListener(changeListenerLauncher5);
             findPreference(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS).setOnPreferenceChangeListener(changeListenerLauncher6);
             findPreference(Common.PREF_ENABLE_FORCE_ENGLISH).setOnPreferenceChangeListener(changeListenerLauncher7);
-            findPreference(Common.PREF_DISABLE_INSTALL_BACKGROUND).setOnPreferenceChangeListener(changeListenerLauncher8);
         }
 
         @Override
@@ -313,16 +321,6 @@ public class MainActivity extends Activity {
             }
         };
 
-        private final Preference.OnPreferenceChangeListener changeListenerLauncher8 = new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                activity = getActivity();
-                if (newValue.equals(true)) {
-                    startActivity(new Intent(activity, BackgroundInstallPrompt.class));
-                }
-                return true;
-            }
-        };
-
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
             super.onActivityResult(requestCode, resultCode, resultData);
@@ -473,6 +471,92 @@ public class MainActivity extends Activity {
             }
             //And finally ask for the permission
             ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
+        }
+    }
+
+    class AsyncCopy extends AsyncTask<String, String, String> {
+
+        private static final String TAG = "InstallerOpt";
+        String oldPath;
+        String savePath;
+        Activity ctx;
+        private ProgressDialog pDialog;
+        ArrayList<String> arr;
+
+        AsyncCopy(Activity _ctx, String _savePath, ArrayList<String> Files) {
+            this.ctx = _ctx;
+            this.oldPath = MultiprocessPreferences.getDefaultSharedPreferences(ctx).getString(Common.PREF_BACKUP_APK_LOCATION_OLD, null);
+            this.savePath = _savePath;
+            this.arr = Files;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (pDialog == null) {
+                pDialog = new ProgressDialog(ctx);
+                pDialog.setMessage(ctx.getString(R.string.move_file_prepare_message));
+                //pDialog.setProgress(0);
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            File f = new File(savePath);
+            if (!f.exists()) {
+                if (f.mkdir()) {
+                    Log.i(TAG, "doInBackground: Backup directory created");
+                } else {
+                    Log.e(TAG, "doInBackground: Unable to create backup directory");
+                }
+            }
+            for (int i = 0; i < arr.size(); i++) {
+                Copy(arr.get(i));
+                publishProgress(String.valueOf(i));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            long curBackupDirSize = Stats.getFileSize(new File(oldPath));
+            long newBackupDirSize = Stats.getFileSize(new File(savePath));
+            if (newBackupDirSize == curBackupDirSize && !oldPath.equals(savePath)) {
+                Stats.deleteRecursive(new File(oldPath + File.separator));
+                Toast.makeText(ctx, R.string.move_complete_message, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(ctx, R.string.folder_size_error_message, Toast.LENGTH_LONG).show();
+            }
+            if(pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+            pDialog = null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            pDialog.setMessage(String.format("%-12s %s %s %d", ctx.getString(R.string.move_file_message).replace('*', ' '), String.valueOf(values[0]), ctx.getString(R.string.move_file_of_message).replace('*', ' '), arr.size()));
+        }
+
+        void Copy(String fname) {
+            try {
+                int count;
+                InputStream input = new FileInputStream(oldPath + File.separator + fname);
+                OutputStream output = new FileOutputStream(savePath + File.separator + fname);
+                byte data[] = new byte[1024];
+                while ((count = input.read(data)) > 0) {
+                    output.write(data, 0, count);
+                }
+                output.flush();
+                output.close();
+                input.close();
+            } catch (Exception e) {
+                Log.e(TAG, "Copy file error: ", e);
+            }
         }
     }
 }

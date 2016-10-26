@@ -77,7 +77,6 @@
     <string name="restore_button_text">恢复</string>
     <string name="restore_file_message">恢复文件*</string>
     <string name="sdcard_access_message">外部SD卡的完全访问权限只是为备份使用,您希望启用它然后重新启动吗?</string>
-    <string name="save_menu">保存</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
@@ -182,5 +181,9 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
-    <string name="multiprocess_preferences_authority" translatable="false">net.fypm.InstallerOpt.MultiprocessPreferences.PREFFERENCE_AUTHORITY</string>
+    <string name="backup_file_message">Backing up file*</string>
+    <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
+    <string name="backup_installed_menu">Backup Installed Apps</string>
+    <string name="backup_menu">Backup</string>
+    <string name="backup_file_of_message">*of*</string>
 </resources>

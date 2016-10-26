@@ -163,7 +163,6 @@
 	<string name="exception_message">Esta opção irá bloquear toda a instalação de fundo e pode interferir com restaurações automatizados como o Titanium Backup, você gostaria de adicionar exceções?</string>
   <string name="exception_selection_empty">Nenhuma exceção selecionada, por favor selecione uma aplicação e tente novamente</string>
   <string name="no">Não</string>
-  <string name="save_menu">Salvar</string>
   <string name="sort_menu">Ordenar</string>
   <string name="sort_name_asc">Nome - Crescente</string>
   <string name="sort_name_des">Nome - Decrescente</string>
@@ -181,4 +180,9 @@
   <string name="current_version_code_inline">\\nCurrent version code:</string>
   <string name="loading_applications_message">Loading applications...</string>
   <string name="loading_backup_message">Loading backups...</string>
+  <string name="backup_file_message">Backing up file*</string>
+  <string name="backup_file_of_message">*of*</string>
+  <string name="backup_installed_menu">Backup Installed Apps</string>
+  <string name="backup_menu">Backup</string>
+  <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
 </resources>

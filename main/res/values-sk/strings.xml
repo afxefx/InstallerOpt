@@ -181,7 +181,6 @@
     <string name="exception_message">Táto možnosť zablokuje všetky inštalácie na pozadí a môže brániť automatickému obnovovaniu napr. z Titanium Backup, chcete pridať výnimky?</string>
     <string name="exception_selection_empty">Nie sú pridané žiadne výnimky, prosím, vyberte aplikáciu a skúste znova</string>
     <string name="no">Nie</string>
-    <string name="save_menu">Uložiť</string>
     <string name="sort_menu">Zoradiť</string>
     <string name="sort_name_asc">Názov - vzostupne</string>
     <string name="sort_name_des">Názov - zostupne</string>
@@ -199,5 +198,10 @@
     <string name="current_version_code_inline">\\nCurrent version code:</string>
     <string name="loading_applications_message">Loading applications...</string>
     <string name="loading_backup_message">Loading backups...</string>
+    <string name="backup_file_message">Backing up file*</string>
+    <string name="backup_file_of_message">*of*</string>
+    <string name="backup_installed_menu">Backup Installed Apps</string>
+    <string name="backup_menu">Backup</string>
+    <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
 
 </resources>

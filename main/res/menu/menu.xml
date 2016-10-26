@@ -2,6 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/stats"
         android:title="@string/manage_menu" />
+    <item android:id="@+id/backup_installed_menu"
+        android:title="@string/backup_installed_menu" />
     <item android:id="@+id/about"
         android:title="@string/about_menu" />
 </menu>

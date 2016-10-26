@@ -16,7 +16,11 @@
     <string name="backup_file_name">File Name:\n</string>
     <string name="backup_file_size">\n\nFile Size:\n</string>
     <string name="backup_file_title">File Info</string>
+    <string name="backup_file_message">Backing up file*</string>
+    <string name="backup_file_of_message">*of*</string>
+    <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
     <string name="backup_free">\nBackup folder free:</string>
+    <string name="backup_installed_menu">Backup Installed Apps</string>
     <string name="backup_last_backed_up">\n\nLast backed up:\n</string>
     <string name="backup_location">Backup folder location:\n</string>
     <string name="backup_location_missing_message">Backup directory did not exist and was created, possibly deleted outside of InstallerOpt???</string>
@@ -77,7 +81,7 @@
     <string name="restore_button_text">Restore</string>
     <string name="restore_file_message">Restoring file*</string>
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
-    <string name="save_menu">Save</string>
+    <string name="backup_menu">Backup</string>
     <string name="sort_menu">Sort</string>
     <string name="sort_name_asc">Name - Ascending</string>
     <string name="sort_name_des">Name - Descending</string>

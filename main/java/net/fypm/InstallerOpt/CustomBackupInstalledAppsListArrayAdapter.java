@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CustomExceptionListArrayAdapter extends ArrayAdapter<PInfo> {
+public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInfo> {
 
     private final List<PInfo> list;
     private final Activity context;
@@ -18,12 +18,12 @@ public class CustomExceptionListArrayAdapter extends ArrayAdapter<PInfo> {
     static class ViewHolder {
         protected TextView appname;
         protected TextView pname;
-        protected TextView uid;
+        protected TextView versioninfo;
         protected ImageView appicon;
     }
 
-    public CustomExceptionListArrayAdapter(Activity context, List<PInfo> list) {
-        super(context, R.layout.manage_background_install_exceptions_row, list);
+    public CustomBackupInstalledAppsListArrayAdapter(Activity context, List<PInfo> list) {
+        super(context, R.layout.backup_installed_apps_row, list);
         this.context = context;
         this.list = list;
     }
@@ -34,11 +34,11 @@ public class CustomExceptionListArrayAdapter extends ArrayAdapter<PInfo> {
 
         if (convertView == null) {
             LayoutInflater inflator = context.getLayoutInflater();
-            view = inflator.inflate(R.layout.manage_background_install_exceptions_row, null);
+            view = inflator.inflate(R.layout.backup_installed_apps_row, null);
             final ViewHolder viewHolder = new ViewHolder();
             viewHolder.appname = (TextView) view.findViewById(R.id.appname);
             viewHolder.pname = (TextView) view.findViewById(R.id.pname);
-            viewHolder.uid = (TextView) view.findViewById(R.id.uid);
+            viewHolder.versioninfo = (TextView) view.findViewById(R.id.versioninfo);
             viewHolder.appicon = (ImageView) view.findViewById(R.id.appicon);
             view.setTag(viewHolder);
         } else {
@@ -47,8 +47,8 @@ public class CustomExceptionListArrayAdapter extends ArrayAdapter<PInfo> {
 
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
-        holder.pname.setText("Package: " + list.get(position).getPackageName());
-        holder.uid.setText("UID: " + list.get(position).getUid());
+        holder.pname.setText(list.get(position).getPackageName());
+        holder.versioninfo.setText(list.get(position).getVersionName());
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;
