@@ -42,7 +42,7 @@
     <string name="delete_file_message">Deleting file*</string>
     <string name="dialog_message">XDA support thread: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Disable</string>
-    <string name="discard_menu">Discard</string>
+    <string name="cancel_menu">Cancel</string>
     <string name="enable">Enable</string>
     <string name="enable_backup_message">Please enable backup APK option and choose your backup folder to see stats</string>
     <string name="enable_exception_message">Add Exceptions?</string>

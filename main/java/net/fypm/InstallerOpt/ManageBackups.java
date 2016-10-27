@@ -43,6 +43,7 @@ public class ManageBackups extends ListActivity {
     public String backupDir;
     public static ArrayAdapter<PInfo> adapter;
     public boolean enableDebug;
+    public ListTask lt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public class ManageBackups extends ListActivity {
         setContentView(R.layout.backup_list);
 
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-        new Task().execute();
+        lt = new ListTask();
+        lt.execute();
         selectedItems = new ArrayList<String>();
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,7 +89,7 @@ public class ManageBackups extends ListActivity {
                 return true;
             case R.id.backup_delete_menu:
                 if (selectedItems.size() > 0) {
-                    new AsyncDelete(this, backupDir, selectedItems).execute("");
+                    new AsyncDelete(this, backupDir, selectedItems).execute();
                     //this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
@@ -95,7 +97,7 @@ public class ManageBackups extends ListActivity {
                 return true;
             case R.id.backup_restore_menu:
                 if (selectedItems.size() > 0) {
-                    new AsyncRestore(this, backupDir, selectedItems).execute("");
+                    new AsyncRestore(this, backupDir, selectedItems).execute();
                     //this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.backup_selection_empty, Toast.LENGTH_LONG).show();
@@ -150,12 +152,13 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        new Task().execute();
-        if (adapter != null) {
+        if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+            lt.execute();
+        }
+        if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
             adapter.notifyDataSetChanged();
             selectedItems.clear();
         }
-
     }
 
     public static String calculateMD5(File updateFile) {
@@ -214,7 +217,7 @@ public class ManageBackups extends ListActivity {
         return arrayFiles;
     }
 
-    class Task extends AsyncTask<String, String, Boolean> {
+    class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
 
         @Override
@@ -359,9 +362,13 @@ public class ManageBackups extends ListActivity {
                 pDialog.dismiss();
             }
             pDialog = null;
-            new Task().execute();
-            adapter.notifyDataSetChanged();
-            selectedItems.clear();
+            if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+                lt.execute();
+            }
+            if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+                adapter.notifyDataSetChanged();
+                selectedItems.clear();
+            }
         }
 
         @Override
@@ -442,9 +449,13 @@ public class ManageBackups extends ListActivity {
                 pDialog.dismiss();
             }
             pDialog = null;
-            new Task().execute();
-            adapter.notifyDataSetChanged();
-            selectedItems.clear();
+            if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+                lt.execute();
+            }
+            if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+                adapter.notifyDataSetChanged();
+                selectedItems.clear();
+            }
         }
 
         @Override

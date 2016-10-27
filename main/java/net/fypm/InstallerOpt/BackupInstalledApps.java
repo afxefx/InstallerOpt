@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static net.fypm.InstallerOpt.Utils.maxBackupVersions;
+
 public class BackupInstalledApps extends ListActivity {
 
     private static final String TAG = "InstallerOpt";
@@ -39,6 +41,7 @@ public class BackupInstalledApps extends ListActivity {
     public ArrayAdapter<PInfo> adapter;
     public List<PackageInfo> packs;
     public String backupDir;
+    public ListTask lt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,8 @@ public class BackupInstalledApps extends ListActivity {
         }
         setContentView(R.layout.backup_list);
         backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
-        new Task().execute();
+        lt = new ListTask();
+        lt.execute();
         selectedItems = new ArrayList<String>();
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,13 +83,13 @@ public class BackupInstalledApps extends ListActivity {
             case R.id.backup_menu:
                 if (selectedItems.size() > 0) {
                     //MultiprocessPreferences.getDefaultSharedPreferences(ManageBackgroundInstallExceptions.this).edit().putString(Common.PREF_INSTALL_BACKGROUND_EXCEPTIONS, selectedItems.toString()).apply();
-                    new AsyncBackup(this, backupDir, selectedItems).execute("");
+                    new AsyncBackup(this, backupDir, selectedItems).execute();
                     //this.finish();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.exception_selection_empty, Toast.LENGTH_LONG).show();
                 }
                 return true;
-            case R.id.discard_menu:
+            case R.id.cancel_menu:
                 this.finish();
                 return true;
             default:
@@ -93,7 +97,7 @@ public class BackupInstalledApps extends ListActivity {
         }
     }
 
-    class Task extends AsyncTask<String, String, Boolean> {
+    class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
 
         @Override
@@ -248,7 +252,7 @@ public class BackupInstalledApps extends ListActivity {
                     if (old_files.get(i).contains(appName))
                         TmpList.add(old_files.get(i));
                 }
-            /*if (TmpList.size() > maxBackupVersions) {
+            if (TmpList.size() > maxBackupVersions) {
                 Collections.sort(TmpList, new NaturalOrderComparator());
                 //Collections.sort(TmpList);
                 do {
@@ -262,7 +266,7 @@ public class BackupInstalledApps extends ListActivity {
                             Toast.LENGTH_LONG).show();
                 }
                 //return;
-            }*/
+            }
 
                 if (enableDebug) {
                     Log.i(TAG, "backupApkFile Debug Start");
@@ -321,6 +325,42 @@ public class BackupInstalledApps extends ListActivity {
                     Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
                 }
                 return false;
+            }
+        }
+    }
+
+    public void deleteApkFile(String apkFile, boolean force) {
+        String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
+        boolean enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        File apk = new File(apkFile);
+        String absolutePath = apk.getAbsolutePath();
+        String filePath = apkFile.
+                substring(0,absolutePath.lastIndexOf(File.separator));
+        if (filePath.equals(backupDir) && !force) {
+            Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
+            return;
+        } else {
+            try {
+                if (!apk.delete()) {
+                    if (enableDebug) {
+                        Toast.makeText(this, "APK file: " + apkFile + " was not successfully deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
+                    String message = apk.exists() ? "is in use by another app" : "does not exist";
+                    throw new IOException("Cannot delete file, because file " + message + ".");
+                } else {
+                    if (enableDebug) {
+                        Toast.makeText(this, "APK file: " + apkFile + " successfully deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    Log.i(TAG, "APK file " + apkFile + " successfully deleted");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error caught in deleteApkFile: " + e);
+                for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                    Log.e(TAG, "HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                }
             }
         }
     }
