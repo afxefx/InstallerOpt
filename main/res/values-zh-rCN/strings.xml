@@ -186,4 +186,5 @@
     <string name="backup_installed_menu">Backup Installed Apps</string>
     <string name="backup_menu">Backup</string>
     <string name="backup_file_of_message">*of*</string>
+    <string name="cancel_menu">Cancel</string>
 </resources>
