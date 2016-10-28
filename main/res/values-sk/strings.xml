@@ -188,21 +188,21 @@
     <string name="sort_size_des">Veľkosť - zostupne</string>
     <string name="enable_install_external_storage_summary">Ak je povolené, aplikácie budú nainštalované na externé úložisko, na interné ak je zakázané</string>
     <string name="enable_install_external_storage_title">Inštalovať ne externé úložisko</string>
-    <string name="parse_application_message">Parsing application*</string>
-    <string name="parse_application_of_message">*of*</string>
-    <string name="parse_backup_message">Parsing backup*</string>
-    <string name="parse_backup_of_message">*of*</string>
-    <string name="sort_status_asc">Status - Ascending</string>
-    <string name="sort_status_des">Status - Descending</string>
-    <string name="current_version_inline">\\nCurrent version:</string>
-    <string name="current_version_code_inline">\\nCurrent version code:</string>
-    <string name="loading_applications_message">Loading applications...</string>
-    <string name="loading_backup_message">Loading backups...</string>
-    <string name="backup_file_message">Backing up file*</string>
-    <string name="backup_file_of_message">*of*</string>
-    <string name="backup_installed_menu">Backup Installed Apps</string>
-    <string name="backup_menu">Backup</string>
-    <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
-    <string name="cancel_menu">Cancel</string>
+    <string name="parse_application_message">Analýza aplikácie*</string>
+    <string name="parse_application_of_message">*z*</string>
+    <string name="parse_backup_message">Analýza zálohy*</string>
+    <string name="parse_backup_of_message">*z*</string>
+    <string name="sort_status_asc">Stav - vzostupne</string>
+    <string name="sort_status_des">Stav - zostupne</string>
+    <string name="current_version_inline">\\nAktuálna verzia:</string>
+    <string name="current_version_code_inline">\\nKód aktuálnej verzie:</string>
+    <string name="loading_applications_message">Načítavanie aplikácií...</string>
+    <string name="loading_backup_message">Načítavanie záloh...</string>
+    <string name="backup_file_message">Zálohovanie súboru*</string>
+    <string name="backup_file_of_message">*z*</string>
+    <string name="backup_installed_menu">Zálohovať nainštalované aplikácie</string>
+    <string name="backup_menu">Zálohovať</string>
+    <string name="backup_file_prepare_message">Pripravuje sa zálohovanie aplikácie do zálohovacieho adresára</string>
+    <string name="cancel_menu">Zrušiť</string>
 
 </resources>
