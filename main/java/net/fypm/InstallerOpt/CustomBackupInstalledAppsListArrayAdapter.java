@@ -17,7 +17,7 @@ public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInf
 
     static class ViewHolder {
         protected TextView appname;
-        protected TextView pname;
+        //protected TextView pname;
         protected TextView versioninfo;
         protected ImageView appicon;
     }
@@ -37,7 +37,7 @@ public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInf
             view = inflator.inflate(R.layout.backup_installed_apps_row, null);
             final ViewHolder viewHolder = new ViewHolder();
             viewHolder.appname = (TextView) view.findViewById(R.id.appname);
-            viewHolder.pname = (TextView) view.findViewById(R.id.pname);
+            //viewHolder.pname = (TextView) view.findViewById(R.id.pname);
             viewHolder.versioninfo = (TextView) view.findViewById(R.id.versioninfo);
             viewHolder.appicon = (ImageView) view.findViewById(R.id.appicon);
             view.setTag(viewHolder);
@@ -47,8 +47,8 @@ public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInf
 
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
-        holder.pname.setText(list.get(position).getPackageName());
-        holder.versioninfo.setText(list.get(position).getVersionName());
+        //holder.pname.setText(list.get(position).getPackageName());
+        holder.versioninfo.setText("Version: " + list.get(position).getVersionName());
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;

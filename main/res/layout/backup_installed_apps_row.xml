@@ -35,12 +35,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">-->
 
-            <TextView
+        <!--<TextView
                 android:id="@+id/pname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="10sp" />
+                android:textSize="10sp" />-->
 
             <TextView
                 android:id="@+id/versioninfo"

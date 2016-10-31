@@ -148,13 +148,13 @@ public class BackupInstalledApps extends ListActivity {
                     continue;
                 }
                 String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
-                String pname = p.packageName;
+                //String pname = p.packageName;
                 String sourceDir = p.applicationInfo.sourceDir;
                 //int uid = p.applicationInfo.uid;
                 String versionName = p.versionName;
                 //int versionCode = p.versionCode;
                 Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-                PInfo newInfo = new PInfo(appname, pname, 0, versionName, 0, appicon, "", "", "", "", "", sourceDir);
+                PInfo newInfo = new PInfo(appname, "", 0, versionName, 0, appicon, "", "", "", "", "", sourceDir);
                 installedApps.add(newInfo);
                 publishProgress(String.valueOf(i));
             }

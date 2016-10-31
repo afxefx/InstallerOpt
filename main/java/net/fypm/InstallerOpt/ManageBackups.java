@@ -257,7 +257,7 @@ public class ManageBackups extends ListActivity {
         protected Boolean doInBackground(String... params) {
             filesInFolder = getFiles(backupDir);
             filesInFolderPackageInfo = new ArrayList<PInfo>();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
 
             for (int i = 0; i < filesInFolder.size(); i++) {
                 PackageInfo p = getPackageManager().getPackageArchiveInfo(backupDir + File.separator + filesInFolder.get(i).toString(), 0);

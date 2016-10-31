@@ -525,11 +525,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 toast.setDuration(Toast.LENGTH_LONG);
                 String packageName = mPkgInfo.packageName;
                 newVersion = mPkgInfo.versionName;
-                versionInfo = String.format("%s %27s", res.getString(R.string.new_version), newVersion);
+                versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
                 try {
                     pi = mPm.getPackageInfo(packageName, 0);
                     currentVersion = pi.versionName;
-                    versionInfo += String.format("%s %22s", res.getString(R.string.current_version_inline), currentVersion);
+                    versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version not found");
@@ -559,11 +559,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
                 newCode = mPkgInfo.versionCode;
-                versionCode = String.format("%10s %21d", res.getString(R.string.new_version_code), newCode);
+                versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
                 try {
                     pi2 = mPm.getPackageInfo(packageName, 0);
                     currentCode = pi2.versionCode;
-                    versionCode += String.format("%10s %16d", res.getString(R.string.current_version_code_inline), currentCode);
+                    versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
                 } catch (PackageManager.NameNotFoundException e) {
                     if (enableDebug) {
                         xlog_start("autoInstallHook - Current version code not found");
