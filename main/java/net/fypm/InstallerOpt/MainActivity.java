@@ -58,9 +58,15 @@ public class MainActivity extends Activity {
             setTheme(R.style.AppThemeDark);
         }
 
-        int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(MainActivity.this).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
+        int oldVersionCode = MultiprocessPreferences.getDefaultSharedPreferences(this).getInt(Common.PREF_VERSION_CODE_KEY, Common.DOESNT_EXIST);
         if (oldVersionCode < 591) {
             resetPreferences();
+        }
+        if (oldVersionCode < 1801) {
+            ComponentName alias = new ComponentName(
+                    this, "net.fypm.InstallerOpt.MainActivity-Alias");
+            this.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_APP_ICON, true).apply();
         }
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new PrefsFragment()).commit();
@@ -134,7 +140,7 @@ public class MainActivity extends Activity {
             checkFirstRun();
             getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
             addPreferencesFromResource(R.xml.prefs);
-            findPreference(Common.PREF_ENABLE_HIDE_APP_ICON).setOnPreferenceChangeListener(changeListenerLauncher);
+            findPreference(Common.PREF_ENABLE_APP_ICON).setOnPreferenceChangeListener(changeListenerLauncher);
             findPreference(Common.PREF_ENABLE_DARK_THEME).setOnPreferenceChangeListener(changeListenerLauncher2);
             findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher3);
             findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
@@ -197,7 +203,7 @@ public class MainActivity extends Activity {
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
                 activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_HIDE_APP_ICON, false).apply();
+                MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_APP_ICON, true).apply();
 
                 String dirPath = activity.getFilesDir().getParentFile().getPath() + "/shared_prefs/";
                 File sharedPrefsFileOld = new File(dirPath, "prefs.xml");
@@ -232,11 +238,16 @@ public class MainActivity extends Activity {
                 activity = getActivity();
                 ComponentName alias = new ComponentName(
                         activity, "net.fypm.InstallerOpt.MainActivity-Alias");
-                if (isLauncherIconVisible(alias)) {
+                if (newValue.equals(false)) {
                     activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
                 } else {
                     activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
                 }
+                /*if (isLauncherIconVisible(alias)) {
+                    activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                } else {
+                    activity.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                }*/
                 return true;
             }
         };

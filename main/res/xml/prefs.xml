@@ -220,7 +220,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advanced">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="enable_hide_icon"
             android:summary="@string/enable_hide_icon_summary"
             android:title="@string/enable_hide_icon_title" />

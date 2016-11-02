@@ -31,7 +31,7 @@ public class Common {
 
     //Prefs
     public static final String PREF_APP_HELP = "app_help";
-    public static final String PREF_ENABLE_HIDE_APP_ICON = "enable_hide_icon";
+    public static final String PREF_ENABLE_APP_ICON = "enable_hide_icon";
     public static final String PREF_APP_TRANSLATOR = "app_translator";
     public static final String PREF_APP_LOCALE = "app_locale";
     public static final String PREF_APP_VERSION = "app_version";
