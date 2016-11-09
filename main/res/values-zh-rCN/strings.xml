@@ -16,7 +16,11 @@
     <string name="backup_file_name">文件名:\n</string>
     <string name="backup_file_size">\n\n文件大小:\n</string>
     <string name="backup_file_title">文件信息</string>
-    <string name="backup_free">\n备份文件夹空:</string>
+	<string name="backup_file_message">备份文件*</string>
+    <string name="backup_file_of_message">*/*</string>
+    <string name="backup_file_prepare_message">准备备份应用到备份位置</string>
+	<string name="backup_free">\n备份文件夹:</string>
+	<string name="backup_installed_menu">备份已安装的应用</string>
     <string name="backup_last_backed_up">\n\n上次备份:\n</string>
     <string name="backup_location">备份文件夹位置:\n</string>
     <string name="backup_location_missing_message">备份目录不存在,已经重新创建,您是否曾在本应用外将其删除???</string>
@@ -29,8 +33,8 @@
     <string name="check_signatures">检查签名</string>
     <string name="confirm_check_signatures">确认签名检查</string>
     <string name="confirm_check_signatures_message">对这个应用禁用签名检查?</string>
-    <string name="current_version">\n当前版本:</string>
-    <string name="current_version_code">\n当前版本号:</string>
+    <string name="current_version">当前版本:</string>
+    <string name="current_version_code">当前版本号:</string>
     <string name="current_version_inline">\n当前版本:</string>
     <string name="current_version_code_inline">\n当前版本号:</string>
     <string name="delete_all_button_text">删除所有</string>
@@ -38,7 +42,7 @@
     <string name="delete_file_message">删除文件*</string>
     <string name="dialog_message">XDA支持页面: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">禁用</string>
-    <string name="discard_menu">丢弃</string>
+	<string name="cancel_menu">取消</string>
     <string name="enable">启用</string>
     <string name="enable_backup_message">请启用备份APK选项并选择备份文件夹以查看统计</string>
     <string name="enable_exception_message">添加例外?</string>
@@ -56,7 +60,7 @@
     <string name="move_backups_message">新旧备份文件夹不同,您想把旧文件夹中的内容转移到新文件夹中吗?</string>
     <string name="move_complete_message">转移成功完成</string>
     <string name="move_file_message">转移文件*</string>
-    <string name="move_file_of_message">*的*</string>
+    <string name="move_file_of_message">*/*</string>
     <string name="move_file_prepare_message">准备转移文件到新的备份位置</string>
     <string name="move_file_title">移动旧备份?</string>
     <string name="new_version">新装版本:</string>
@@ -66,7 +70,7 @@
     <string name="non_writeable_message">无法写入选择的文件夹,请选择另外的文件夹</string>
     <string name="ok">确定</string>
     <string name="parse_application_message">描述应用程序*</string>
-    <string name="parse_application_of_message">*的*</string>
+    <string name="parse_application_of_message">*/*</string>
     <string name="parse_backup_message">描述备份*</string>
     <string name="parse_backup_of_message">*的*</string>
     <string name="perm_denied">糟糕,您拒绝了写入存储设备的权限</string>
@@ -77,6 +81,7 @@
     <string name="restore_button_text">恢复</string>
     <string name="restore_file_message">恢复文件*</string>
     <string name="sdcard_access_message">外部SD卡的完全访问权限只是为备份使用,您希望启用它然后重新启动吗?</string>
+	<string name="backup_menu">Backup</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
@@ -181,10 +186,5 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
-    <string name="backup_file_message">Backing up file*</string>
-    <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
-    <string name="backup_installed_menu">Backup Installed Apps</string>
-    <string name="backup_menu">Backup</string>
-    <string name="backup_file_of_message">*of*</string>
-    <string name="cancel_menu">Cancel</string>
+    
 </resources>
