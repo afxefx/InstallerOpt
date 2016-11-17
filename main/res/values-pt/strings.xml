@@ -158,8 +158,7 @@
   <string name="backup_file_md5">\\n\\nMD5 checksum:\\n</string>
   <string name="backup_file_name">Nome do Arquivo:\\n</string>
   <string name="backup_file_size">\\n\\nTamanho do arquivo:\\n</string>
-  <string name="discard_menu">Descartar</string>
-	<string name="enable_exception_message">Adicionar exceções?</string>
+  <string name="enable_exception_message">Adicionar exceções?</string>
 	<string name="exception_message">Esta opção irá bloquear toda a instalação de fundo e pode interferir com restaurações automatizados como o Titanium Backup, você gostaria de adicionar exceções?</string>
   <string name="exception_selection_empty">Nenhuma exceção selecionada, por favor selecione uma aplicação e tente novamente</string>
   <string name="no">Não</string>

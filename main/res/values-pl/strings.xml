@@ -160,7 +160,6 @@
     <string name="backup_file_md5">\\n\\nSuma kontrolna MD5:\\n</string>
     <string name="backup_file_name">Nazwa pliku:\\n</string>
     <string name="backup_file_size">\\n\\nRozmiar pliku:\\n</string>
-    <string name="discard_menu">Odrzuć</string>
     <string name="enable_exception_message">Dodać wyjątki?</string>
     <string name="exception_message">Ta opcja będzie blokować wszystkie instalacje w tle i może kolidować z automatycznym przywracaniem np. w Titanium Backup, chcesz dodać wyjątki?</string>
     <string name="exception_selection_empty">Brak wybranych wyjątków, wybierz aplikację i spróbuj ponownie</string>

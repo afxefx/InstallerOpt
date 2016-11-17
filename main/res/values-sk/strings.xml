@@ -176,7 +176,6 @@
     <string name="backup_file_md5">\\n\\nKontrolný súčet MD5:\\n</string>
     <string name="backup_file_name">Názov súboru:\\n</string>
     <string name="backup_file_size">\\n\\nVeľkosť súboru:\\n</string>
-    <string name="discard_menu">Zrušiť</string>
     <string name="enable_exception_message">Pridať výnimky?</string>
     <string name="exception_message">Táto možnosť zablokuje všetky inštalácie na pozadí a môže brániť automatickému obnovovaniu napr. z Titanium Backup, chcete pridať výnimky?</string>
     <string name="exception_selection_empty">Nie sú pridané žiadne výnimky, prosím, vyberte aplikáciu a skúste znova</string>
