@@ -202,6 +202,5 @@
     <string name="backup_installed_menu">Zálohovať nainštalované aplikácie</string>
     <string name="backup_menu">Zálohovať</string>
     <string name="backup_file_prepare_message">Pripravuje sa zálohovanie aplikácie do zálohovacieho adresára</string>
-    <string name="cancel_menu">Zrušiť</string>
 
 </resources>

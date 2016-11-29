@@ -186,5 +186,4 @@
     <string name="backup_installed_menu">Backup Installed Apps</string>
     <string name="backup_menu">Backup</string>
     <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
-    <string name="cancel_menu">Cancel</string>
 </resources>

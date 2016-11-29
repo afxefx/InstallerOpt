@@ -42,7 +42,6 @@
     <string name="delete_file_message">删除文件*</string>
     <string name="dialog_message">XDA支持页面: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">禁用</string>
-	<string name="cancel_menu">取消</string>
     <string name="enable">启用</string>
     <string name="enable_backup_message">请启用备份APK选项并选择备份文件夹以查看统计</string>
     <string name="enable_exception_message">添加例外?</string>

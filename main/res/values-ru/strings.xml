@@ -42,7 +42,6 @@
     <string name="delete_file_message">Удаление файла*</string>
     <string name="dialog_message">Тема на XDA: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">Выкл</string>
-    <string name="cancel_menu">Отмена</string>
     <string name="enable">Вкл</string>
     <string name="enable_backup_message">Включите опцию рез.копирования APK и выберите папку рез.копий</string>
     <string name="enable_exception_message">Добавить исключения?</string>
