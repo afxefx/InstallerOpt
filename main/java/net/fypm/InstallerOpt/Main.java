@@ -1986,16 +1986,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         BufferedReader reader = null;
 
         try {
-            if (host.contains("cyanogenmod")) {
+            if (host.contains("cyanogenmod") || host.contains("mokee")) {
                 isCyanogenMod = true;
-            } else if (version.contains("cyanogenmod")) {
+            } else if (version.contains("cyanogenmod") || version.contains("mokee")) {
                 isCyanogenMod = true;
             } else {
                 // This does not require root
                 reader = new BufferedReader(new FileReader("/proc/version"), 256);
                 version = reader.readLine();
 
-                if (version.contains("cyanogenmod")) {
+                if (version.contains("cyanogenmod") || version.contains("mokee")) {
                     isCyanogenMod = true;
                 }
             }
