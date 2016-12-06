@@ -31,7 +31,7 @@ public class Utils extends BroadcastReceiver {
     public Context ctx;
     public Resources resources;
     public boolean enableDebug;
-    public static int maxBackupVersions = 3;
+    public static int maxBackupVersions = 2;
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -801,9 +801,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 }
                 if (checkPermissions) {
-                    if (enableDebug) {
+                    /*if (enableDebug) {
                         xlog("Disable check permissions set to", checkPermissions);
-                    }
+                    }*/
                     param.setResult(PackageManager.PERMISSION_GRANTED);
                     return;
                 }

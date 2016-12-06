@@ -71,7 +71,7 @@ public class ManageBackups extends ListActivity {
                         String selected = filesInFolderPackageInfo.get(position).getApkName();
                         selectedItems.remove(selected);
                     }
-                    Toast.makeText(ManageBackups.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ManageBackups.this, selectedItems.size() + " backups selected", Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -84,6 +84,23 @@ public class ManageBackups extends ListActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.send:
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
+                intent.setType("*/*"); /* This example is sharing jpeg images. */
+
+                ArrayList<Uri> files = new ArrayList<Uri>();
+
+                for(String path : selectedItems /* List of the files you want to send */) {
+                    File file = new File(backupDir + File.separator + path);
+                    Uri uri = Uri.fromFile(file);
+                    files.add(uri);
+                }
+
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+                startActivity(intent);
+                return true;
             case R.id.stats:
                 startActivity(new Intent(this, Stats.class));
                 return true;
@@ -152,13 +169,14 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+            lt = new ListTask();
             lt.execute();
         }
-        if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+        /*if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
             adapter.notifyDataSetChanged();
             selectedItems.clear();
-        }
+        }*/
     }
 
     public static String calculateMD5(File updateFile) {
@@ -243,6 +261,7 @@ public class ManageBackups extends ListActivity {
             Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
             adapter = new CustomBackupListArrayAdapter(ManageBackups.this, filesInFolderPackageInfo);
             setListAdapter(adapter);
+            selectedItems.clear();
             //adapter.notifyDataSetChanged();
             super.onPostExecute(result);
         }
@@ -362,13 +381,14 @@ public class ManageBackups extends ListActivity {
                 pDialog.dismiss();
             }
             pDialog = null;
-            if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+            if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+                lt = new ListTask();
                 lt.execute();
             }
-            if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+            /*if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
                 adapter.notifyDataSetChanged();
                 selectedItems.clear();
-            }
+            }*/
         }
 
         @Override
@@ -449,13 +469,14 @@ public class ManageBackups extends ListActivity {
                 pDialog.dismiss();
             }
             pDialog = null;
-            if(lt.getStatus() != AsyncTask.Status.PENDING || lt.getStatus() == AsyncTask.Status.RUNNING){
+            if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+                lt = new ListTask();
                 lt.execute();
             }
-            if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+            /*if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
                 adapter.notifyDataSetChanged();
                 selectedItems.clear();
-            }
+            }*/
         }
 
         @Override
