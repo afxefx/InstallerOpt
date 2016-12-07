@@ -185,4 +185,5 @@
     <string name="enable_version_toast_title">Всплывающая подсказка</string>
     <string name="external_sdcard_full_access_summary">Разрешить чтение/запись на внешнюю SD карту (требуется перезагрузка)</string>
     <string name="external_sdcard_full_access_title">Полный доступ к внешней SD карте</string>
+    <string name="send_menu">Send</string>
 </resources>

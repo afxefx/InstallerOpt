@@ -44,6 +44,7 @@ public class ManageBackups extends ListActivity {
     public static ArrayAdapter<PInfo> adapter;
     public boolean enableDebug;
     public ListTask lt;
+    public boolean reload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,25 +88,32 @@ public class ManageBackups extends ListActivity {
             case R.id.send:
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE);
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
-                intent.setType("*/*"); /* This example is sharing jpeg images. */
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Sent via InstallerOpt");
+                intent.setType("*/*");
 
                 ArrayList<Uri> files = new ArrayList<Uri>();
 
-                for(String path : selectedItems /* List of the files you want to send */) {
+                for(String path : selectedItems) {
                     File file = new File(backupDir + File.separator + path);
                     Uri uri = Uri.fromFile(file);
                     files.add(uri);
                 }
 
                 intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-                startActivity(intent);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    reload = false;
+                    startActivity(Intent.createChooser(intent, "Share"));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Not able to share this file type", Toast.LENGTH_LONG).show();
+                }
+                //startActivity(intent);
                 return true;
             case R.id.stats:
                 startActivity(new Intent(this, Stats.class));
                 return true;
             case R.id.backup_delete_menu:
                 if (selectedItems.size() > 0) {
+                    reload = true;
                     new AsyncDelete(this, backupDir, selectedItems).execute();
                     //this.finish();
                 } else {
@@ -114,6 +122,7 @@ public class ManageBackups extends ListActivity {
                 return true;
             case R.id.backup_restore_menu:
                 if (selectedItems.size() > 0) {
+                    reload = true;
                     new AsyncRestore(this, backupDir, selectedItems).execute();
                     //this.finish();
                 } else {
@@ -169,7 +178,7 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING && reload){
             lt = new ListTask();
             lt.execute();
         }
