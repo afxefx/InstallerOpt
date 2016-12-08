@@ -203,6 +203,5 @@
     <string name="backup_menu">Zálohovať</string>
     <string name="send_menu">Odoslať</string>
     <string name="backup_file_prepare_message">Pripravuje sa zálohovanie aplikácie do zálohovacieho adresára</string>
-    <string name="send_menu">Send</string>
 
 </resources>
