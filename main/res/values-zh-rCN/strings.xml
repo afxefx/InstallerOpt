@@ -80,7 +80,8 @@
     <string name="restore_button_text">恢复</string>
     <string name="restore_file_message">恢复文件*</string>
     <string name="sdcard_access_message">外部SD卡的完全访问权限只是为备份使用,您希望启用它然后重新启动吗?</string>
-	<string name="backup_menu">Backup</string>
+	<string name="backup_menu">备份</string>
+	<string name="send_menu">发送</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
@@ -183,8 +184,7 @@
     <string name="enable_version_title">显示版本</string>
     <string name="enable_version_toast_summary">在消息框中显示版本信息</string>
     <string name="enable_version_toast_title">版本信息消息框</string>
-    <string name="external_sdcard_full_access_summary">允许读写外部SD卡（需要重新启动）</string>
+    <string name="external_sdcard_full_access_summary">允许读写外部SD卡(需要重新启动)</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
-    <string name="send_menu">Send</string>
 
 </resources>
