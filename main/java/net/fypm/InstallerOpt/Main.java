@@ -1329,7 +1329,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.args[id] = flags;
                 }
 
-                if (isInstallPackageAsUser) {
+                /*if (isInstallPackageAsUser) {
                     int uid = Binder.getCallingUid();
                     xlog("Calling UID: ", uid);
                     int total = param.args.length;
@@ -1348,7 +1348,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (isInstallStage) {
                     int installerUid = (int) XposedHelpers.getObjectField(param.thisObject, "installUid");
                     xlog("installerUid: ", installerUid);
-                }
+                }*/
 
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
@@ -1854,10 +1854,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
                 // 4.2 and newer
                 if (Common.JB_MR1_NEWER) {
-                    XposedHelpers.findAndHookMethod(Common.APPSTORAGEDETAILS,
-                            lpparam.classLoader, "initDataButtons",
-                            initAppStorageSettingsButtonsHook);
-                    if (!rom_TW) {
+                    if (rom_CM || rom_TW) {
+                        XposedHelpers.findAndHookMethod(Common.APPSTORAGEDETAILS,
+                                lpparam.classLoader, "initDataButtons",
+                                initAppStorageSettingsButtonsHook);
+                    }
+                    if (rom_CM) {
                         try {
                             XposedHelpers.findAndHookMethod(Common.APPOPSDETAILS,
                                     lpparam.classLoader, "isPlatformSigned",
