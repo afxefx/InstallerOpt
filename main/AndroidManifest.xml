@@ -92,6 +92,7 @@
                 <action android:name="InstallerOpt.intent.action.BACKUP_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.CONFIRM_CHECK_SIGNATURE"/>
                 <action android:name="InstallerOpt.intent.action.DELETE_APK_FILE"/>
+                <action android:name="InstallerOpt.intent.action.POST_NOTIFICATION"/>
                 <action android:name="InstallerOpt.intent.action.RESET_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.RESTORE_PREFERENCES"/>
                 <action android:name="InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP"/>

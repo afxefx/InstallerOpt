@@ -96,6 +96,26 @@ public class MainActivity extends Activity {
             case R.id.stats:
                 startActivity(new Intent(this, ManageBackups.class));
                 return true;
+            case R.id.backupprefs:
+                Intent backupPreferences = new Intent(
+                        Common.ACTION_BACKUP_PREFERENCES);
+                backupPreferences.setPackage(Common.PACKAGE_NAME);
+                this.sendBroadcast(backupPreferences);
+                return true;
+            case R.id.restoreprefs:
+                Intent restorePreferences = new Intent(
+                        Common.ACTION_RESTORE_PREFERENCES);
+                restorePreferences.setPackage(Common.PACKAGE_NAME);
+                this.sendBroadcast(restorePreferences);
+                this.finish();
+                return true;
+            case R.id.resetprefs:
+                Intent resetPreferences = new Intent(
+                        Common.ACTION_RESET_PREFERENCES);
+                resetPreferences.setPackage(Common.PACKAGE_NAME);
+                this.sendBroadcast(resetPreferences);
+                this.finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

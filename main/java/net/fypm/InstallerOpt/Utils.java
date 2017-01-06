@@ -1,14 +1,20 @@
 package net.fypm.InstallerOpt;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,16 +24,28 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 @SuppressWarnings("deprecation")
 public class Utils extends BroadcastReceiver {
 
     private static final String TAG = "InstallerOpt";
+    public static final String APP_DIR = Environment
+            .getExternalStorageDirectory()
+            + File.separator
+            + Common.PACKAGE_TAG
+            + File.separator;
+    public static final File PACKAGE_DIR = new File(APP_DIR);
+    public static final File PREFERENCES_BACKUP_FILE = new File(APP_DIR
+            + File.separator + Common.PACKAGE_TAG + ".backup");
     public Context ctx;
     public Resources resources;
     public boolean enableDebug;
@@ -35,6 +53,9 @@ public class Utils extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!PACKAGE_DIR.exists()) {
+            PACKAGE_DIR.mkdir();
+        }
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
         //maxBackupVersions = MultiprocessPreferences.getDefaultSharedPreferences(context).getInt(Common.PREF_MAX_BACKUP_VERSIONS, 3);
         ctx = context;
@@ -64,12 +85,19 @@ public class Utils extends BroadcastReceiver {
                 int duration = extras.getInt(Common.DURATION);
                 vibrateDevice(duration);
             }
+        } else if (Common.ACTION_POST_NOTIFICATION.equals(action)) {
+            if (hasExtras) {
+                String description = extras.getString(Common.DESCRIPTION);
+                String title = extras.getString(Common.TITLE);
+                String thirdline = extras.getString(Common.THIRDLINE);
+                postNotification(title, description, thirdline, ctx);
+            }
         } else if (Common.ACTION_BACKUP_PREFERENCES.equals(action)) {
-            //backupPreferences();
+            backupPreferences();
         } else if (Common.ACTION_RESTORE_PREFERENCES.equals(action)) {
-            //restorePreferences();
+            restorePreferences();
         } else if (Common.ACTION_RESET_PREFERENCES.equals(action)) {
-            //resetPreferences();
+            resetPreferences();
         } else if (Common.ACTION_CONFIRM_CHECK_SIGNATURE.equals(action)) {
             confirmCheckSignatures();
         }
@@ -143,12 +171,15 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " successfully backed up",
                                 Toast.LENGTH_LONG).show();
+                        //postNotification("Backup Status", "APK file: " + apkFile + "\nsuccessfully backed up", ctx);
+
                     }
                     Log.i(TAG, "APK file " + apkFile + " successfully backed up");
                 } else {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully backed up",
                                 Toast.LENGTH_LONG).show();
+                        //postNotification("Backup Status", "APK file: " + apkFile + "\nwas not successfully backed up", ctx);
                     }
                     Log.e(TAG, "APK file " + apkFile + " was not successfully backed up");
                 }
@@ -203,6 +234,7 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
                                 Toast.LENGTH_LONG).show();
+                        //postNotification("Deletion Status", "APK file: " + apkFile + "\nwas not successfully deleted", ctx);
                     }
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                     String message = apk.exists() ? "is in use by another app" : "does not exist";
@@ -211,6 +243,8 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
                                 Toast.LENGTH_LONG).show();
+                        //postNotification("Deletion Status", "APK file: " + apkFile + "\nsuccessfully deleted", ctx);
+
                     }
                     Log.i(TAG, "APK file " + apkFile + " successfully deleted");
                 }
@@ -221,6 +255,24 @@ public class Utils extends BroadcastReceiver {
                 }
             }
         }
+    }
+
+    private void postNotification(String title, String description, String thirdline, Context ctx) {
+
+        PendingIntent pi = PendingIntent.getActivity(ctx, 0, new Intent(ctx, MainActivity.class), 0);
+        //Resources r = ctx.getResources();
+        Notification notification = new NotificationCompat.Builder(ctx)
+                .setTicker(description)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(description)
+                .setSubText(thirdline)
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
     }
 
     public void uninstallSystemApp(String packageName) {
@@ -265,11 +317,12 @@ public class Utils extends BroadcastReceiver {
         v.vibrate(duration);
     }
 
-    /*public void backupPreferences() {
+    public void backupPreferences() {
         if (!PREFERENCES_BACKUP_FILE.exists()) {
             try {
                 PREFERENCES_BACKUP_FILE.createNewFile();
             } catch (Exception e) {
+                Log.e(TAG, "Error in backupPreferences", e);
             }
         }
 
@@ -281,6 +334,7 @@ public class Utils extends BroadcastReceiver {
                     Common.PACKAGE_PREFERENCES, Context.MODE_WORLD_READABLE);
             output.writeObject(prefs.getAll());
         } catch (Exception e) {
+            Log.e(TAG, "Error in backupPreferences", e);
         } finally {
             try {
                 if (output != null) {
@@ -288,6 +342,7 @@ public class Utils extends BroadcastReceiver {
                     output.close();
                 }
             } catch (Exception e) {
+                Log.e(TAG, "Error in backupPreferences", e);
             }
         }
 
@@ -317,20 +372,25 @@ public class Utils extends BroadcastReceiver {
                 Object value = entry.getValue();
                 String key = entry.getKey();
                 if (value instanceof Boolean) {
-                    prefsEditor.putBoolean(key,
-                            ((Boolean) value).booleanValue());
+                    prefsEditor.putBoolean(key, ((Boolean) value).booleanValue());
                 } else if (value instanceof String) {
                     prefsEditor.putString(key, (String) value);
+                } else if (value instanceof Long) {
+                    prefsEditor.putLong(key, (Long) value);
+                } else if (value instanceof Integer) {
+                    prefsEditor.putInt(key, (Integer) value);
                 }
             }
             prefsEditor.commit();
         } catch (Exception e) {
+            Log.e(TAG, "Error in restorePreferences", e);
         } finally {
             try {
                 if (input != null) {
                     input.close();
                 }
             } catch (Exception e) {
+                Log.e(TAG, "Error in restorePreferences", e);
             }
         }
 
@@ -347,6 +407,19 @@ public class Utils extends BroadcastReceiver {
 
         Toast.makeText(ctx, resources.getString(R.string.preferences_reset),
                 Toast.LENGTH_LONG).show();
-    }*/
+    }
+
+    /*final PendingResult result = goAsync();
+Thread thread = new Thread() {
+   public void run() {
+      int i;
+      // Do processing
+      result.setResultCode(i);
+      result.finish();
+   }
+};
+thread.start();
+
+    */
 
 }

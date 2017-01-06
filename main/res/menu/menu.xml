@@ -6,4 +6,15 @@
         android:title="@string/backup_installed_menu" />
     <item android:id="@+id/about"
         android:title="@string/about_menu" />
+    <item android:id="@+id/prefs"
+          android:title="@string/prefs_menu" >
+        <menu>
+            <item android:id="@+id/backupprefs"
+                  android:title="@string/backupprefs_menu" />
+            <item android:id="@+id/restoreprefs"
+                  android:title="@string/restoreprefs_menu" />
+            <item android:id="@+id/resetprefs"
+                  android:title="@string/resetprefs_menu" />
+        </menu>
+    </item>
 </menu>

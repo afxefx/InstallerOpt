@@ -146,6 +146,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
 
+        /*File bootfile = new File(Environment.getExternalStorageDirectory() + File.separator + "bootfile");
+        if(bootfile.exists())
+        {
+            xlog("Bootfile exist, deleting", null);
+            bootfile.delete();
+        }*/
+
+
         xlog_start("ROM Detection");
         File frameworkTW = new File("/system/framework/twframework-res.apk");
         if (frameworkTW.exists()) {
@@ -340,6 +348,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 Button mLaunch = (Button) XposedHelpers.getObjectField(
                         XposedHelpers.getSurroundingThis(param.thisObject),
                         "mLaunchButton");
+                Uri packageUri = (Uri) XposedHelpers.getObjectField(
+                        XposedHelpers.getSurroundingThis(param.thisObject),
+                        "mPackageURI");
 
                 Message msg = (Message) param.args[0];
                 boolean installedApp = false;
@@ -372,8 +383,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             xlog_end("autoCloseInstallHook");
                         }
                         if (!appInstalledText.isEmpty()) {
-                            Toast.makeText(mContext, appInstalledText,
-                                    Toast.LENGTH_LONG).show();
+                            /*Toast.makeText(mContext, appInstalledText,
+                                    Toast.LENGTH_LONG).show();*/
+                            postNotification("Install Success", packageUri.getLastPathSegment() + " installed", "");
                             if (enableVibrateDevice) {
                                 try {
                                     vibrateDevice(500);
@@ -385,8 +397,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             }
                         }
                     } else {
-                        Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
-                                Toast.LENGTH_LONG).show();
+                        /*Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
+                                Toast.LENGTH_LONG).show();*/
+                        postNotification("Install Failure", packageUri.getLastPathSegment() + " not installed", "Error code: " + msg.arg1);
                         if (enableDebug) {
                             xlog_start("autoCloseInstallHook");
                             xlog("Install failed", msg);
@@ -397,9 +410,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
 
                 if (deleteApkFiles && installedApp) {
-                    Uri packageUri = (Uri) XposedHelpers.getObjectField(
-                            XposedHelpers.getSurroundingThis(param.thisObject),
-                            "mPackageURI");
                     String apkFile = packageUri.getPath();
                     deleteApkFile(apkFile);
                     if (enableDebug) {
@@ -761,8 +771,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 Log.i(TAG, "bootCompletedHook: bootCompleted value before changing " + bootCompleted);
                 bootCompleted = true;
                 Log.i(TAG, "bootCompletedHook: bootCompleted after changing " + bootCompleted);
-                mContext = AndroidAppHelper.currentApplication();
-                setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, false, 0, 0, null);
+                /*File bootfile = new File(Environment.getExternalStorageDirectory() + File.separator + "bootfile");
+                bootfile.createNewFile();
+                byte data=1;
+                if(bootfile.exists())
+                {
+                    OutputStream fo = new FileOutputStream(bootfile);
+                    fo.write(data);
+                    fo.close();
+                }*/
+                //mContext = AndroidAppHelper.currentApplication();
+                //setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, false, 0, 0, null);
             }
         };
 
@@ -1548,6 +1567,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     verifySignature = getPref(Common.PREF_DISABLE_VERIFY_SIGNATURE, getInstallerOptContext());
                 }
                 if (verifySignature) {
+                    //xlog("verifySignatureHook: Boot complete", bootCompleted);
                     /*xlog_start("verifySignatureHook");
                     xlog("Disable signature verification set to", verifySignature);
                     xlog_end("verifySignatureHook");*/
@@ -1568,6 +1588,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
                 }
                 if (checkSignatures) {
+                    //xlog("verifySignaturesHook: Boot complete", bootCompleted);
                     /*xlog_start("verifySignaturesHook");
                     xlog("Disable signature checking set to", checkSignatures);
                     xlog_end("verifySignaturesHook");*/
@@ -1988,16 +2009,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         BufferedReader reader = null;
 
         try {
-            if (host.contains("cyanogenmod") || host.contains("mokee")) {
+            if (host.contains("cyanogenmod") || host.contains("mokee") || host.contains("Emotion")) {
                 isCyanogenMod = true;
-            } else if (version.contains("cyanogenmod") || version.contains("mokee")) {
+            } else if (version.contains("cyanogenmod") || version.contains("mokee") || version.contains("Emotion")) {
                 isCyanogenMod = true;
             } else {
                 // This does not require root
                 reader = new BufferedReader(new FileReader("/proc/version"), 256);
                 version = reader.readLine();
 
-                if (version.contains("cyanogenmod") || version.contains("mokee")) {
+                if (version.contains("cyanogenmod") || version.contains("mokee") || version.contains("Emotion")) {
                     isCyanogenMod = true;
                 }
             }
@@ -2026,6 +2047,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             return enabled;
         }
         //return enabled;
+    }
+
+    public void postNotification(String title, String description, String thirdline) {
+        Intent postNotification = new Intent(
+                Common.ACTION_POST_NOTIFICATION);
+        postNotification.putExtra(Common.DESCRIPTION, description);
+        postNotification.putExtra(Common.THIRDLINE, thirdline);
+        postNotification.putExtra(Common.TITLE, title);
+        getInstallerOptContext().sendBroadcast(postNotification);
     }
 
     public static void setPref(Context context, String pref, Boolean value, int value2, long value3, String value4) {

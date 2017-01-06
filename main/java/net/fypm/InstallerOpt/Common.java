@@ -10,18 +10,21 @@ public class Common {
     public static final String ACTION_BACKUP_PREFERENCES = "InstallerOpt.intent.action.BACKUP_PREFERENCES";
     public static final String ACTION_CONFIRM_CHECK_SIGNATURE = "InstallerOpt.intent.action.CONFIRM_CHECK_SIGNATURE";
     public static final String ACTION_DELETE_APK_FILE = "InstallerOpt.intent.action.DELETE_APK_FILE";
+    public static final String ACTION_POST_NOTIFICATION = "InstallerOpt.intent.action.POST_NOTIFICATION";
     public static final String ACTION_RELOAD_PREFERENCES = "InstallerOpt.intent.action.RELOAD_PREFERENCES";
     public static final String ACTION_RESET_PREFERENCES = "InstallerOpt.intent.action.RESET_PREFERENCES";
     public static final String ACTION_RESTORE_PREFERENCES = "InstallerOpt.intent.action.RESTORE_PREFERENCES";
     public static final String ACTION_UNINSTALL_SYSTEM_APP = "InstallerOpt.intent.action.UNINSTALL_SYSTEM_APP";
     public static final String ACTION_VIBRATE_DEVICE = "InstallerOpt.intent.action.VIBRATE_DEVICE";
 
-    //public static final String DESCRIPTION = "description";
+    public static final String DESCRIPTION = "description";
     public static final String BACKUP_DIR = "backup_dir";
     public static final String DURATION = "duration";
     public static final String FILE = "file";
     public static final String PACKAGE = "package";
     public static final String PREFERENCE = "preference";
+    public static final String THIRDLINE = "thirdline";
+    public static final String TITLE = "title";
     public static final String VALUE = "value";
 
     //Perms
@@ -121,7 +124,7 @@ public class Common {
     public static final String INSTALLEROPT = "net.fypm.InstallerOpt";
     public static final String LUCKYPATCHER_PKG = "com.android.vending.billing.InAppBillingService.LUCK";
     public static final String MOKEE_PACKAGEINSTALLER_PKG = "com.mokee.packageinstaller";
-    public static final String PACKAGE_NAME = Main.class.getPackage().getName();
+    public static final String PACKAGE_NAME = Common.class.getPackage().getName();
     public static final String PACKAGE_PREFERENCES = PACKAGE_NAME + "_preferences";
     public static final String PACKAGE_TAG = "InstallerOpt";
     public static final String PACKAGEINSTALLER_PKG = "com.android.packageinstaller";
