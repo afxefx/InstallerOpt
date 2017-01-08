@@ -1373,7 +1373,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.setResult(null);
                     if (enableDebug) {
                         Looper.prepare();
-                        Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                        postNotification("Install Blocked", "Background install attempt blocked", "");
                         Looper.loop();
                         xlog_start("installPackageHook - installBackground");
                         xlog("Background install attempt blocked", null);
@@ -1386,7 +1387,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.setResult(null);
                     if (enableDebug) {
                         Looper.prepare();
-                        Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                        postNotification("Install Blocked", "ADB install attempt blocked", "");
                         Looper.loop();
                         xlog_start("installPackageHook - installShell");
                         xlog("ADB install attempt blocked", null);

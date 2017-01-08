@@ -137,8 +137,7 @@
   <string name="stats_menu">Estatísticas</string>
   <string name="updated">Módulo foi atualizado</string>
   <string name="write_permission_message">permissão de gravação externa é necessária para a funcionalidade de backup de APK funcione</string>
-  <string name="yes">Sim</string>
-	<string name="disable_install_shell_summary">Desativa a instalação de aplicativos através de shell</string>
+  <string name="disable_install_shell_summary">Desativa a instalação de aplicativos através de shell</string>
 	<string name="disable_install_shell_title">Desativar instalação Shell</string>
   <string name="backup_delete_complete_message">Backup Deletion Completed Successfully</string>
   <string name="backup_delete_menu">Deletar Backups selecionados</string>
@@ -151,7 +150,6 @@
   <string name="backup_file_title">Informações do arquivo</string>
   <string name="delete_all_button_text">Arquivo info.</string>
   <string name="delete_file_message">Deletando arquivo*</string>
-  <string name="ok">OK</string>
   <string name="restore_button_text">Restaurar</string>
   <string name="restore_file_message">Restaurando arquivo*</string>
   <string name="backup_file_date">\\n\\nData do backup:\\n</string>
@@ -161,7 +159,6 @@
   <string name="enable_exception_message">Adicionar exceções?</string>
 	<string name="exception_message">Esta opção irá bloquear toda a instalação de fundo e pode interferir com restaurações automatizados como o Titanium Backup, você gostaria de adicionar exceções?</string>
   <string name="exception_selection_empty">Nenhuma exceção selecionada, por favor selecione uma aplicação e tente novamente</string>
-  <string name="no">Não</string>
   <string name="sort_menu">Ordenar</string>
   <string name="sort_name_asc">Nome - Crescente</string>
   <string name="sort_name_des">Nome - Decrescente</string>
@@ -185,4 +182,12 @@
   <string name="backup_menu">Backup</string>
   <string name="backup_file_prepare_message">Preparando para o backup de aplicativo(s) para o local de backup</string>
   <string name="send_menu">Send</string>
+  <string name="backupprefs_menu">Backup preferences</string>
+  <string name="no_backup_file">No saved preferences found</string>
+  <string name="preferences_backed_up">Preferences successfully backed up</string>
+  <string name="preferences_reset">Preferences successfully reset</string>
+  <string name="preferences_restored">Preferences successfully restored</string>
+  <string name="prefs_menu">Preferences</string>
+  <string name="resetprefs_menu">Reset preferences</string>
+  <string name="restoreprefs_menu">Restore preferences</string>
 </resources>

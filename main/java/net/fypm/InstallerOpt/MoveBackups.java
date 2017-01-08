@@ -18,7 +18,7 @@ public class MoveBackups extends Activity {
         moveBackupsDialog
                 .setMessage(getText(R.string.move_backups_message));
         moveBackupsDialog.setCancelable(false);
-        moveBackupsDialog.setPositiveButton(R.string.yes,
+        moveBackupsDialog.setPositiveButton(android.R.string.yes,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {

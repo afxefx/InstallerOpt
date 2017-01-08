@@ -64,10 +64,8 @@
     <string name="move_file_title">移动旧备份?</string>
     <string name="new_version">新装版本:</string>
     <string name="new_version_code">新装版本号:</string>
-    <string name="no">不</string>
     <string name="no_old_files_message">现在旧备份文件夹中没有文件</string>
     <string name="non_writeable_message">无法写入选择的文件夹,请选择另外的文件夹</string>
-    <string name="ok">确定</string>
     <string name="parse_application_message">描述应用程序*</string>
     <string name="parse_application_of_message">*/*</string>
     <string name="parse_backup_message">描述备份*</string>
@@ -92,7 +90,6 @@
     <string name="stats_menu">备份统计</string>
     <string name="updated">模块已经更新</string>
     <string name="write_permission_message">需要外部存储访问权限以确保备份功能正常工作</string>
-    <string name="yes">是</string>
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">保留多少备份版本</string>
     <string name="backup_apk_files_limit_title">备份版本限制</string>
@@ -186,5 +183,13 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡(需要重新启动)</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
+    <string name="backupprefs_menu">Backup preferences</string>
+    <string name="no_backup_file">No saved preferences found</string>
+    <string name="preferences_backed_up">Preferences successfully backed up</string>
+    <string name="preferences_reset">Preferences successfully reset</string>
+    <string name="preferences_restored">Preferences successfully restored</string>
+    <string name="prefs_menu">Preferences</string>
+    <string name="resetprefs_menu">Reset preferences</string>
+    <string name="restoreprefs_menu">Restore preferences</string>
 
 </resources>

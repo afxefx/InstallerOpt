@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/stats"
-        android:title="@string/manage_menu" />
     <item android:id="@+id/backup_installed_menu"
         android:title="@string/backup_installed_menu" />
-    <item android:id="@+id/about"
-        android:title="@string/about_menu" />
+    <item android:id="@+id/stats"
+          android:title="@string/manage_menu" />
     <item android:id="@+id/prefs"
           android:title="@string/prefs_menu" >
         <menu>
@@ -17,4 +15,6 @@
                   android:title="@string/resetprefs_menu" />
         </menu>
     </item>
+    <item android:id="@+id/about"
+          android:title="@string/about_menu" />
 </menu>

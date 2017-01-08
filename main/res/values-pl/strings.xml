@@ -49,7 +49,6 @@
     <string name="stats_menu">Status kopii zapasowej</string>
     <string name="updated">Moduł został zaktualizowany</string>
     <string name="write_permission_message">Uprawnienie do zapisu jest potrzebne, aby działała funkcja utworzenia kopii zapasowej plików APK</string>
-    <string name="yes">Tak</string>
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">Ile starych wersji kopii zapasowych zachować</string>
     <string name="backup_apk_files_limit_title">Limit kopii zapasowych</string>
@@ -153,7 +152,6 @@
     <string name="backup_file_title">Informacje o pliku</string>
     <string name="delete_all_button_text">Informacje o pliku</string>
     <string name="delete_file_message">Usuwanie pliku*</string>
-    <string name="ok">OK</string>
     <string name="restore_button_text">Przywróć</string>
     <string name="restore_file_message">Przywracanie pliku*</string>
     <string name="backup_file_date">\\n\\nData kopii pliku:\\n</string>
@@ -163,7 +161,6 @@
     <string name="enable_exception_message">Dodać wyjątki?</string>
     <string name="exception_message">Ta opcja będzie blokować wszystkie instalacje w tle i może kolidować z automatycznym przywracaniem np. w Titanium Backup, chcesz dodać wyjątki?</string>
     <string name="exception_selection_empty">Brak wybranych wyjątków, wybierz aplikację i spróbuj ponownie</string>
-    <string name="no">Nie</string>
     <string name="sort_menu">Sortuj</string>
     <string name="sort_name_asc">Nazwa - Rosnąco</string>
     <string name="sort_name_des">Nazwa - Malejąco</string>
@@ -187,4 +184,12 @@
     <string name="backup_menu">Backup</string>
     <string name="backup_file_prepare_message">Preparing to backup application(s) to backup location</string>
     <string name="send_menu">Send</string>
+    <string name="backupprefs_menu">Backup preferences</string>
+    <string name="no_backup_file">No saved preferences found</string>
+    <string name="preferences_backed_up">Preferences successfully backed up</string>
+    <string name="preferences_reset">Preferences successfully reset</string>
+    <string name="preferences_restored">Preferences successfully restored</string>
+    <string name="prefs_menu">Preferences</string>
+    <string name="resetprefs_menu">Reset preferences</string>
+    <string name="restoreprefs_menu">Restore preferences</string>
 </resources>

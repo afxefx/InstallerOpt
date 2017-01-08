@@ -64,10 +64,8 @@
     <string name="move_file_title">Перенести старые рез.копии?</string>
     <string name="new_version">Новая версия:</string>
     <string name="new_version_code">Код новой версии:</string>
-    <string name="no">Нет</string>
     <string name="no_old_files_message">В старой папке отсутствуют файлы</string>
     <string name="non_writeable_message">Запись в выбранную папку невозможна, выберите другую</string>
-    <string name="ok">Ок</string>
     <string name="parse_application_message">Обработка приложения*</string>
     <string name="parse_application_of_message">*из*</string>
     <string name="parse_backup_message">Обработка рез.копии*</string>
@@ -91,7 +89,6 @@
     <string name="stats_menu">Статистика</string>
     <string name="updated">Модуль был обновлен</string>
     <string name="write_permission_message">Для рез.копирования APK нужное разрешение на запись на внешний носитель</string>
-    <string name="yes">Да</string>
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">Сколько резервных копий приложения хранить</string>
     <string name="backup_apk_files_limit_title">Лимит версий</string>
@@ -186,4 +183,12 @@
     <string name="external_sdcard_full_access_summary">Разрешить чтение/запись на внешнюю SD карту (требуется перезагрузка)</string>
     <string name="external_sdcard_full_access_title">Полный доступ к внешней SD карте</string>
     <string name="send_menu">Send</string>
+    <string name="backupprefs_menu">Backup preferences</string>
+    <string name="no_backup_file">No saved preferences found</string>
+    <string name="preferences_backed_up">Preferences successfully backed up</string>
+    <string name="preferences_reset">Preferences successfully reset</string>
+    <string name="preferences_restored">Preferences successfully restored</string>
+    <string name="prefs_menu">Preferences</string>
+    <string name="resetprefs_menu">Reset preferences</string>
+    <string name="restoreprefs_menu">Restore preferences</string>
 </resources>

@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -38,6 +37,7 @@ public class ManageBackups extends ListActivity {
     private static final String TAG = "InstallerOpt";
 
     public ArrayList<String> filesInFolder;
+    public String appname;
     public ArrayList<PInfo> filesInFolderPackageInfo;
     public ArrayList<String> selectedItems;
     public String backupDir;
@@ -278,7 +278,7 @@ public class ManageBackups extends ListActivity {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            pDialog.setMessage(String.format("%-12s %s %s %d", ManageBackups.this.getString(R.string.parse_backup_message).replace('*', ' '), String.valueOf(values[0]), ManageBackups.this.getString(R.string.parse_backup_of_message).replace('*', ' '), filesInFolder.size()));
+            pDialog.setMessage(String.format("%-12s %s %s %d", ManageBackups.this.getString(R.string.parse_backup_message).replace('*', ' '), String.valueOf(values[0]), ManageBackups.this.getString(R.string.parse_backup_of_message).replace('*', ' '), filesInFolder.size()) + "\n" + appname);
             }
 
         @Override
@@ -294,7 +294,7 @@ public class ManageBackups extends ListActivity {
                     p.applicationInfo.sourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
                     p.applicationInfo.publicSourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
 
-                    String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                    appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
                     String pname = p.packageName;
                     //int uid = p.applicationInfo.uid;
                     String versionName = p.versionName;

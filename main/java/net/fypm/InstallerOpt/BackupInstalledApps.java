@@ -38,6 +38,7 @@ public class BackupInstalledApps extends ListActivity {
 
     public ArrayList<PInfo> installedApps;
     public ArrayList<String> selectedItems;
+    public String appname;
     public ArrayAdapter<PInfo> adapter;
     public List<PackageInfo> packs;
     public String backupDir;
@@ -134,7 +135,7 @@ public class BackupInstalledApps extends ListActivity {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            pDialog.setMessage(String.format("%-12s %s %s %d", BackupInstalledApps.this.getString(R.string.parse_application_message).replace('*', ' '), String.valueOf(values[0]), BackupInstalledApps.this.getString(R.string.parse_application_of_message).replace('*', ' '), packs.size()));
+            pDialog.setMessage(String.format("%-12s %s %s %d", BackupInstalledApps.this.getString(R.string.parse_application_message).replace('*', ' '), String.valueOf(values[0]), BackupInstalledApps.this.getString(R.string.parse_application_of_message).replace('*', ' '), packs.size()) + "\n" + appname);
         }
 
         @Override
@@ -147,7 +148,7 @@ public class BackupInstalledApps extends ListActivity {
                 if ((!getSysPackages) && (p.versionName == null)) {
                     continue;
                 }
-                String appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
                 //String pname = p.packageName;
                 String sourceDir = p.applicationInfo.sourceDir;
                 //int uid = p.applicationInfo.uid;

@@ -64,10 +64,8 @@
     <string name="move_file_title">Move old backups?</string>
     <string name="new_version">New version:</string>
     <string name="new_version_code">New version code:</string>
-    <string name="no">No</string>
     <string name="no_old_files_message">No files present in old backup folder</string>
     <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
-    <string name="ok">OK</string>
     <string name="parse_application_message">Parsing application*</string>
     <string name="parse_application_of_message">*of*</string>
     <string name="parse_backup_message">Parsing backup*</string>
@@ -100,7 +98,6 @@
     <string name="stats_menu">Backup Stats</string>
     <string name="updated">Module has been updated</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
-    <string name="yes">Yes</string>
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>
     <string name="backup_apk_files_limit_title">Backup Version Limit</string>
@@ -142,7 +139,7 @@
     <string name="enable_darkui_title">Dark Theme</string>
     <string name="enable_debug_apps_summary">Enables debugging on all applications</string>
     <string name="enable_debug_apps_title">Debug Applications</string>
-    <string name="enable_debug_summary">Enables additional logging InstallerOpt</string>
+    <string name="enable_debug_summary">Enables additional logging for InstallerOpt</string>
     <string name="enable_debug_title">Debug</string>
     <string name="enable_delete_apk_files_summary">Delete APK files after install</string>
     <string name="enable_delete_apk_files_title">Delete APKs</string>

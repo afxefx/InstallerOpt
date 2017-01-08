@@ -7,7 +7,6 @@
     <string name="disable">Zakázať</string>
     <string name="enable">Povoliť</string>
     <string name="reboot">Reštartovať</string>
-    <string name="yes">Áno</string>
     <string name="current_version">Aktuálna verzia: </string>
     <string name="current_version_code">Kód aktuálnej verzie: </string>
     <string name="new_version">Nová verzia: </string>
@@ -169,7 +168,6 @@
     <string name="backup_file_title">Info o súbore</string>
     <string name="delete_all_button_text">Info o súbore</string>
     <string name="delete_file_message">Mazanie súboru*</string>
-    <string name="ok">OK</string>
     <string name="restore_file_message">Obnovovanie súboru*</string>
     <string name="restore_button_text">Obnoviť</string>
     <string name="backup_file_date">\\n\\nDátum zálohy:\\n</string>
@@ -179,7 +177,6 @@
     <string name="enable_exception_message">Pridať výnimky?</string>
     <string name="exception_message">Táto možnosť zablokuje všetky inštalácie na pozadí a môže brániť automatickému obnovovaniu napr. z Titanium Backup, chcete pridať výnimky?</string>
     <string name="exception_selection_empty">Nie sú pridané žiadne výnimky, prosím, vyberte aplikáciu a skúste znova</string>
-    <string name="no">Nie</string>
     <string name="sort_menu">Zoradiť</string>
     <string name="sort_name_asc">Názov - vzostupne</string>
     <string name="sort_name_des">Názov - zostupne</string>
@@ -203,5 +200,13 @@
     <string name="backup_menu">Zálohovať</string>
     <string name="send_menu">Odoslať</string>
     <string name="backup_file_prepare_message">Pripravuje sa zálohovanie aplikácie do zálohovacieho adresára</string>
+    <string name="backupprefs_menu">Backup preferences</string>
+    <string name="no_backup_file">No saved preferences found</string>
+    <string name="preferences_backed_up">Preferences successfully backed up</string>
+    <string name="preferences_reset">Preferences successfully reset</string>
+    <string name="preferences_restored">Preferences successfully restored</string>
+    <string name="prefs_menu">Preferences</string>
+    <string name="resetprefs_menu">Reset preferences</string>
+    <string name="restoreprefs_menu">Restore preferences</string>
 
 </resources>
