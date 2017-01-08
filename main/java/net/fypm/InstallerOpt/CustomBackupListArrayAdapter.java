@@ -52,9 +52,9 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
         holder.backupdate.setText("Backup Date: " + list.get(position).getItemModified());
-        holder.filesize.setText("Size: " + list.get(position).getItemSize());
+        holder.filesize.setText("Size: " + list.get(position).getItemSizeHuman() + " (" + list.get(position).getItemSize() + " bytes)");
         holder.status.setText("Status: " + list.get(position).getStatus());
-        holder.versioninfo.setText("Version: " + list.get(position).getVersionName() + "     Version Code: " + list.get(position).getVersionCode());
+        holder.versioninfo.setText("Version: " + list.get(position).getVersionName() + " (" + list.get(position).getVersionCode() + ")");
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;

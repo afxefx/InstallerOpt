@@ -87,7 +87,7 @@
     <string name="restore_file_message">Restoring file*</string>
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
     <string name="backup_menu">Backup</string>
-    <string name="send_menu">Send</string>
+    <string name="share_menu">Share</string>
     <string name="sort_menu">Sort</string>
     <string name="sort_name_asc">Name - Ascending</string>
     <string name="sort_name_des">Name - Descending</string>

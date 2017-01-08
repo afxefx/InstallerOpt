@@ -181,7 +181,6 @@
   <string name="backup_installed_menu">Backup de Apps Instalados</string>
   <string name="backup_menu">Backup</string>
   <string name="backup_file_prepare_message">Preparando para o backup de aplicativo(s) para o local de backup</string>
-  <string name="send_menu">Send</string>
   <string name="backupprefs_menu">Backup preferences</string>
   <string name="no_backup_file">No saved preferences found</string>
   <string name="preferences_backed_up">Preferences successfully backed up</string>
@@ -190,4 +189,5 @@
   <string name="prefs_menu">Preferences</string>
   <string name="resetprefs_menu">Reset preferences</string>
   <string name="restoreprefs_menu">Restore preferences</string>
+  <string name="share_menu">Share</string>
 </resources>

@@ -182,7 +182,6 @@
     <string name="enable_version_toast_title">Всплывающая подсказка</string>
     <string name="external_sdcard_full_access_summary">Разрешить чтение/запись на внешнюю SD карту (требуется перезагрузка)</string>
     <string name="external_sdcard_full_access_title">Полный доступ к внешней SD карте</string>
-    <string name="send_menu">Send</string>
     <string name="backupprefs_menu">Backup preferences</string>
     <string name="no_backup_file">No saved preferences found</string>
     <string name="preferences_backed_up">Preferences successfully backed up</string>
@@ -191,4 +190,5 @@
     <string name="prefs_menu">Preferences</string>
     <string name="resetprefs_menu">Reset preferences</string>
     <string name="restoreprefs_menu">Restore preferences</string>
+    <string name="share_menu">Share</string>
 </resources>

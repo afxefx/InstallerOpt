@@ -12,14 +12,15 @@ public class PInfo implements Comparable<PInfo> {
     private String versionName;
     private int versionCode;
     private Drawable appicon;
-    private String itemSize;
+    private long itemSize;
+    private String itemSizeHuman;
     private String formattedDate;
     private String calculatedDigest;
     private String apkName;
     private String status;
     private String sourceDir;
 
-    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, String itemSize, String formattedDate, String calculatedDigest, String apkName, String status, String sourceDir) {
+    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, long itemSize, String itemSizeHuman, String formattedDate, String calculatedDigest, String apkName, String status, String sourceDir) {
         this.appname = appname;
         this.pname = pname;
         this.uid = uid;
@@ -27,6 +28,7 @@ public class PInfo implements Comparable<PInfo> {
         this.versionCode = versionCode;
         this.appicon = appicon;
         this.itemSize = itemSize;
+        this.itemSizeHuman = itemSizeHuman;
         this.formattedDate = formattedDate;
         this.calculatedDigest = calculatedDigest;
         this.apkName = apkName;
@@ -52,7 +54,7 @@ public class PInfo implements Comparable<PInfo> {
 
     public static Comparator<PInfo> COMPARE_BY_SIZE = new Comparator<PInfo>() {
         public int compare(PInfo one, PInfo other) {
-            return one.itemSize.compareTo(other.itemSize);
+            return Long.valueOf(one.itemSize).compareTo(Long.valueOf(other.itemSize));
         }
     };
 
@@ -86,8 +88,12 @@ public class PInfo implements Comparable<PInfo> {
         return versionName;
     }
 
-    public String getItemSize() {
+    public long getItemSize() {
         return itemSize;
+    }
+
+    public String getItemSizeHuman() {
+        return itemSizeHuman;
     }
 
     public String getItemModified() {

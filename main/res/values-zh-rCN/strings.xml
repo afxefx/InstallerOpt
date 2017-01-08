@@ -79,7 +79,6 @@
     <string name="restore_file_message">恢复文件*</string>
     <string name="sdcard_access_message">外部SD卡的完全访问权限只是为备份使用,您希望启用它然后重新启动吗?</string>
 	<string name="backup_menu">备份</string>
-	<string name="send_menu">发送</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
@@ -191,5 +190,6 @@
     <string name="prefs_menu">Preferences</string>
     <string name="resetprefs_menu">Reset preferences</string>
     <string name="restoreprefs_menu">Restore preferences</string>
+    <string name="share_menu">Share</string>
 
 </resources>

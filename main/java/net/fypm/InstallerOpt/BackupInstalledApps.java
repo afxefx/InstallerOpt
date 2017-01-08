@@ -155,7 +155,7 @@ public class BackupInstalledApps extends ListActivity {
                 String versionName = p.versionName;
                 //int versionCode = p.versionCode;
                 Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-                PInfo newInfo = new PInfo(appname, "", 0, versionName, 0, appicon, "", "", "", "", "", sourceDir);
+                PInfo newInfo = new PInfo(appname, "", 0, versionName, 0, appicon, 0, "", "", "", "", "", sourceDir);
                 installedApps.add(newInfo);
                 publishProgress(String.valueOf(i));
             }

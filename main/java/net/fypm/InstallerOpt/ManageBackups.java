@@ -85,7 +85,7 @@ public class ManageBackups extends ListActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.send:
+            case R.id.share:
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE);
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Sent via InstallerOpt");
@@ -324,13 +324,14 @@ public class ManageBackups extends ListActivity {
 
                     Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
                     File item = new File(backupDir + File.separator + filesInFolder.get(i).toString());
-                    String itemSize = Stats.humanReadableByteCount(Stats.getFileSize(item), true);
+                    long itemSize = Stats.getFileSize(item);
+                    String itemSizeHuman = Stats.humanReadableByteCount(itemSize, true);
                     Date itemModified = new Date(item.lastModified());
                     String formattedDate = dateFormat.format(itemModified);
                     //String calculatedDigest = calculateMD5(item);
                     String apkName = filesInFolder.get(i).toString();
 
-                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, formattedDate, "", apkName, status, "");
+                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, itemSizeHuman, formattedDate, "", apkName, status, "");
                     filesInFolderPackageInfo.add(newInfo);
                     publishProgress(String.valueOf(i));
                 }
