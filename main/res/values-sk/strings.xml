@@ -199,14 +199,14 @@
     <string name="backup_installed_menu">Zálohovať nainštalované aplikácie</string>
     <string name="backup_menu">Zálohovať</string>
     <string name="backup_file_prepare_message">Pripravuje sa zálohovanie aplikácie do zálohovacieho adresára</string>
-    <string name="backupprefs_menu">Backup preferences</string>
-    <string name="no_backup_file">No saved preferences found</string>
-    <string name="preferences_backed_up">Preferences successfully backed up</string>
-    <string name="preferences_reset">Preferences successfully reset</string>
-    <string name="preferences_restored">Preferences successfully restored</string>
-    <string name="prefs_menu">Preferences</string>
-    <string name="resetprefs_menu">Reset preferences</string>
-    <string name="restoreprefs_menu">Restore preferences</string>
-    <string name="share_menu">Share</string>
+    <string name="backupprefs_menu">Zálohovať nastavenia</string>
+    <string name="no_backup_file">Neboli nájdené žiadne uložené nastavenia</string>
+    <string name="preferences_backed_up">Nastavenia boli úspešne uložené</string>
+    <string name="preferences_reset">Nastavenia boli úspešne vymazané</string>
+    <string name="preferences_restored">Nastavenia boli úspešne obnovené</string>
+    <string name="prefs_menu">Nastavenia</string>
+    <string name="resetprefs_menu">Vymazať nastavenia</string>
+    <string name="restoreprefs_menu">Obnoviť nastavenia</string>
+    <string name="share_menu">Zdieľať</string>
 
 </resources>
