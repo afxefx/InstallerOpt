@@ -208,7 +208,7 @@
     <string name="resetprefs_menu">Vymazať nastavenia</string>
     <string name="restoreprefs_menu">Obnoviť nastavenia</string>
     <string name="share_menu">Zdieľať</string>
-    <string name="enable_notifications_title">Notifications</string>
-    <string name="enable_notifications_summary">Enables notifications for InstallerOpt actions</string>
+    <string name="enable_notifications_title">Upozornenia</string>
+    <string name="enable_notifications_summary">Povoliť upozornenia pre akcie InstallerOpt</string>
 
 </resources>
