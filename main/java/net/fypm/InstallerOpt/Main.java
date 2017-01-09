@@ -115,6 +115,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean enableAutoUninstall;
     public static boolean enableDebug;
     public static boolean enableLaunchApp;
+    public static boolean enableNotifications;
     public static boolean enableOpenAppOps;
     public static boolean enablePackageName;
     public static boolean enablePlay;
@@ -342,6 +343,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
                 enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
                 enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, getInstallerOptContext());
+                enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, getInstallerOptContext());
                 enableOpenAppOps = getPref(Common.PREF_ENABLE_OPEN_APP_OPS, getInstallerOptContext());
                 deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
                 enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, getInstallerOptContext());
@@ -385,7 +387,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (!appInstalledText.isEmpty()) {
                             /*Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();*/
-                            postNotification("Install Success", packageUri.getLastPathSegment() + " installed", "");
+                            if (enableNotifications) {
+                                postNotification("Install Success", packageUri.getLastPathSegment() + " installed", "");
+                            }
                             if (enableVibrateDevice) {
                                 try {
                                     vibrateDevice(500);
@@ -399,7 +403,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     } else {
                         /*Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
                                 Toast.LENGTH_LONG).show();*/
-                        postNotification("Install Failure", packageUri.getLastPathSegment() + " not installed", "Error code: " + msg.arg1);
+                        if (enableNotifications) {
+                            postNotification("Install Failure", packageUri.getLastPathSegment() + " not installed", "Error code: " + msg.arg1);
+                        }
                         if (enableDebug) {
                             xlog_start("autoCloseInstallHook");
                             xlog("Install failed", msg);
@@ -1269,7 +1275,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, getInstallerOptContext());
                 backupDir = getPrefString(Common.PREF_BACKUP_APK_LOCATION, getInstallerOptContext());
                 enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                //add below to prefs
+                enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, getInstallerOptContext());
                 downgradeApps = getPref(Common.PREF_ENABLE_DOWNGRADE_APP, getInstallerOptContext());
                 forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, getInstallerOptContext());
                 installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
@@ -1371,11 +1377,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
                 if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
                     param.setResult(null);
-                    if (enableDebug) {
+                    if (enableNotifications) {
                         Looper.prepare();
                         //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
                         postNotification("Install Blocked", "Background install attempt blocked", "");
                         Looper.loop();
+                    }
+                    if (enableDebug) {
                         xlog_start("installPackageHook - installBackground");
                         xlog("Background install attempt blocked", null);
                         xlog_end("installPackageHook - installBackground");
@@ -1385,11 +1393,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
                 if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
                     param.setResult(null);
-                    if (enableDebug) {
+                    if (enableNotifications) {
                         Looper.prepare();
                         //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
                         postNotification("Install Blocked", "ADB install attempt blocked", "");
                         Looper.loop();
+                    }
+                    if (enableDebug) {
                         xlog_start("installPackageHook - installShell");
                         xlog("ADB install attempt blocked", null);
                         xlog_end("installPackageHook - installShell");
@@ -2098,6 +2108,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
         enableLaunchApp = prefs.getBoolean(Common.PREF_ENABLE_LAUNCH_APP, false);
         enableOpenAppOps = prefs.getBoolean(Common.PREF_ENABLE_OPEN_APP_OPS, false);
+        enableNotifications = prefs.getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
         enablePackageName = prefs.getBoolean(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, false);
         enablePlay = prefs.getBoolean(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, false);
         enableVersion = prefs.getBoolean(Common.PREF_ENABLE_SHOW_VERSION, false);

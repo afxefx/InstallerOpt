@@ -101,6 +101,7 @@ public class Common {
     public static final String PREF_ENABLE_LAUNCH_APP = "enable_launch_app";
     public static final String PREF_ENABLE_MODULE = "enable_module";
     public static final String PREF_ENABLE_MOVE_APP = "enable_move_apps";
+    public static final String PREF_ENABLE_NOTIFICATIONS = "enable_notifications";
     public static final String PREF_ENABLE_OPEN_APP_GOOGLE_PLAY = "enable_play_open";
     public static final String PREF_ENABLE_OPEN_APP_OPS = "enable_open_app_ops";
     public static final String PREF_ENABLE_SHOW_BUTTON = "enable_show_buttons";

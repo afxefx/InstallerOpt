@@ -239,5 +239,10 @@
             android:key="enable_force_english"
             android:summary="@string/enable_force_english_summary"
             android:title="@string/enable_force_english_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_notifications"
+            android:summary="@string/enable_notifications_summary"
+            android:title="@string/enable_notifications_title" />
     </PreferenceCategory>
 </PreferenceScreen>
