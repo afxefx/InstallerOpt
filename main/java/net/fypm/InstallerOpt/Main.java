@@ -1167,15 +1167,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         initAppOpsDetailsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                //mContext = AndroidAppHelper.currentApplication();
-                //verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, getInstallerOptContext());
-                //if (verifyApps) {
-                //xlog_start("initAppOpsDetailsHook");
-                //xlog("Disable app verification set to", verifyApps);
-                //xlog_end("initAppOpsDetailsHook");
                 param.setResult(false);
                 return;
-                //}
             }
         };
 
