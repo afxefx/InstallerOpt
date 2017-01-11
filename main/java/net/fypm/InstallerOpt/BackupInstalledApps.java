@@ -135,7 +135,7 @@ public class BackupInstalledApps extends ListActivity {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            pDialog.setMessage(String.format("%-12s %s %s %d", BackupInstalledApps.this.getString(R.string.parse_application_message).replace('*', ' '), String.valueOf(values[0]), BackupInstalledApps.this.getString(R.string.parse_application_of_message).replace('*', ' '), packs.size()) + "\n" + appname);
+            pDialog.setMessage(String.format("%-12s %s %s %d", BackupInstalledApps.this.getString(R.string.parse_application_message).replace('*', ' '), String.valueOf(values[0]), BackupInstalledApps.this.getString(R.string.parse_application_of_message).replace('*', ' '), packs.size()) + "\n\n" + appname);
         }
 
         @Override
