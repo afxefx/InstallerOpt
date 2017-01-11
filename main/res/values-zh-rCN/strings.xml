@@ -16,11 +16,11 @@
     <string name="backup_file_name">文件名:\n</string>
     <string name="backup_file_size">\n\n文件大小:\n</string>
     <string name="backup_file_title">文件信息</string>
-	<string name="backup_file_message">备份文件*</string>
+    <string name="backup_file_message">备份文件*</string>
     <string name="backup_file_of_message">*/*</string>
     <string name="backup_file_prepare_message">准备备份应用到备份位置</string>
-	<string name="backup_free">\n备份文件夹:</string>
-	<string name="backup_installed_menu">备份已安装的应用</string>
+    <string name="backup_free">\n备份文件夹:</string>
+    <string name="backup_installed_menu">备份已安装的应用</string>
     <string name="backup_last_backed_up">\n\n上次备份:\n</string>
     <string name="backup_location">备份文件夹位置:\n</string>
     <string name="backup_location_missing_message">备份目录不存在,已经重新创建,您是否曾在本应用外将其删除???</string>
@@ -73,12 +73,21 @@
     <string name="perm_denied">糟糕,您拒绝了写入存储设备的权限</string>
     <string name="perm_granted">存储权限已获得,您可以读写</string>
     <string name="reboot">重新启动</string>
+    <string name="prefs_menu">参数</string>
+    <string name="preferences_backed_up">备份参数已成功</string>
+    <string name="preferences_restored">恢复首参数已成功</string>
+    <string name="preferences_reset">参数已成功重置</string>
+    <string name="backupprefs_menu">备份参数</string>
+    <string name="restoreprefs_menu">恢复参数</string>
+    <string name="resetprefs_menu">重置参数</string>
+    <string name="no_backup_file">未找到已保存的参数</string>
     <string name="reboot_failed">重新启动失败,请手动操作！</string>
     <string name="reset">重置设置以避免冲突</string>
     <string name="restore_button_text">恢复</string>
     <string name="restore_file_message">恢复文件*</string>
     <string name="sdcard_access_message">外部SD卡的完全访问权限只是为备份使用,您希望启用它然后重新启动吗?</string>
-	<string name="backup_menu">备份</string>
+    <string name="backup_menu">备份</string>
+    <string name="share_menu">分享</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
@@ -159,7 +168,9 @@
     <string name="enable_keep_apps_data_summary">在卸载后保留应用数据</string>
     <string name="enable_keep_apps_data_title">保留应用数据</string>
     <string name="enable_launch_app_summary">在查看应用信息时点击应用图标以打开应用</string>
-    <string name="enable_launch_app_title">应用图标打开</string>
+    <string name="enable_launch_app_title">在应用图标打开</string>
+    <string name="enable_notifications_summary">为InstallerOpt操作启用通知</string>
+    <string name="enable_notifications_title">通知</string>
     <string name="enable_open_app_ops_summary">应用安装后打开App Ops</string>
     <string name="enable_open_app_ops_title">打开App Ops</string>
     <string name="enable_package_name_summary">在查看应用信息时长按应用名以显示包名</string>
@@ -182,16 +193,5 @@
     <string name="enable_version_toast_title">版本信息消息框</string>
     <string name="external_sdcard_full_access_summary">允许读写外部SD卡(需要重新启动)</string>
     <string name="external_sdcard_full_access_title">外部SD卡完整访问权限</string>
-    <string name="backupprefs_menu">Backup preferences</string>
-    <string name="no_backup_file">No saved preferences found</string>
-    <string name="preferences_backed_up">Preferences successfully backed up</string>
-    <string name="preferences_reset">Preferences successfully reset</string>
-    <string name="preferences_restored">Preferences successfully restored</string>
-    <string name="prefs_menu">Preferences</string>
-    <string name="resetprefs_menu">Reset preferences</string>
-    <string name="restoreprefs_menu">Restore preferences</string>
-    <string name="share_menu">Share</string>
-    <string name="enable_notifications_summary">Enables notifications for InstallerOpt actions</string>
-    <string name="enable_notifications_title">Notifications</string>
 
 </resources>
