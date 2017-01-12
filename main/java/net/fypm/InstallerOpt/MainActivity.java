@@ -167,6 +167,8 @@ public class MainActivity extends Activity {
             findPreference(Common.PREF_ENABLE_BACKUP_APK_FILE).setOnPreferenceChangeListener(changeListenerLauncher5);
             findPreference(Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS).setOnPreferenceChangeListener(changeListenerLauncher6);
             findPreference(Common.PREF_ENABLE_FORCE_ENGLISH).setOnPreferenceChangeListener(changeListenerLauncher7);
+            findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP).setOnPreferenceChangeListener(changeListenerLauncher8);
+            findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT).setOnPreferenceChangeListener(changeListenerLauncher9);
         }
 
         @Override
@@ -348,6 +350,32 @@ public class MainActivity extends Activity {
                         .getClass());
                 startActivity(refresh);
                 getActivity().finish();
+                return true;
+            }
+        };
+
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher8 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity = getActivity();
+                if (newValue.equals(true)) {
+                    findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT).setEnabled(false);
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, false).apply();
+                } else {
+                    findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT).setEnabled(true);
+                }
+                return true;
+            }
+        };
+
+        private final Preference.OnPreferenceChangeListener changeListenerLauncher9 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity = getActivity();
+                if (newValue.equals(true)) {
+                    findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP).setEnabled(false);
+                    MultiprocessPreferences.getDefaultSharedPreferences(activity).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false).apply();
+                } else {
+                    findPreference(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP).setEnabled(true);
+                }
                 return true;
             }
         };
@@ -561,7 +589,7 @@ public class MainActivity extends Activity {
             } else {
                 Toast.makeText(ctx, R.string.folder_size_error_message, Toast.LENGTH_LONG).show();
             }
-            if(pDialog != null && pDialog.isShowing()) {
+            if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
             pDialog = null;

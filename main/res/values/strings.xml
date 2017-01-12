@@ -165,6 +165,8 @@
     <string name="enable_install_external_storage_title">Install to External Storage</string>
     <string name="enable_install_unknown_apps_summary">Allow unknown applications to be installed</string>
     <string name="enable_install_unknown_apps_title">Unknown Apps</string>
+    <string name="enable_install_unknown_apps_prompt_summary">Blocks unknown app installs, but prompts to override on each install</string>
+    <string name="enable_install_unknown_apps_prompt_title">Unknown Apps Prompt</string>
     <string name="enable_keep_apps_data_summary">App data is not deleted when application is uninstalled</string>
     <string name="enable_keep_apps_data_title">Keep App Data</string>
     <string name="enable_launch_app_summary">Click application icon when viewing application info to launch application</string>

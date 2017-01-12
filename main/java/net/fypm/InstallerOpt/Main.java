@@ -1,9 +1,11 @@
 package net.fypm.InstallerOpt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.AndroidAppHelper;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -79,11 +81,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook systemAppsHook;
     public XC_MethodHook updatePrefsHook;
     public XC_MethodHook unknownAppsHook;
+    public XC_MethodReplacement unknownAppsPrompt;
+    public XC_MethodHook unknownAppsHookPrompt;
     public XC_MethodHook verifyAppsHook;
     public XC_MethodHook verifyJarHook;
     public XC_MethodHook verifySignatureHook;
     public XC_MethodHook verifySignaturesHook;
     public XC_MethodHook grantPermissionsBackButtonHook;
+
 
     public Class<?> disableChangerClass;
     public Context mContext;
@@ -131,6 +136,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installBackground;
     public static boolean installShell;
     public static boolean installUnknownApps;
+    public static boolean installUnknownAppsPrompt;
     public static boolean keepAppsData;
     public static boolean prefsChanged;
     public static boolean showButtons;
@@ -536,7 +542,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         .getObjectField(param.thisObject, "mPkgInfo");
                 Resources res = getInstallerOptContext().getResources();
                 LayoutInflater inflater = LayoutInflater.from(getInstallerOptContext());
-                GridLayout layoutVersion = (GridLayout)inflater.inflate(res.getLayout(R.layout.version_layout), null);
+                GridLayout layoutVersion = (GridLayout) inflater.inflate(res.getLayout(R.layout.version_layout), null);
                 Toast toast = new Toast(mContext);
                 toast.setDuration(Toast.LENGTH_LONG);
                 String packageName = mPkgInfo.packageName;
@@ -569,7 +575,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         } else {
                             ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
                         }
-                        ((TextView)layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                        ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
                         toast.setView(layoutVersion);
                         toast.show();
                     }
@@ -606,7 +612,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         } else {
                             ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
                         }
-                        ((TextView)layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                        ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
                         toast.setView(layoutVersion);
                         toast.show();
                     }
@@ -648,13 +654,13 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
                             //((TextView) layoutVersion.findViewById(R.id.current_version)).setVisibility(View.VISIBLE);
                         }
-                        ((TextView)layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                        ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
                         if (currentCode != 0) {
                             ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
                         } else {
                             ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
                         }
-                        ((TextView)layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                        ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
                         toast.setView(layoutVersion);
                         toast.show();
 
@@ -1483,7 +1489,70 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     param.setResult(true);
                     return;
                 }
+            }
+        };
 
+        unknownAppsPrompt = new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                mContext = AndroidAppHelper.currentApplication();
+                installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, getInstallerOptContext());
+                if (installUnknownAppsPrompt) {
+                    int DLG_UNKNOWN_APPS = Build.VERSION.SDK_INT >= 17 ? 1 : 2;
+                    if ((Integer) param.args[0] != DLG_UNKNOWN_APPS) {
+                        XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
+                        XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
+                    }
+                    return null;
+                }
+                XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
+                XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
+                return null;
+            }
+        };
+
+        unknownAppsHookPrompt = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                mContext = AndroidAppHelper.currentApplication();
+                installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, getInstallerOptContext());
+                if (installUnknownAppsPrompt) {
+                    xlog_start("unknownAppsHookPrompt");
+                    String checkUnknownSourceMethod = "";
+
+                    String instAlertTitle = "Package installation";
+                    String instAlertBody = "You are trying to install an apk from an unknown source.\nYour phone/tablet and personal data are more vulnerable to attack by apps from unknown sources. You agree that you are solely responsible for any damage to your phone or loss of data that may result from using these apps.\n\nDo you want to continue the installation?";
+
+                    if (Build.VERSION.SDK_INT >= 22) {
+                        checkUnknownSourceMethod = "isUnknownSourcesEnabled";
+                    } else {
+                        checkUnknownSourceMethod = "isInstallingUnknownAppsAllowed";
+                    }
+                    if (Common.MARSHMALLOW_NEWER) {
+                        if (!(Boolean) XposedHelpers.callMethod(param.thisObject, "isUnknownSourcesAllowedByAdmin")) {
+                            return;
+                        }
+                    }
+                    if (!(Boolean) XposedHelpers.callMethod(param.thisObject, checkUnknownSourceMethod)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder((Context) param.thisObject);
+                        builder.setTitle(instAlertTitle);
+                        //Alert taken from Android settings
+                        builder.setMessage(instAlertBody);
+                        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                XposedHelpers.callMethod(param.thisObject, "initiateInstall");
+                            }
+                        });
+                        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                XposedHelpers.callMethod(param.thisObject, "finish");
+                            }
+                        });
+                        builder.show();
+                    }
+                }
             }
         };
 
@@ -1825,6 +1894,24 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         xlog("Method not found", nsme);
                         xlog_end("grantPermissionsBackButtonHook");
                     }
+                }
+
+                try {
+                    XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
+                            lpparam.classLoader, "onCreate", "android.os.Bundle", unknownAppsHookPrompt);
+                } catch (NoSuchMethodError nsme) {
+                    xlog_start("unknownAppsHookPrompt");
+                    xlog("Method not found", nsme);
+                    xlog_end("unknownAppsHookPrompt");
+                }
+
+                try {
+                    XposedHelpers.findAndHookMethod(Common.PACKAGEINSTALLERACTIVITY,
+                            lpparam.classLoader, "showDialogInner", Integer.TYPE, unknownAppsPrompt);
+                } catch (NoSuchMethodError nsme) {
+                    xlog_start("unknownAppsPrompt");
+                    xlog("Method not found", nsme);
+                    xlog_end("unknownAppsPrompt");
                 }
 
                 if (Common.LOLLIPOP_MR1_NEWER) {

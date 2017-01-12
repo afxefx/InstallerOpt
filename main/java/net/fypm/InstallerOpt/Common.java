@@ -96,6 +96,7 @@ public class Common {
     public static final String PREF_ENABLE_HIDE_APP_CRASHES = "enable_hide_app_crashes";
     public static final String PREF_ENABLE_INSTALL_EXTERNAL_STORAGE = "enable_install_external_storage";
     public static final String PREF_ENABLE_INSTALL_UNKNOWN_APP = "enable_install_unknown_apps";
+    public static final String PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT = "enable_install_unknown_apps_prompt";
     public static final String PREF_ENABLE_INSTALL_UNSIGNED_APP = "enable_install_unsigned_apps";
     public static final String PREF_ENABLE_KEEP_APP_DATA = "enable_keep_apps_data";
     public static final String PREF_ENABLE_LAUNCH_APP = "enable_launch_app";
