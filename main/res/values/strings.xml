@@ -8,6 +8,7 @@
     <string name="AppInstPrefs">Application Install Preferences</string>
     <string name="AppPrefs">Application Preferences</string>
     <string name="AppUninstPrefs">Application Uninstall Preferences</string>
+    <string name="MasterSwitch">Master Switch</string>
     <string name="backup_delete_complete_message">Backup Deletion Completed Successfully</string>
     <string name="backup_delete_file_prepare_message">Preparing to delete files from backup location</string>
     <string name="backup_delete_menu">Delete Selected Backups</string>
@@ -171,6 +172,8 @@
     <string name="enable_keep_apps_data_title">Keep App Data</string>
     <string name="enable_launch_app_summary">Click application icon when viewing application info to launch application</string>
     <string name="enable_launch_app_title">Icon Application Launch</string>
+    <string name="enable_module_summary">Uncheck to disable all InstallerOpt functions</string>
+    <string name="enable_module_title">InstallerOpt Module</string>
     <string name="enable_notifications_summary">Enables notifications for InstallerOpt actions</string>
     <string name="enable_notifications_title">Notifications</string>
     <string name="enable_open_app_ops_summary">Opens App Ops after installation of application</string>

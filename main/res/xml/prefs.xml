@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/MasterSwitch">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_module"
+            android:summary="@string/enable_module_summary"
+            android:title="@string/enable_module_title" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/AppPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_hide_app_crashes"
             android:summary="@string/enable_hide_app_crashes_summary"
             android:title="@string/enable_hide_app_crashes_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_disable_user_apps"
             android:summary="@string/enable_disable_user_apps_summary"
             android:title="@string/enable_disable_user_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_app_storage_buttons"
             android:summary="@string/enable_app_storage_buttons_summary"
             android:title="@string/enable_app_storage_buttons_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_disable_system_apps"
             android:summary="@string/enable_disable_system_apps_summary"
             android:title="@string/enable_disable_system_apps_title" />
@@ -25,16 +36,19 @@
     <PreferenceCategory android:title="@string/AppInfoPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_launch_app"
             android:summary="@string/enable_launch_app_summary"
             android:title="@string/enable_launch_app_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_play_open"
             android:summary="@string/enable_play_open_summary"
             android:title="@string/enable_play_open_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_package_name"
             android:summary="@string/enable_package_name_summary"
             android:title="@string/enable_package_name_title" />
@@ -42,86 +56,103 @@
     <PreferenceCategory android:title="@string/AppInstPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_hide_install"
             android:summary="@string/enable_auto_hide_install_summary"
             android:title="@string/enable_auto_hide_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_install"
             android:summary="@string/enable_auto_install_summary"
             android:title="@string/enable_auto_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_close_install"
             android:summary="@string/enable_auto_close_install_summary"
             android:title="@string/enable_auto_close_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_install_launch"
             android:summary="@string/enable_auto_install_launch_summary"
             android:title="@string/enable_auto_install_launch_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_close_install_vibrate"
             android:summary="@string/enable_auto_close_install_vibrate_summary"
             android:title="@string/enable_auto_close_install_vibrate_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_backup_apk_files"
             android:summary="@string/enable_backup_apk_files_summary"
             android:title="@string/enable_backup_apk_files_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_delete_apk_files"
             android:summary="@string/enable_delete_apk_files_summary"
             android:title="@string/enable_delete_apk_files_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_install_background"
             android:summary="@string/disable_install_background_summary"
             android:title="@string/disable_install_background_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_install_shell"
             android:summary="@string/disable_install_shell_summary"
             android:title="@string/disable_install_shell_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_install_external_storage"
             android:summary="@string/enable_install_external_storage_summary"
             android:title="@string/enable_install_external_storage_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_open_app_ops"
             android:summary="@string/enable_open_app_ops_summary"
             android:title="@string/enable_open_app_ops_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_version_code"
             android:summary="@string/enable_version_code_summary"
             android:title="@string/enable_version_code_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_version"
             android:summary="@string/enable_version_summary"
             android:title="@string/enable_version_title" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:dependency="enable_module"
             android:key="enable_version_inline"
             android:summary="@string/enable_version_inline_summary"
             android:title="@string/enable_version_inline_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_version_toast"
             android:summary="@string/enable_version_toast_summary"
             android:title="@string/enable_version_toast_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_install_unknown_apps"
             android:summary="@string/enable_install_unknown_apps_summary"
             android:title="@string/enable_install_unknown_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_install_unknown_apps_prompt"
             android:summary="@string/enable_install_unknown_apps_prompt_summary"
             android:title="@string/enable_install_unknown_apps_prompt_title" />
@@ -129,31 +160,37 @@
     <PreferenceCategory android:title="@string/AppUninstPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_uninstall"
             android:summary="@string/enable_auto_uninstall_summary"
             android:title="@string/enable_auto_uninstall_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_auto_close_uninstall"
             android:summary="@string/enable_auto_close_uninstall_summary"
             android:title="@string/enable_auto_close_uninstall_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_uninstall_background"
             android:summary="@string/disable_uninstall_background_summary"
             android:title="@string/disable_uninstall_background_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_keep_apps_data"
             android:summary="@string/enable_keep_apps_data_summary"
             android:title="@string/enable_keep_apps_data_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_uninstall_system_apps"
             android:summary="@string/enable_uninstall_system_apps_summary"
             android:title="@string/enable_uninstall_system_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_uninstall_device_admin"
             android:summary="@string/enable_uninstall_device_admin_summary"
             android:title="@string/enable_uninstall_device_admin_title" />
@@ -161,57 +198,68 @@
     <PreferenceCategory android:title="@string/ExpertPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_debug_apps"
             android:summary="@string/enable_debug_apps_summary"
             android:title="@string/enable_debug_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_verify_apps"
             android:summary="@string/disable_verify_apps_summary"
             android:title="@string/disable_verify_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_check_duplicated_permissions"
             android:summary="@string/disable_check_duplicated_permissions_summary"
             android:title="@string/disable_check_duplicated_permissions_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_disable_verify_signatures"
             android:summary="@string/enable_disable_verify_signatures_summary"
             android:title="@string/enable_disable_verify_signatures_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_verify_jar"
             android:summary="@string/disable_verify_jar_summary"
             android:title="@string/disable_verify_jar_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_check_permissions"
             android:summary="@string/disable_check_permissions_summary"
             android:title="@string/disable_check_permissions_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_sig_check"
             android:summary="@string/enable_disable_sig_check_summary"
             android:title="@string/enable_disable_sig_check_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_check_sdk_version"
             android:summary="@string/disable_check_sdk_version_summary"
             android:title="@string/disable_check_sdk_version_title" />
         <!--<CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="disable_lucky_patcher_presence"
             android:enabled="false"
             android:summary="@string/enable_disable_lucky_patcher_presence_summary"
             android:title="@string/enable_disable_lucky_patcher_presence_title" />-->
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_downgrade_apps"
             android:summary="@string/enable_downgrade_apps_summary"
             android:title="@string/enable_downgrade_apps_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="external_sdcard_full_access"
             android:summary="@string/external_sdcard_full_access_summary"
             android:title="@string/external_sdcard_full_access_title" />
@@ -219,6 +267,7 @@
     <PreferenceCategory android:title="@string/MiscPrefs">
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_show_buttons"
             android:summary="@string/enable_show_buttons_summary"
             android:title="@string/enable_show_buttons_title" />
@@ -226,26 +275,31 @@
     <PreferenceCategory android:title="@string/advanced">
         <CheckBoxPreference
             android:defaultValue="true"
+            android:dependency="enable_module"
             android:key="enable_hide_icon"
             android:summary="@string/enable_hide_icon_summary"
             android:title="@string/enable_hide_icon_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_darkui"
             android:summary="@string/enable_darkui_summary"
             android:title="@string/enable_darkui_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_debug"
             android:summary="@string/enable_debug_summary"
             android:title="@string/enable_debug_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_force_english"
             android:summary="@string/enable_force_english_summary"
             android:title="@string/enable_force_english_title" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_module"
             android:key="enable_notifications"
             android:summary="@string/enable_notifications_summary"
             android:title="@string/enable_notifications_title" />

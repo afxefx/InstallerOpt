@@ -161,6 +161,7 @@ public class MainActivity extends Activity {
             getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
             addPreferencesFromResource(R.xml.prefs);
             findPreference(Common.PREF_ENABLE_APP_ICON).setOnPreferenceChangeListener(changeListenerLauncher);
+            //findPreference(Common.PREF_ENABLE_MODULE).setOnPreferenceChangeListener(changeListenerLauncher1);
             findPreference(Common.PREF_ENABLE_DARK_THEME).setOnPreferenceChangeListener(changeListenerLauncher2);
             findPreference(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher3);
             findPreference(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL).setOnPreferenceChangeListener(changeListenerLauncher4);
@@ -273,6 +274,16 @@ public class MainActivity extends Activity {
                 return true;
             }
         };
+
+        /*private final Preference.OnPreferenceChangeListener changeListenerLauncher1 = new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Intent refresh = new Intent(getActivity(), getActivity()
+                        .getClass());
+                startActivity(refresh);
+                getActivity().finish();
+                return true;
+            }
+        };*/
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher2 = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
