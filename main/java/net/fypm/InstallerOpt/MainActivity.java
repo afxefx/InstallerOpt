@@ -484,6 +484,7 @@ public class MainActivity extends Activity {
             }
         }
 
+        @NonNull
         @Override
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
             //Checking the request code of our request
