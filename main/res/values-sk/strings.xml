@@ -212,8 +212,8 @@
     <string name="enable_notifications_summary">Povoliť upozornenia pre akcie InstallerOpt</string>
     <string name="enable_install_unknown_apps_prompt_summary">Blocks unknown app installs, but prompts to override on each install</string>
     <string name="enable_install_unknown_apps_prompt_title">Unknown Apps Prompt</string>
-    <string name="MasterSwitch">Master Switch</string>
-    <string name="enable_module_summary">Uncheck to disable all InstallerOpt functions</string>
-    <string name="enable_module_title">InstallerOpt Module</string>
+    <string name="MasterSwitch">Hlavný prepínač</string>
+    <string name="enable_module_summary">Vypnutím zakážete všetky funckie InstallerOpt</string>
+    <string name="enable_module_title">InstallerOpt modul</string>
 
 </resources>
