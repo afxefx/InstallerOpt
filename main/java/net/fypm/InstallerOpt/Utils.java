@@ -1,6 +1,5 @@
 package net.fypm.InstallerOpt;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -14,7 +13,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -49,6 +48,7 @@ public class Utils extends BroadcastReceiver {
     public Context ctx;
     public Resources resources;
     public boolean enableDebug;
+    //public boolean enableNotifications;
     public static int maxBackupVersions = 2;
 
     @Override
@@ -57,6 +57,7 @@ public class Utils extends BroadcastReceiver {
             PACKAGE_DIR.mkdir();
         }
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        //enableNotifications = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
         //maxBackupVersions = MultiprocessPreferences.getDefaultSharedPreferences(context).getInt(Common.PREF_MAX_BACKUP_VERSIONS, 3);
         ctx = context;
         resources = ctx.getResources();
@@ -171,16 +172,19 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " successfully backed up",
                                 Toast.LENGTH_LONG).show();
-                        //postNotification("Backup Status", "APK file: " + apkFile + "\nsuccessfully backed up", ctx);
-
                     }
+                    /*if (enableNotifications) {
+                        postNotification("Install Status", "APK file: " + apkFile + "\nsuccessfully backed up", "", ctx);
+                    }*/
                     Log.i(TAG, "APK file " + apkFile + " successfully backed up");
                 } else {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully backed up",
                                 Toast.LENGTH_LONG).show();
-                        //postNotification("Backup Status", "APK file: " + apkFile + "\nwas not successfully backed up", ctx);
                     }
+                    /*if (enableNotifications) {
+                        postNotification("Install Status", "APK file: " + apkFile + "\nwas not successfully backed up", "", ctx);
+                    }*/
                     Log.e(TAG, "APK file " + apkFile + " was not successfully backed up");
                 }
             }
@@ -224,7 +228,7 @@ public class Utils extends BroadcastReceiver {
         File apk = new File(apkFile);
         String absolutePath = apk.getAbsolutePath();
         String filePath = apkFile.
-                substring(0,absolutePath.lastIndexOf(File.separator));
+                substring(0, absolutePath.lastIndexOf(File.separator));
         if (filePath.equals(backupDir) && !force) {
             Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
             return;
@@ -234,8 +238,10 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
                                 Toast.LENGTH_LONG).show();
-                        //postNotification("Deletion Status", "APK file: " + apkFile + "\nwas not successfully deleted", ctx);
                     }
+                    /*if (enableNotifications) {
+                        postNotification("Install Status", "APK file: " + apkFile + "\nwas not successfully deleted", "", ctx);
+                    }*/
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                     String message = apk.exists() ? "is in use by another app" : "does not exist";
                     throw new IOException("Cannot delete file, because file " + message + ".");
@@ -243,9 +249,10 @@ public class Utils extends BroadcastReceiver {
                     if (enableDebug) {
                         Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
                                 Toast.LENGTH_LONG).show();
-                        //postNotification("Deletion Status", "APK file: " + apkFile + "\nsuccessfully deleted", ctx);
-
                     }
+                    /*if (enableNotifications) {
+                        postNotification("Install Status", "APK file: " + apkFile + "\nsuccessfully deleted", "", ctx);
+                    }*/
                     Log.i(TAG, "APK file " + apkFile + " successfully deleted");
                 }
             } catch (Exception e) {
@@ -261,18 +268,17 @@ public class Utils extends BroadcastReceiver {
 
         PendingIntent pi = PendingIntent.getActivity(ctx, 0, new Intent(ctx, MainActivity.class), 0);
         //Resources r = ctx.getResources();
-        Notification notification = new NotificationCompat.Builder(ctx)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(ctx)
                 .setTicker(description)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(description)
                 .setSubText(thirdline)
                 .setContentIntent(pi)
-                .setAutoCancel(true)
-                .build();
+                .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notification);
+        notificationManager.notify(0, notification.build());
     }
 
     public void uninstallSystemApp(String packageName) {
