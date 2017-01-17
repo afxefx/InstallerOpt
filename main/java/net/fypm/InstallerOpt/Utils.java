@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -48,7 +49,7 @@ public class Utils extends BroadcastReceiver {
     public Context ctx;
     public Resources resources;
     public boolean enableDebug;
-    //public boolean enableNotifications;
+    public boolean enableNotifications;
     public static int maxBackupVersions = 2;
 
     @Override
@@ -57,7 +58,7 @@ public class Utils extends BroadcastReceiver {
             PACKAGE_DIR.mkdir();
         }
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
-        //enableNotifications = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
+        enableNotifications = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
         //maxBackupVersions = MultiprocessPreferences.getDefaultSharedPreferences(context).getInt(Common.PREF_MAX_BACKUP_VERSIONS, 3);
         ctx = context;
         resources = ctx.getResources();
@@ -74,7 +75,7 @@ public class Utils extends BroadcastReceiver {
         } else if (Common.ACTION_DELETE_APK_FILE.equals(action)) {
             if (hasExtras) {
                 String apkFile = extras.getString(Common.FILE);
-                deleteApkFile(apkFile, false);
+                deleteApkFile(apkFile, false, true);
             }
         } else if (Common.ACTION_UNINSTALL_SYSTEM_APP.equals(action)) {
             if (hasExtras) {
@@ -139,7 +140,7 @@ public class Utils extends BroadcastReceiver {
                 //Collections.sort(TmpList);
                 do {
                     String oldest_file = dir + File.separator + TmpList.get(0);
-                    deleteApkFile(oldest_file, true);
+                    deleteApkFile(oldest_file, true, false);
                     TmpList.remove(0);
                     Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
                 } while (TmpList.size() > maxBackupVersions);
@@ -170,21 +171,21 @@ public class Utils extends BroadcastReceiver {
             if (!dst.equals(src)) {
                 if (copyFile(src, dst)) {
                     if (enableDebug) {
-                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully backed up",
+                        Toast.makeText(ctx, apkFile + " successfully backed up",
                                 Toast.LENGTH_LONG).show();
                     }
-                    /*if (enableNotifications) {
-                        postNotification("Install Status", "APK file: " + apkFile + "\nsuccessfully backed up", "", ctx);
-                    }*/
+                    if (enableNotifications) {
+                        postNotification("Backup Success", apkFile + "\nsuccessfully backed up", "", ctx);
+                    }
                     Log.i(TAG, "APK file " + apkFile + " successfully backed up");
                 } else {
                     if (enableDebug) {
-                        Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully backed up",
+                        Toast.makeText(ctx, apkFile + " was not successfully backed up",
                                 Toast.LENGTH_LONG).show();
                     }
-                    /*if (enableNotifications) {
-                        postNotification("Install Status", "APK file: " + apkFile + "\nwas not successfully backed up", "", ctx);
-                    }*/
+                    if (enableNotifications) {
+                        postNotification("Backup Failure", apkFile + "\nwas not successfully backed up", "", ctx);
+                    }
                     Log.e(TAG, "APK file " + apkFile + " was not successfully backed up");
                 }
             }
@@ -223,7 +224,7 @@ public class Utils extends BroadcastReceiver {
         }
     }
 
-    public void deleteApkFile(String apkFile, boolean force) {
+    public void deleteApkFile(String apkFile, boolean force, boolean notif) {
         String backupDir = MultiprocessPreferences.getDefaultSharedPreferences(ctx).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         File apk = new File(apkFile);
         String absolutePath = apk.getAbsolutePath();
@@ -236,23 +237,23 @@ public class Utils extends BroadcastReceiver {
             try {
                 if (!apk.delete()) {
                     if (enableDebug) {
-                        Toast.makeText(ctx, "APK file: " + apkFile + " was not successfully deleted",
+                        Toast.makeText(ctx, apkFile + " was not successfully deleted",
                                 Toast.LENGTH_LONG).show();
                     }
-                    /*if (enableNotifications) {
-                        postNotification("Install Status", "APK file: " + apkFile + "\nwas not successfully deleted", "", ctx);
-                    }*/
+                    if (enableNotifications && notif) {
+                        postNotification("Delete Failure", apkFile + "\nwas not successfully deleted", "", ctx);
+                    }
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                     String message = apk.exists() ? "is in use by another app" : "does not exist";
                     throw new IOException("Cannot delete file, because file " + message + ".");
                 } else {
                     if (enableDebug) {
-                        Toast.makeText(ctx, "APK file: " + apkFile + " successfully deleted",
+                        Toast.makeText(ctx, apkFile + " successfully deleted",
                                 Toast.LENGTH_LONG).show();
                     }
-                    /*if (enableNotifications) {
-                        postNotification("Install Status", "APK file: " + apkFile + "\nsuccessfully deleted", "", ctx);
-                    }*/
+                    if (enableNotifications && notif) {
+                        postNotification("Delete Success", apkFile + "\nsuccessfully deleted", "", ctx);
+                    }
                     Log.i(TAG, "APK file " + apkFile + " successfully deleted");
                 }
             } catch (Exception e) {
@@ -266,6 +267,8 @@ public class Utils extends BroadcastReceiver {
 
     private void postNotification(String title, String description, String thirdline, Context ctx) {
 
+        Random random = new Random();
+        int mId = random.nextInt();
         PendingIntent pi = PendingIntent.getActivity(ctx, 0, new Intent(ctx, MainActivity.class), 0);
         //Resources r = ctx.getResources();
         NotificationCompat.Builder notification = new NotificationCompat.Builder(ctx)
@@ -278,7 +281,7 @@ public class Utils extends BroadcastReceiver {
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notification.build());
+        notificationManager.notify(mId, notification.build());
     }
 
     public void uninstallSystemApp(String packageName) {

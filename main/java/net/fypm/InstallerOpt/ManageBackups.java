@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -43,6 +45,8 @@ public class ManageBackups extends ListActivity {
     public String backupDir;
     public static ArrayAdapter<PInfo> adapter;
     public boolean enableDebug;
+    public boolean unknownApps;
+    public boolean unknownAppsPrompt;
     public ListTask lt;
     public boolean reload;
 
@@ -51,6 +55,8 @@ public class ManageBackups extends ListActivity {
         super.onCreate(savedInstanceState);
         boolean enableDark = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DARK_THEME, false);
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        unknownApps = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false);
+        unknownAppsPrompt = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, false);
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
@@ -244,12 +250,26 @@ public class ManageBackups extends ListActivity {
         return arrayFiles;
     }
 
+    private void lockScreenOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    private void unlockScreenOrientation() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
     class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
 
         @Override
         protected void onPreExecute() {
             if (pDialog == null) {
+                lockScreenOrientation();
                 pDialog = new ProgressDialog(ManageBackups.this);
                 //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
                 pDialog.setMessage(ManageBackups.this.getString(R.string.loading_backup_message));
@@ -266,6 +286,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
             Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
             adapter = new CustomBackupListArrayAdapter(ManageBackups.this, filesInFolderPackageInfo);
@@ -358,6 +379,7 @@ public class ManageBackups extends ListActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             if (pDialog == null) {
+                lockScreenOrientation();
                 pDialog = new ProgressDialog(ctx);
                 pDialog.setMessage(ctx.getString(R.string.backup_delete_file_prepare_message));
                 //pDialog.setProgress(0);
@@ -390,6 +412,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
             if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
                 lt = new ListTask();
@@ -446,6 +469,12 @@ public class ManageBackups extends ListActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             if (pDialog == null) {
+                lockScreenOrientation();
+                MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, true).apply();
+                if (!unknownApps) {
+                    MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, true).apply();
+                    MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, false).apply();
+                }
                 pDialog = new ProgressDialog(ctx);
                 pDialog.setMessage(ctx.getString(R.string.backup_restore_file_prepare_message));
                 //pDialog.setProgress(0);
@@ -475,9 +504,13 @@ public class ManageBackups extends ListActivity {
         @Override
         protected void onPostExecute(String unused) {
             Toast.makeText(ctx, R.string.backup_restore_complete_message, Toast.LENGTH_LONG).show();
+            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
+            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, unknownApps).apply();
+            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, unknownAppsPrompt).apply();
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
             if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
                 lt = new ListTask();
@@ -502,6 +535,8 @@ public class ManageBackups extends ListActivity {
                 intent.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
                 ctx.startActivity(intent);
             } catch (Exception e) {
+                MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, unknownApps).apply();
+                MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, unknownAppsPrompt).apply();
                 Log.e(TAG, "Restore file error: ", e);
             }
         }

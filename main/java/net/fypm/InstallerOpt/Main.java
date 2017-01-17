@@ -96,6 +96,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static String backupDir;
     public static XSharedPreferences prefs;
     public static boolean autoInstallCancelled;
+    public static boolean autoInstallCancelOverride;
     public static boolean backupApkFiles;
     public static boolean bootCompleted;
     public static boolean checkDuplicatedPermissions;
@@ -523,6 +524,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableVersionInline = getPref(Common.PREF_ENABLE_SHOW_VERSION_INLINE, getInstallerOptContext());
                 enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, getInstallerOptContext());
                 enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, getInstallerOptContext());
+                autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, getInstallerOptContext());
                 //Add below two in prefs
                 //checkSignatures = getPref("enabled_disable_sig_check", getInstallerOptContext());
                 confirmCheckSignatures = getPref("enabled_confirm_check_signatures", getInstallerOptContext());
@@ -667,7 +669,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     }
                 }
 
-                if (enableAutoInstall && isModuleEnabled()) {
+                if (enableAutoInstall && !autoInstallCancelOverride && isModuleEnabled()) {
                     if ((newVersion.equals(currentVersion) && newCode == currentCode) || newCode < currentCode) {
                         Toast.makeText(mContext, "Auto install cancelled due to matching version info and/or current version is newer than one being installed", Toast.LENGTH_LONG)
                                 .show();

@@ -75,6 +75,7 @@ public class Common {
     public static final String PREF_ENABLE_AUTO_ENABLE_CLEAR_BUTTON = "enable_auto_enable_clear_buttons";
     public static final String PREF_ENABLE_AUTO_HIDE_INSTALL = "enable_auto_hide_install";
     public static final String PREF_ENABLE_AUTO_INSTALL = "enable_auto_install";
+    public static final String PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE = "enable_auto_install_cancel_override";
     public static final String PREF_ENABLE_AUTO_LAUNCH_INSTALL = "enable_auto_install_launch";
     public static final String PREF_ENABLE_AUTO_UNINSTALL = "enable_auto_uninstall";
     public static final String PREF_ENABLE_BACKUP_ALL_APPS = "enable_backup_all_apps";

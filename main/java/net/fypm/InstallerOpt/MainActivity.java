@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -545,6 +546,19 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void lockScreenOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    private void unlockScreenOrientation() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
     class AsyncCopy extends AsyncTask<String, String, String> {
 
         private static final String TAG = "InstallerOpt";
@@ -565,6 +579,7 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             if (pDialog == null) {
+                lockScreenOrientation();
                 pDialog = new ProgressDialog(ctx);
                 pDialog.setMessage(ctx.getString(R.string.move_file_prepare_message));
                 //pDialog.setProgress(0);
@@ -604,6 +619,7 @@ public class MainActivity extends Activity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
         }
 

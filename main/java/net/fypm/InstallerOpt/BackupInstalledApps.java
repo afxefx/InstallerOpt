@@ -3,9 +3,11 @@ package net.fypm.InstallerOpt;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -98,12 +100,26 @@ public class BackupInstalledApps extends ListActivity {
         }
     }
 
+    private void lockScreenOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    private void unlockScreenOrientation() {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
     class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
 
         @Override
         protected void onPreExecute() {
             if (pDialog == null) {
+                lockScreenOrientation();
                 pDialog = new ProgressDialog(BackupInstalledApps.this);
                 //pDialog.setMessage(ManageBackups.this.getString(R.string.move_file_prepare_message));
                 pDialog.setMessage(BackupInstalledApps.this.getString(R.string.loading_applications_message));
@@ -120,6 +136,7 @@ public class BackupInstalledApps extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
             Collections.sort(installedApps, new Comparator<PInfo>() {
                 public int compare(PInfo one, PInfo other) {
@@ -182,6 +199,7 @@ public class BackupInstalledApps extends ListActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             if (pDialog == null) {
+                lockScreenOrientation();
                 pDialog = new ProgressDialog(ctx);
                 pDialog.setMessage(ctx.getString(R.string.backup_file_prepare_message));
                 //pDialog.setProgress(0);
@@ -213,6 +231,7 @@ public class BackupInstalledApps extends ListActivity {
             if(pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
+            unlockScreenOrientation();
             pDialog = null;
         }
 
