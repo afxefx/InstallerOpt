@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
@@ -49,6 +52,7 @@ public class ManageBackups extends ListActivity {
     public boolean unknownAppsPrompt;
     public ListTask lt;
     public boolean reload;
+    private EditText searchBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,28 @@ public class ManageBackups extends ListActivity {
                     Toast.makeText(ManageBackups.this, selectedItems.size() + " backups selected", Toast.LENGTH_SHORT).show();
                 }
             });
+
+        searchBox = (EditText) findViewById(R.id.searchbox);
+
+        // Add Text Change Listener to EditText
+        searchBox.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Call back the Adapter with current character to Filter
+                if (adapter != null) {
+                    adapter.getFilter().filter(s);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

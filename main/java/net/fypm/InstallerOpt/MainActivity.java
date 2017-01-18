@@ -50,6 +50,10 @@ public class MainActivity extends Activity {
     private static final String TAG = "InstallerOpt";
     public Activity activity;
 
+    public MainActivity() {
+
+    }
+
     @SuppressWarnings({"deprecation"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {

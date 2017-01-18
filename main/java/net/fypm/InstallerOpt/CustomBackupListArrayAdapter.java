@@ -5,15 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
 
     private final List<PInfo> list;
+    private List<PInfo> objects;
     private final Activity context;
+    private Filter filter;
 
     static class ViewHolder {
         protected TextView appname;
@@ -28,7 +32,23 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
         super(context, R.layout.manage_backups_row, list);
         this.context = context;
         this.list = list;
+        this.objects = list;
     }
+
+    @Override
+    public int getCount() {
+        return objects.size();
+    }
+
+    @Override
+    public PInfo getItem(int position) {
+        return objects.get(position);
+    }
+
+    /*@Override
+    public long getItemId(int position) {
+        return list.get(position).getId();
+    }*/
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -59,4 +79,76 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
 
         return view;
     }
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null)
+            filter = new AppFilter<PInfo>(objects);
+        return filter;
+    }
+
+    /**
+     * Class for filtering in Arraylist listview. Objects need a valid
+     * 'toString()' method.
+     *
+     * @author Tobias Schürg inspired by Alxandr
+     *         (http://stackoverflow.com/a/2726348/570168)
+     *
+     */
+    private class AppFilter<T> extends Filter {
+
+        private ArrayList<T> sourceObjects;
+
+        public AppFilter(List<T> objects) {
+            sourceObjects = new ArrayList<T>();
+            synchronized (this) {
+                sourceObjects.addAll(objects);
+            }
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence chars) {
+            String filterSeq = chars.toString().toLowerCase();
+            FilterResults result = new FilterResults();
+            if (filterSeq != null && filterSeq.length() > 0) {
+                ArrayList<T> filter = new ArrayList<T>();
+
+                for (T object : sourceObjects) {
+                    // the filtering itself:
+                    if (filterSeq.length() > 1) {
+                        if (object.toString().toLowerCase().contains(filterSeq)) {
+                            filter.add(object);
+                        }
+                    } else {
+                        if (object.toString().toLowerCase().startsWith(filterSeq)) {
+                            filter.add(object);
+                        }
+                    }
+                }
+                result.count = filter.size();
+                result.values = filter;
+            } else {
+                // add all objects
+                synchronized (this) {
+                    result.values = sourceObjects;
+                    result.count = sourceObjects.size();
+                }
+            }
+            return result;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            // NOTE: this function is *always* called from the UI thread.
+            ArrayList<T> filtered = (ArrayList<T>) results.values;
+            notifyDataSetChanged();
+            clear();
+            for (int i = 0, l = filtered.size(); i < l; i++)
+                add((PInfo) filtered.get(i));
+            notifyDataSetInvalidated();
+        }
+    }
+
 }

@@ -115,4 +115,8 @@ public class PInfo implements Comparable<PInfo> {
     public String getSourceDir() {
         return sourceDir;
     }
+
+    public String toString() {
+        return appname;
+    }
 }

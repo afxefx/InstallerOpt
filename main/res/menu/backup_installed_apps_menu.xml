@@ -3,5 +3,5 @@
     <item android:id="@+id/backup_menu"
           android:title="@string/backup_menu" />
     <item android:id="@+id/cancel_menu"
-          android:title="android.R.string.cancel" />
+          android:title="@android:string/cancel" />
 </menu>

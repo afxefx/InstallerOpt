@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/searchbox"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Filter results..." />
+    <ListView
+        android:id="@+id/android:list"
+        android:choiceMode="multipleChoice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_weight="1" >
+    </ListView>
+
+</LinearLayout>
+
+<!--
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -14,7 +38,12 @@
         android:layout_weight="1" >
     </ListView>
 
-    <!--<Button android:id="@+id/delete_btn"
+    <EditText
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    &lt;!&ndash;<Button android:id="@+id/delete_btn"
         android:text="@string/delete_button_text"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
@@ -26,6 +55,6 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"/>-->
+        android:layout_alignParentBottom="true"/>&ndash;&gt;
 
-</RelativeLayout>
+</RelativeLayout>-->

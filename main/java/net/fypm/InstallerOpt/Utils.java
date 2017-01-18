@@ -174,18 +174,18 @@ public class Utils extends BroadcastReceiver {
                         Toast.makeText(ctx, apkFile + " successfully backed up",
                                 Toast.LENGTH_LONG).show();
                     }
-                    if (enableNotifications) {
+                    /*if (enableNotifications) {
                         postNotification("Backup Success", apkFile + "\nsuccessfully backed up", "", ctx);
-                    }
+                    }*/
                     Log.i(TAG, "APK file " + apkFile + " successfully backed up");
                 } else {
                     if (enableDebug) {
                         Toast.makeText(ctx, apkFile + " was not successfully backed up",
                                 Toast.LENGTH_LONG).show();
                     }
-                    if (enableNotifications) {
+                    /*if (enableNotifications) {
                         postNotification("Backup Failure", apkFile + "\nwas not successfully backed up", "", ctx);
-                    }
+                    }*/
                     Log.e(TAG, "APK file " + apkFile + " was not successfully backed up");
                 }
             }
@@ -240,9 +240,9 @@ public class Utils extends BroadcastReceiver {
                         Toast.makeText(ctx, apkFile + " was not successfully deleted",
                                 Toast.LENGTH_LONG).show();
                     }
-                    if (enableNotifications && notif) {
+                    /*if (enableNotifications && notif) {
                         postNotification("Delete Failure", apkFile + "\nwas not successfully deleted", "", ctx);
-                    }
+                    }*/
                     Log.e(TAG, "APK file " + apkFile + " was not successfully deleted");
                     String message = apk.exists() ? "is in use by another app" : "does not exist";
                     throw new IOException("Cannot delete file, because file " + message + ".");
@@ -251,9 +251,9 @@ public class Utils extends BroadcastReceiver {
                         Toast.makeText(ctx, apkFile + " successfully deleted",
                                 Toast.LENGTH_LONG).show();
                     }
-                    if (enableNotifications && notif) {
+                    /*if (enableNotifications && notif) {
                         postNotification("Delete Success", apkFile + "\nsuccessfully deleted", "", ctx);
-                    }
+                    }*/
                     Log.i(TAG, "APK file " + apkFile + " successfully deleted");
                 }
             } catch (Exception e) {
