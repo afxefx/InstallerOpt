@@ -354,6 +354,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 enableOpenAppOps = getPref(Common.PREF_ENABLE_OPEN_APP_OPS, getInstallerOptContext());
                 deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
                 enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, getInstallerOptContext());
+                Resources res = getInstallerOptContext().getResources();
                 Button mLaunch = (Button) XposedHelpers.getObjectField(
                         XposedHelpers.getSurroundingThis(param.thisObject),
                         "mLaunchButton");
@@ -395,7 +396,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             /*Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();*/
                             if (enableNotifications && isModuleEnabled()) {
-                                postNotification("Install Success", packageUri.getLastPathSegment() + " installed", "");
+                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "");
                             }
                             if (enableVibrateDevice && isModuleEnabled()) {
                                 try {
@@ -411,7 +412,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         /*Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
                                 Toast.LENGTH_LONG).show();*/
                         if (enableNotifications && isModuleEnabled()) {
-                            postNotification("Install Failure", packageUri.getLastPathSegment() + " not installed", "Error code: " + msg.arg1);
+                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1);
                         }
                         if (enableDebug && isModuleEnabled()) {
                             xlog_start("autoCloseInstallHook");

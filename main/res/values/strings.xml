@@ -4,6 +4,7 @@
     <string name="advanced">Advanced</string>
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">App was uninstalled</string>
+    <string name="applications_selected"> application(s) selected</string>
     <string name="AppInfoPrefs">Application Info Preferences</string>
     <string name="AppInstPrefs">Application Install Preferences</string>
     <string name="AppPrefs">Application Preferences</string>
@@ -29,6 +30,7 @@
     <string name="backup_restore_file_prepare_message">Preparing to restore files from backup location</string>
     <string name="backup_restore_menu">Restore Selected Backups</string>
     <string name="backup_selection_empty">No backups selected, please select a backup and try again</string>
+    <string name="backups_seleced"> backup(s) selected</string>
     <string name="backup_total_items">\n\nTotal backed up:</string>
     <string name="backup_used">\n\nBackup folder used:</string>
     <string name="check_signatures">Checking signatures</string>
@@ -50,8 +52,14 @@
     <string name="exception_message">This option will block all background installs and may interfere with automated restorations like Titanium Backup, would you like to add exceptions?</string>
     <string name="exception_selection_empty">No exceptions selected, please select an application and try again</string>
     <string name="ExpertPrefs">Expert Preferences - PROCEED WITH CAUTION!</string>
+    <string name="search_box_text">Filter...</string>
     <string name="folder_size_error_message">Old and new folders sizes do not match, deletion of old folder cancelled</string>
     <string name="free_space_message">New backup folder does not have enough free space, please choose another</string>
+    <string name="install_status_failure">Install Failure</string>
+    <string name="install_status_failure_error_code">Error code: </string>
+    <string name="install_status_success">Install Success</string>
+    <string name="install_status_failure_cont"> not installed</string>
+    <string name="install_status_success_cont"> installed</string>
     <string name="loading_backup_message">Loading backups...</string>
     <string name="loading_applications_message">Loading applications...</string>
     <string name="manage_button_text">Manage</string>

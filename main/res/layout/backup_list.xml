@@ -8,7 +8,7 @@
         android:id="@+id/searchbox"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Filter results..." />
+        android:hint="@string/search_box_text" />
     <ListView
         android:id="@+id/android:list"
         android:choiceMode="multipleChoice"

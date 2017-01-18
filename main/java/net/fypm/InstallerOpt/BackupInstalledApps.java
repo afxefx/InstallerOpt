@@ -74,7 +74,8 @@ public class BackupInstalledApps extends ListActivity {
                         String selected = installedApps.get(position).getSourceDir();
                         selectedItems.remove(selected);
                     }
-                    Toast.makeText(BackupInstalledApps.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(BackupInstalledApps.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BackupInstalledApps.this, selectedItems.size() + R.string.applications_selected, Toast.LENGTH_SHORT).show();
                 }
             });
 
