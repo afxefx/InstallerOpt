@@ -225,11 +225,11 @@
     <string name="sort_date_asc">Dátum - vzostupne</string>
     <string name="sort_date_des">Dátum - zostupne</string>
     <string name="install_status_failure_cont">Nenainštalovaných: &#160;</string>
-    <string name="backupdate_text">Backup Date:&#160;</string>
-    <string name="byte_text">&#160;bytes)</string>
-    <string name="size_text">Size:&#160;</string>
-    <string name="status_text">Status:&#160;</string>
-    <string name="version_text">Version:&#160;</string>
-    <string name="apps_text">&#160;apps</string>
+    <string name="backupdate_text">Dátum zálohy: &#160;</string>
+    <string name="byte_text">&#160;bajtov)</string>
+    <string name="size_text">Veľkosť: &#160;</string>
+    <string name="status_text">Stav: &#160;</string>
+    <string name="version_text">Verzia: &#160;</string>
+    <string name="apps_text">&#160; aplikácií</string>
 
 </resources>
