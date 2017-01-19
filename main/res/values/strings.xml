@@ -98,6 +98,8 @@
     <string name="backup_menu">Backup</string>
     <string name="share_menu">Share</string>
     <string name="sort_menu">Sort</string>
+    <string name="sort_date_asc">Date - Ascending</string>
+    <string name="sort_date_des">Date - Descending</string>
     <string name="sort_name_asc">Name - Ascending</string>
     <string name="sort_name_des">Name - Descending</string>
     <string name="sort_size_asc">Size - Ascending</string>

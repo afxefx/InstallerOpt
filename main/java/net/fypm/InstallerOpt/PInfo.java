@@ -3,6 +3,7 @@ package net.fypm.InstallerOpt;
 import android.graphics.drawable.Drawable;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 public class PInfo implements Comparable<PInfo> {
@@ -14,13 +15,14 @@ public class PInfo implements Comparable<PInfo> {
     private Drawable appicon;
     private long itemSize;
     private String itemSizeHuman;
+    private Date itemModified;
     private String formattedDate;
     private String calculatedDigest;
     private String apkName;
     private String status;
     private String sourceDir;
 
-    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, long itemSize, String itemSizeHuman, String formattedDate, String calculatedDigest, String apkName, String status, String sourceDir) {
+    public PInfo(String appname, String pname, int uid, String versionName, int versionCode, Drawable appicon, long itemSize, String itemSizeHuman, Date itemModified, String formattedDate, String calculatedDigest, String apkName, String status, String sourceDir) {
         this.appname = appname;
         this.pname = pname;
         this.uid = uid;
@@ -29,6 +31,7 @@ public class PInfo implements Comparable<PInfo> {
         this.appicon = appicon;
         this.itemSize = itemSize;
         this.itemSizeHuman = itemSizeHuman;
+        this.itemModified = itemModified;
         this.formattedDate = formattedDate;
         this.calculatedDigest = calculatedDigest;
         this.apkName = apkName;
@@ -48,7 +51,7 @@ public class PInfo implements Comparable<PInfo> {
 
     public static Comparator<PInfo> COMPARE_BY_DATE = new Comparator<PInfo>() {
         public int compare(PInfo one, PInfo other) {
-            return one.formattedDate.compareTo(other.formattedDate);
+            return one.itemModified.compareTo(other.itemModified);
         }
     };
 
@@ -94,6 +97,10 @@ public class PInfo implements Comparable<PInfo> {
 
     public String getItemSizeHuman() {
         return itemSizeHuman;
+    }
+
+    public Date getItemModifiedRaw() {
+        return itemModified;
     }
 
     public String getItemModified() {

@@ -9,6 +9,10 @@
             android:title="@string/sort_name_asc" />
         <item android:id="@+id/sort_name_dec"
             android:title="@string/sort_name_des" />
+        <item android:id="@+id/sort_date_asc"
+              android:title="@string/sort_date_asc" />
+        <item android:id="@+id/sort_date_dec"
+              android:title="@string/sort_date_des" />
         <item android:id="@+id/sort_size_asc"
             android:title="@string/sort_size_asc" />
         <item android:id="@+id/sort_size_dec"

@@ -170,6 +170,15 @@ public class ManageBackups extends ListActivity {
                 //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
                 adapter.notifyDataSetChanged();
                 return true;
+            case R.id.sort_date_asc:
+                Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_DATE);
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.sort_date_dec:
+                Collections.sort(filesInFolderPackageInfo, Collections.reverseOrder(PInfo.COMPARE_BY_DATE));
+                //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
+                adapter.notifyDataSetChanged();
+                return true;
             case R.id.sort_size_asc:
                 Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_SIZE);
                 //Collections.sort(filesInFolder, new NaturalOrderComparator());
@@ -378,7 +387,7 @@ public class ManageBackups extends ListActivity {
                     //String calculatedDigest = calculateMD5(item);
                     String apkName = filesInFolder.get(i).toString();
 
-                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, itemSizeHuman, formattedDate, "", apkName, status, "");
+                    PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, itemSizeHuman, itemModified, formattedDate, "", apkName, status, "");
                     filesInFolderPackageInfo.add(newInfo);
                     publishProgress(String.valueOf(i));
                 }
