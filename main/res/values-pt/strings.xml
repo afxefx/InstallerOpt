@@ -199,4 +199,14 @@
     <string name="enable_version_toast_title">Versão em Notificação Toast</string>
     <string name="external_sdcard_full_access_summary">Permite ler/gravar no cartão SD externo (requer reinício)</string>
     <string name="external_sdcard_full_access_title">Acesso Completo ao Cartão SD Externo</string>
+    <string name="applications_selected">&#160;application(s) selected</string>
+    <string name="backups_selected">&#160;backup(s) selected</string>
+    <string name="install_status_failure">Install Failure</string>
+    <string name="install_status_failure_error_code">Error code:&#160;</string>
+    <string name="install_status_success">Install Success</string>
+    <string name="install_status_success_cont">&#160;installed</string>
+    <string name="search_box_text">Filter&#8230;</string>
+    <string name="sort_date_asc">Date - Ascending</string>
+    <string name="sort_date_des">Date - Descending</string>
+    <string name="install_status_failure_cont">&#160;not installed</string>
 </resources>

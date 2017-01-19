@@ -198,5 +198,15 @@
     <string name="MasterSwitch">Master Switch</string>
     <string name="enable_module_summary">Uncheck to disable all InstallerOpt functions</string>
     <string name="enable_module_title">InstallerOpt Module</string>
+    <string name="applications_selected">&#160;application(s) selected</string>
+    <string name="backups_selected">&#160;backup(s) selected</string>
+    <string name="install_status_failure">Install Failure</string>
+    <string name="install_status_failure_error_code">Error code:&#160;</string>
+    <string name="install_status_success">Install Success</string>
+    <string name="install_status_success_cont">&#160;installed</string>
+    <string name="search_box_text">Filter&#8230;</string>
+    <string name="sort_date_asc">Date - Ascending</string>
+    <string name="sort_date_des">Date - Descending</string>
+    <string name="install_status_failure_cont">&#160;not installed</string>
 
 </resources>
