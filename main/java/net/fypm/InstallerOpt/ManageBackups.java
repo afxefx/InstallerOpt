@@ -312,7 +312,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            unlockScreenOrientation();
+            //unlockScreenOrientation();
             pDialog = null;
             Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_APKNAME);
             adapter = new CustomBackupListArrayAdapter(ManageBackups.this, filesInFolderPackageInfo);
@@ -438,7 +438,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            unlockScreenOrientation();
+            //unlockScreenOrientation();
             pDialog = null;
             if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
                 lt = new ListTask();
@@ -536,7 +536,7 @@ public class ManageBackups extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            unlockScreenOrientation();
+            //unlockScreenOrientation();
             pDialog = null;
             if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
                 lt = new ListTask();

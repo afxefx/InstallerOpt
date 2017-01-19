@@ -49,10 +49,8 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "InstallerOpt";
     public Activity activity;
-
-    public MainActivity() {
-
-    }
+    private PrefsFragment fragmentPrefs;
+    private final String PREFS_FRAGMENT_TAG = "prefsfragmenttag";
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -73,8 +71,25 @@ public class MainActivity extends Activity {
             this.getPackageManager().setComponentEnabledSetting(alias, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
             MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_APP_ICON, true).apply();
         }
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new PrefsFragment()).commit();
+
+        if (savedInstanceState != null) { // saved instance state, fragment may exist
+            // look up the instance that already exists by tag
+            fragmentPrefs = (PrefsFragment)
+                    getFragmentManager().findFragmentByTag(PREFS_FRAGMENT_TAG);
+        } else if (fragmentPrefs == null) {
+            // only create fragment if they haven't been instantiated already
+            fragmentPrefs = new PrefsFragment();
+        }
+
+        if (!fragmentPrefs.isInLayout()) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(android.R.id.content, fragmentPrefs, PREFS_FRAGMENT_TAG)
+                    .commit();
+        }
+
+        /*getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new PrefsFragment()).commit();*/
     }
 
     public void resetPreferences() {
@@ -133,11 +148,11 @@ public class MainActivity extends Activity {
         boolean stateOfLaunch;
         boolean forceEnglish;
 
-
         @SuppressWarnings("deprecation")
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            setRetainInstance(true);
             activity = getActivity();
             forceEnglish = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_FORCE_ENGLISH, false);
             stateOfClose = MultiprocessPreferences.getDefaultSharedPreferences(activity).getBoolean(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, false);

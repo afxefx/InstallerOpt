@@ -140,6 +140,19 @@ public class BackupInstalledApps extends ListActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+            lt = new ListTask();
+            lt.execute();
+        }
+        /*if (lt.getStatus() == AsyncTask.Status.FINISHED && adapter != null) {
+            adapter.notifyDataSetChanged();
+            selectedItems.clear();
+        }*/
+    }
+
     class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
 
@@ -163,7 +176,7 @@ public class BackupInstalledApps extends ListActivity {
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            unlockScreenOrientation();
+            //unlockScreenOrientation();
             pDialog = null;
             Collections.sort(installedApps, new Comparator<PInfo>() {
                 public int compare(PInfo one, PInfo other) {
@@ -258,7 +271,7 @@ public class BackupInstalledApps extends ListActivity {
             if(pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
-            unlockScreenOrientation();
+            //unlockScreenOrientation();
             pDialog = null;
         }
 
