@@ -75,7 +75,7 @@ public class BackupInstalledApps extends ListActivity {
                         selectedItems.remove(selected);
                     }
                     //Toast.makeText(BackupInstalledApps.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(BackupInstalledApps.this, selectedItems.size() + R.string.applications_selected, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BackupInstalledApps.this, selectedItems.size() + BackupInstalledApps.this.getString(R.string.applications_selected), Toast.LENGTH_SHORT).show();
                 }
             });
 

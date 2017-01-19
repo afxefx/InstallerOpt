@@ -82,7 +82,7 @@ public class ManageBackups extends ListActivity {
                         String selected = filesInFolderPackageInfo.get(position).getApkName();
                         selectedItems.remove(selected);
                     }
-                    Toast.makeText(ManageBackups.this, selectedItems.size() + R.string.backups_seleced, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ManageBackups.this, selectedItems.size() + ManageBackups.this.getString(R.string.backups_selected), Toast.LENGTH_SHORT).show();
                 }
             });
 
