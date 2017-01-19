@@ -210,9 +210,17 @@ public class BackupInstalledApps extends ListActivity {
                 String sourceDir = p.applicationInfo.sourceDir;
                 //int uid = p.applicationInfo.uid;
                 String versionName = p.versionName;
-                //int versionCode = p.versionCode;
+                int versionCode = p.versionCode;
+                String fileName = appname + " " + versionName + "-" + versionCode + ".apk";
+                File backupfile = new File(backupDir + File.separator + fileName);
+                String status ="";
+                if (backupfile.exists()) {
+                    status = "Backup exist";
+                } else {
+                    status = "Not backed up";
+                }
                 Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-                PInfo newInfo = new PInfo(appname, "", 0, versionName, 0, appicon, 0, "", null, "", "", "", "", sourceDir);
+                PInfo newInfo = new PInfo(appname, "", 0, versionName, 0, appicon, 0, "", null, "", "", "", status, sourceDir);
                 installedApps.add(newInfo);
                 publishProgress(String.valueOf(i));
             }
@@ -273,6 +281,10 @@ public class BackupInstalledApps extends ListActivity {
             }
             //unlockScreenOrientation();
             pDialog = null;
+            if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+                lt = new ListTask();
+                lt.execute();
+            }
         }
 
         @Override
