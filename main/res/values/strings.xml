@@ -2,6 +2,7 @@
     <!--Strings-->
     <string name="about_menu">About</string>
     <string name="advanced">Advanced</string>
+    <string name="apps_text">&#160;apps</string>
     <string name="app_name">InstallerOpt</string>
     <string name="app_uninstalled">App was uninstalled</string>
     <string name="AppInfoPrefs">Application Info Preferences</string>
@@ -32,8 +33,10 @@
     <string name="backup_selection_empty">No backups selected, please select a backup and try again</string>
     <string name="backup_total_items">\n\nTotal backed up:</string>
     <string name="backup_used">\n\nBackup folder used:</string>
+    <string name="backupdate_text">Backup Date:&#160;</string>
     <string name="backupprefs_menu">Backup preferences</string>
     <string name="backups_selected">&#160;backup(s) selected</string>
+    <string name="byte_text">&#160;bytes)</string>
     <string name="check_signatures">Checking signatures</string>
     <string name="confirm_check_signatures">Confirming signatures check</string>
     <string name="confirm_check_signatures_message">Disable signatures check for this installation?</string>
@@ -77,6 +80,7 @@
     <string name="no_backup_file">No saved preferences found</string>
     <string name="no_old_files_message">No files present in old backup folder</string>
     <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
+    <string name="none" translatable="false"></string>
     <string name="parse_application_message">Parsing application*</string>
     <string name="parse_application_of_message">*of*</string>
     <string name="parse_backup_message">Parsing backup*</string>
@@ -97,6 +101,7 @@
     <string name="sdcard_access_message">External SD Card Full Access is only needed for backing up to external SD cards, would you like it enabled and then reboot?</string>
     <string name="search_box_text">Filter&#8230;</string>
     <string name="share_menu">Share</string>
+    <string name="size_text">Size:&#160;</string>
     <string name="sort_date_asc">Date - Ascending</string>
     <string name="sort_date_des">Date - Descending</string>
     <string name="sort_menu">Sort</string>
@@ -107,7 +112,9 @@
     <string name="sort_status_asc">Status - Ascending</string>
     <string name="sort_status_des">Status - Descending</string>
     <string name="stats_menu">Backup Stats</string>
+    <string name="status_text">Status:&#160;</string>
     <string name="updated">Module has been updated</string>
+    <string name="version_text">Version:&#160;</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
     <!--Preferences-->
     <string name="backup_apk_files_limit_summary">How many old backup versions to keep</string>

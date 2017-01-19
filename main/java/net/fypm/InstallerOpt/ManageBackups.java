@@ -25,13 +25,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+//import java.io.FileInputStream;
+//import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+//import java.io.InputStream;
+//import java.math.BigInteger;
+//import java.security.MessageDigest;
+//import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,18 +41,18 @@ public class ManageBackups extends ListActivity {
 
     private static final String TAG = "InstallerOpt";
 
-    public ArrayList<String> filesInFolder;
-    public String appname;
-    public ArrayList<PInfo> filesInFolderPackageInfo;
-    public ArrayList<String> selectedItems;
-    public String backupDir;
-    public static ArrayAdapter<PInfo> adapter;
     public boolean enableDebug;
     public boolean unknownApps;
     public boolean unknownAppsPrompt;
-    public ListTask lt;
     public boolean reload;
-    private EditText searchBox;
+
+    public static ArrayAdapter<PInfo> adapter;
+    public ArrayList<String> filesInFolder;
+    public ArrayList<PInfo> filesInFolderPackageInfo;
+    public ArrayList<String> selectedItems;
+    public ListTask lt;
+    public String appname;
+    public String backupDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,20 +72,21 @@ public class ManageBackups extends ListActivity {
         selectedItems = new ArrayList<String>();
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    CheckableLinearLayout item = (CheckableLinearLayout) view;
-                    if (item.isChecked()) {
-                        String selected = filesInFolderPackageInfo.get(position).getApkName();
-                        selectedItems.add(selected);
-                    } else {
-                        String selected = filesInFolderPackageInfo.get(position).getApkName();
-                        selectedItems.remove(selected);
-                    }
-                    Toast.makeText(ManageBackups.this, selectedItems.size() + ManageBackups.this.getString(R.string.backups_selected), Toast.LENGTH_SHORT).show();
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CheckableLinearLayout item = (CheckableLinearLayout) view;
+                if (item.isChecked()) {
+                    String selected = filesInFolderPackageInfo.get(position).getApkName();
+                    selectedItems.add(selected);
+                } else {
+                    String selected = filesInFolderPackageInfo.get(position).getApkName();
+                    selectedItems.remove(selected);
                 }
-            });
+                Toast.makeText(ManageBackups.this, selectedItems.size() + ManageBackups.this.getString(R.string.backups_selected), Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        EditText searchBox;
         searchBox = (EditText) findViewById(R.id.searchbox);
 
         // Add Text Change Listener to EditText
@@ -100,7 +101,7 @@ public class ManageBackups extends ListActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
@@ -125,7 +126,7 @@ public class ManageBackups extends ListActivity {
 
                 ArrayList<Uri> files = new ArrayList<Uri>();
 
-                for(String path : selectedItems) {
+                for (String path : selectedItems) {
                     File file = new File(backupDir + File.separator + path);
                     Uri uri = Uri.fromFile(file);
                     files.add(uri);
@@ -219,7 +220,7 @@ public class ManageBackups extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING && reload){
+        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING && reload) {
             lt = new ListTask();
             lt.execute();
         }
@@ -229,7 +230,7 @@ public class ManageBackups extends ListActivity {
         }*/
     }
 
-    public static String calculateMD5(File updateFile) {
+    /*public static String calculateMD5(File updateFile) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
@@ -267,7 +268,7 @@ public class ManageBackups extends ListActivity {
                 Log.e(TAG, "Exception on closing MD5 input stream", e);
             }
         }
-    }
+    }*/
 
     public ArrayList<String> getFiles(String DirectoryPath) {
         ArrayList<String> arrayFiles = new ArrayList<String>();
@@ -281,7 +282,6 @@ public class ManageBackups extends ListActivity {
                 arrayFiles.add(files[i].getName());
             }
         }
-
         return arrayFiles;
     }
 
@@ -294,9 +294,9 @@ public class ManageBackups extends ListActivity {
         }
     }
 
-    private void unlockScreenOrientation() {
+    /*private void unlockScreenOrientation() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
+    }*/
 
     class ListTask extends AsyncTask<String, String, Boolean> {
         private ProgressDialog pDialog;
@@ -335,7 +335,7 @@ public class ManageBackups extends ListActivity {
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             pDialog.setMessage(String.format("%-12s %s %s %d", ManageBackups.this.getString(R.string.parse_backup_message).replace('*', ' '), String.valueOf(values[0]), ManageBackups.this.getString(R.string.parse_backup_of_message).replace('*', ' '), filesInFolder.size()) + "\n\n" + appname);
-            }
+        }
 
         @Override
         protected Boolean doInBackground(String... params) {
@@ -344,11 +344,11 @@ public class ManageBackups extends ListActivity {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
 
             for (int i = 0; i < filesInFolder.size(); i++) {
-                PackageInfo p = getPackageManager().getPackageArchiveInfo(backupDir + File.separator + filesInFolder.get(i).toString(), 0);
+                PackageInfo p = getPackageManager().getPackageArchiveInfo(backupDir + File.separator + filesInFolder.get(i), 0);
 
                 if (p != null) {
-                    p.applicationInfo.sourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
-                    p.applicationInfo.publicSourceDir = backupDir + File.separator + filesInFolder.get(i).toString();
+                    p.applicationInfo.sourceDir = backupDir + File.separator + filesInFolder.get(i);
+                    p.applicationInfo.publicSourceDir = backupDir + File.separator + filesInFolder.get(i);
 
                     appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
                     String pname = p.packageName;
@@ -379,13 +379,13 @@ public class ManageBackups extends ListActivity {
                     }
 
                     Drawable appicon = p.applicationInfo.loadIcon(getPackageManager());
-                    File item = new File(backupDir + File.separator + filesInFolder.get(i).toString());
+                    File item = new File(backupDir + File.separator + filesInFolder.get(i));
                     long itemSize = Stats.getFileSize(item);
                     String itemSizeHuman = Stats.humanReadableByteCount(itemSize, true);
                     Date itemModified = new Date(item.lastModified());
                     String formattedDate = dateFormat.format(itemModified);
                     //String calculatedDigest = calculateMD5(item);
-                    String apkName = filesInFolder.get(i).toString();
+                    String apkName = filesInFolder.get(i);
 
                     PInfo newInfo = new PInfo(appname, pname, 0, versionName, versionCode, appicon, itemSize, itemSizeHuman, itemModified, formattedDate, "", apkName, status, "");
                     filesInFolderPackageInfo.add(newInfo);
@@ -449,7 +449,7 @@ public class ManageBackups extends ListActivity {
             }
             //unlockScreenOrientation();
             pDialog = null;
-            if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+            if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING) {
                 lt = new ListTask();
                 lt.execute();
             }
@@ -547,7 +547,7 @@ public class ManageBackups extends ListActivity {
             }
             //unlockScreenOrientation();
             pDialog = null;
-            if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+            if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING) {
                 lt = new ListTask();
                 lt.execute();
             }

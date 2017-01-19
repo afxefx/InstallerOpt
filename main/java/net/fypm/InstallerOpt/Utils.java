@@ -49,7 +49,7 @@ public class Utils extends BroadcastReceiver {
     public Context ctx;
     public Resources resources;
     public boolean enableDebug;
-    public boolean enableNotifications;
+    //public boolean enableNotifications;
     public static int maxBackupVersions = 2;
 
     @Override
@@ -58,7 +58,7 @@ public class Utils extends BroadcastReceiver {
             PACKAGE_DIR.mkdir();
         }
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_DEBUG, false);
-        enableNotifications = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
+        //enableNotifications = MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(Common.PREF_ENABLE_NOTIFICATIONS, false);
         //maxBackupVersions = MultiprocessPreferences.getDefaultSharedPreferences(context).getInt(Common.PREF_MAX_BACKUP_VERSIONS, 3);
         ctx = context;
         resources = ctx.getResources();
@@ -232,7 +232,6 @@ public class Utils extends BroadcastReceiver {
                 substring(0, absolutePath.lastIndexOf(File.separator));
         if (filePath.equals(backupDir) && !force) {
             Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
-            return;
         } else {
             try {
                 if (!apk.delete()) {

@@ -58,7 +58,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_LayoutInflated autoInstallHook2;
     public XC_MethodHook autoCloseUninstallHook;
     public XC_MethodHook autoUninstallHook;
-    public XC_MethodHook bootCompletedHook;
+    //public XC_MethodHook bootCompletedHook;
     public XC_MethodHook checkDuplicatedPermissionsHook;
     public XC_MethodHook checkPermissionsHook;
     public XC_MethodHook checkSdkVersionHook;
@@ -70,7 +70,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook disableUserAppsHook;
     public XC_MethodHook externalSdCardAccessHook; // 4.4 - 5.0
     public XC_MethodHook externalSdCardAccessHook2; // 6.0 and up
-    public XC_MethodHook getPackageInfoHook;
+    //public XC_MethodHook getPackageInfoHook;
     public XC_MethodHook hideAppCrashesHook;
     public XC_MethodHook initAppStorageSettingsButtonsHook;
     public XC_MethodHook initAppOpsDetailsHook;
@@ -79,7 +79,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public XC_MethodHook scanPackageHook;
     public XC_MethodHook showButtonsHook;
     public XC_MethodHook systemAppsHook;
-    public XC_MethodHook updatePrefsHook;
+    //public XC_MethodHook updatePrefsHook;
     public XC_MethodHook unknownAppsHook;
     public XC_MethodReplacement unknownAppsPrompt;
     public XC_MethodHook unknownAppsHookPrompt;
@@ -100,11 +100,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean backupApkFiles;
     public static boolean bootCompleted;
     public static boolean checkDuplicatedPermissions;
-    public static boolean checkLuckyPatcher;
+    //public static boolean checkLuckyPatcher;
     public static boolean checkPermissions;
     public static boolean checkSdkVersion;
     public static boolean checkSignatures;
-    public static boolean confirmCheckSignatures;
+    //public static boolean confirmCheckSignatures;
     public static boolean debugApps;
     public static boolean deleteApkFiles;
     public static boolean deviceAdmins;
@@ -139,7 +139,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installUnknownApps;
     public static boolean installUnknownAppsPrompt;
     public static boolean keepAppsData;
-    public static boolean prefsChanged;
+    //public static boolean prefsChanged;
     public static boolean showButtons;
     public static boolean uninstallBackground;
     public static boolean uninstallSystemApps;
@@ -148,7 +148,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean verifySignature;
     public static boolean rom_CM;
     public static boolean rom_TW;
-    public static long prefsModifiedTime;
+    //public static long prefsModifiedTime;
     private static final String TAG = "InstallerOpt";
 
     @Override
@@ -528,7 +528,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, getInstallerOptContext());
                 //Add below two in prefs
                 //checkSignatures = getPref("enabled_disable_sig_check", getInstallerOptContext());
-                confirmCheckSignatures = getPref("enabled_confirm_check_signatures", getInstallerOptContext());
+                //confirmCheckSignatures = getPref("enabled_confirm_check_signatures", getInstallerOptContext());
                 //int msg = (int) XposedHelpers.getObjectField(param.thisObject, "msg");
                 int newCode = 0;
                 int currentCode = 0;
@@ -780,14 +780,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
-        bootCompletedHook = new XC_MethodHook() {
+        /*bootCompletedHook = new XC_MethodHook() {
             @Override
             public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 if (isModuleEnabled()) {
                     Log.i(TAG, "bootCompletedHook: bootCompleted value before changing " + bootCompleted);
                     bootCompleted = true;
                     Log.i(TAG, "bootCompletedHook: bootCompleted after changing " + bootCompleted);
-                /*File bootfile = new File(Environment.getExternalStorageDirectory() + File.separator + "bootfile");
+                *//*File bootfile = new File(Environment.getExternalStorageDirectory() + File.separator + "bootfile");
                 bootfile.createNewFile();
                 byte data=1;
                 if(bootfile.exists())
@@ -795,12 +795,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     OutputStream fo = new FileOutputStream(bootfile);
                     fo.write(data);
                     fo.close();
-                }*/
+                }*//*
                     //mContext = AndroidAppHelper.currentApplication();
                     //setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, false, 0, 0, null);
                 }
             }
-        };
+        };*/
 
         checkDuplicatedPermissionsHook = new XC_MethodHook() {
             @Override
@@ -1081,10 +1081,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
-        getPackageInfoHook = new XC_MethodHook() {
+        /*getPackageInfoHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                /*mContext = AndroidAppHelper.currentApplication();
+                *//*mContext = AndroidAppHelper.currentApplication();
                 try {
                     checkLuckyPatcher = getPref(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, getInstallerOptContext());
                 } catch (Throwable e) {
@@ -1101,9 +1101,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             param.args[0] = Common.EMPTY_STRING;
                         }
                     }
-                }*/
+                }*//*
             }
-        };
+        };*/
 
         grantPermissionsBackButtonHook = new XC_MethodHook() {
             @Override
@@ -1476,14 +1476,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }
         };
 
-        updatePrefsHook = new XC_MethodHook() {
+        /*updatePrefsHook = new XC_MethodHook() {
             @Override
             public void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 //mContext = AndroidAppHelper.currentApplication();
                 //updatePrefs(null);
                 prefsChanged = getPref(Common.PREF_MODIFIED_PREFERENCES, getInstallerOptContext());
             }
-        };
+        };*/
 
         unknownAppsHook = new XC_MethodHook() {
             @Override
@@ -1940,6 +1940,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                     Common.PACKAGEINSTALLERACTIVITY, lpparam.classLoader,
                                     "isUnknownSourcesEnabled", unknownAppsHook);
                         } catch (NoSuchMethodError nsme2) {
+                            xlog_start("isUnknownSourcesEnabled");
+                            xlog("Method not found", nsme);
+                            xlog_end("isUnknownSourcesEnabled");
                         }
                     }
                 } else {
@@ -2141,18 +2144,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         return isCyanogenMod;
     }
 
-    public boolean isExpertModeEnabled() {
-        mContext = AndroidAppHelper.currentApplication();
-        //Add below to prefs
+    /*public boolean isExpertModeEnabled() {
         try {
-            boolean enabled = getPref(Common.PREF_ENABLE_EXPERT_MODE, getInstallerOptContext());
-            return enabled;
+            return prefs.getBoolean(Common.PREF_ENABLE_EXPERT_MODE, false);
         } catch (Throwable e) {
-            boolean enabled = prefs.getBoolean(Common.PREF_ENABLE_EXPERT_MODE, false);
-            return enabled;
+            mContext = AndroidAppHelper.currentApplication();
+            return getPref(Common.PREF_ENABLE_EXPERT_MODE, getInstallerOptContext());
         }
-        //return enabled;
-    }
+    }*/
 
     public boolean isModuleEnabled() {
         try {
@@ -2191,7 +2190,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public void updatePrefs() {
         backupApkFiles = prefs.getBoolean(Common.PREF_ENABLE_BACKUP_APK_FILE, false);
         checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
-        checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
+        //checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
         checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
         checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
         checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);

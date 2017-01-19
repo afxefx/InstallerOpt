@@ -209,4 +209,10 @@
     <string name="sort_date_asc">Date - Ascending</string>
     <string name="sort_date_des">Date - Descending</string>
     <string name="install_status_failure_cont">&#160;not installed</string>
+    <string name="backupdate_text">Backup Date:&#160;</string>
+    <string name="byte_text">&#160;bytes)</string>
+    <string name="size_text">Size:&#160;</string>
+    <string name="status_text">Status:&#160;</string>
+    <string name="version_text">Version:&#160;</string>
+    <string name="apps_text">&#160;apps</string>
 </resources>

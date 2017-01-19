@@ -36,7 +36,7 @@ public class Stats extends Activity {
             }
             final File PACKAGE_DIR = new File(backupDir + File.separator);
             long mSize = getFileSize(PACKAGE_DIR);
-            String fileCount = getFileCount(PACKAGE_DIR);
+            String fileCount = getFileCount(PACKAGE_DIR) + getString(R.string.apps_text);
             if (fileCount != null) {
                 statsDialog.setMessage(String.format("%s %s %s %s %-22s %10s %-22s %10s %-20s %s",
                         getString(R.string.backup_location), PACKAGE_DIR.toString(),
@@ -103,11 +103,10 @@ public class Stats extends Activity {
         return availableSpace;
     }
 
-    public static String getFileCount(final File file) {
+    public static int getFileCount(final File file) {
         ArrayList<String> backup_dir = new ArrayList<String>(Arrays.asList(file.list()));
         int result = backup_dir.size();
-        String total = result + " apps";
-        return total;
+        return result;
     }
 
     public static long getFileSize(final File file) {
@@ -147,8 +146,7 @@ public class Stats extends Activity {
                 lastModifiedFile = files[i];
             }
         }
-        String filename = lastModifiedFile.getName();
-        return filename;
+        return lastModifiedFile.getName();
     }
 
     public static String humanReadableByteCount(long bytes, boolean si) {

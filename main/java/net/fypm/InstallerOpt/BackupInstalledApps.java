@@ -48,7 +48,6 @@ public class BackupInstalledApps extends ListActivity {
     public List<PackageInfo> packs;
     public String backupDir;
     public ListTask lt;
-    private EditText searchBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,21 +63,22 @@ public class BackupInstalledApps extends ListActivity {
         selectedItems = new ArrayList<String>();
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    CheckableLinearLayout item = (CheckableLinearLayout) view;
-                    if (item.isChecked()) {
-                        String selected = installedApps.get(position).getSourceDir();
-                        selectedItems.add(selected);
-                    } else {
-                        String selected = installedApps.get(position).getSourceDir();
-                        selectedItems.remove(selected);
-                    }
-                    //Toast.makeText(BackupInstalledApps.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(BackupInstalledApps.this, selectedItems.size() + BackupInstalledApps.this.getString(R.string.applications_selected), Toast.LENGTH_SHORT).show();
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CheckableLinearLayout item = (CheckableLinearLayout) view;
+                if (item.isChecked()) {
+                    String selected = installedApps.get(position).getSourceDir();
+                    selectedItems.add(selected);
+                } else {
+                    String selected = installedApps.get(position).getSourceDir();
+                    selectedItems.remove(selected);
                 }
-            });
+                //Toast.makeText(BackupInstalledApps.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(BackupInstalledApps.this, selectedItems.size() + BackupInstalledApps.this.getString(R.string.applications_selected), Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        EditText searchBox;
         searchBox = (EditText) findViewById(R.id.searchbox);
 
         // Add Text Change Listener to EditText
@@ -93,7 +93,7 @@ public class BackupInstalledApps extends ListActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
@@ -136,14 +136,14 @@ public class BackupInstalledApps extends ListActivity {
         }
     }
 
-    private void unlockScreenOrientation() {
+    /*private void unlockScreenOrientation() {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-    }
+    }*/
 
     @Override
     public void onResume() {
         super.onResume();
-        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+        if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING) {
             lt = new ListTask();
             lt.execute();
         }
@@ -213,7 +213,7 @@ public class BackupInstalledApps extends ListActivity {
                 int versionCode = p.versionCode;
                 String fileName = appname + " " + versionName + "-" + versionCode + ".apk";
                 File backupfile = new File(backupDir + File.separator + fileName);
-                String status ="";
+                String status = "";
                 if (backupfile.exists()) {
                     status = "Backup exist";
                 } else {
@@ -276,12 +276,12 @@ public class BackupInstalledApps extends ListActivity {
 
         @Override
         protected void onPostExecute(String unused) {
-            if(pDialog != null && pDialog.isShowing()) {
+            if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }
             //unlockScreenOrientation();
             pDialog = null;
-            if(lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING){
+            if (lt.getStatus() != AsyncTask.Status.PENDING && lt.getStatus() != AsyncTask.Status.RUNNING) {
                 lt = new ListTask();
                 lt.execute();
             }
@@ -324,21 +324,21 @@ public class BackupInstalledApps extends ListActivity {
                     if (old_files.get(i).contains(appName))
                         TmpList.add(old_files.get(i));
                 }
-            if (TmpList.size() > maxBackupVersions) {
-                Collections.sort(TmpList, new NaturalOrderComparator());
-                //Collections.sort(TmpList);
-                do {
-                    String oldest_file = dir + File.separator + TmpList.get(0);
-                    deleteApkFile(oldest_file, true);
-                    TmpList.remove(0);
-                    Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
-                } while (TmpList.size() > maxBackupVersions);
-                if (enableDebug) {
-                    Toast.makeText(ctx, "Max backup limit reached, oldest backup file has been deleted",
-                            Toast.LENGTH_LONG).show();
+                if (TmpList.size() > maxBackupVersions) {
+                    Collections.sort(TmpList, new NaturalOrderComparator());
+                    //Collections.sort(TmpList);
+                    do {
+                        String oldest_file = dir + File.separator + TmpList.get(0);
+                        deleteApkFile(oldest_file, true);
+                        TmpList.remove(0);
+                        Log.i(TAG, "Max backup limit reached, oldest backup file has been deleted" + oldest_file);
+                    } while (TmpList.size() > maxBackupVersions);
+                    if (enableDebug) {
+                        Toast.makeText(ctx, "Max backup limit reached, oldest backup file has been deleted",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    //return;
                 }
-                //return;
-            }
 
                 if (enableDebug) {
                     Log.i(TAG, "backupApkFile Debug Start");
@@ -407,10 +407,9 @@ public class BackupInstalledApps extends ListActivity {
         File apk = new File(apkFile);
         String absolutePath = apk.getAbsolutePath();
         String filePath = apkFile.
-                substring(0,absolutePath.lastIndexOf(File.separator));
+                substring(0, absolutePath.lastIndexOf(File.separator));
         if (filePath.equals(backupDir) && !force) {
             Log.i(TAG, "deleteApkFile: Install started from backup directory, file not deleted");
-            return;
         } else {
             try {
                 if (!apk.delete()) {

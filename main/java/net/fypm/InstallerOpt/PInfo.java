@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 public class PInfo implements Comparable<PInfo> {
     private String appname;

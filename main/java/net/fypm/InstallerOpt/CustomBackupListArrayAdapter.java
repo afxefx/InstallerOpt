@@ -71,10 +71,10 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
 
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
-        holder.backupdate.setText("Backup Date: " + list.get(position).getItemModified());
-        holder.filesize.setText("Size: " + list.get(position).getItemSizeHuman() + " (" + list.get(position).getItemSize() + " bytes)");
-        holder.status.setText("Status: " + list.get(position).getStatus());
-        holder.versioninfo.setText("Version: " + list.get(position).getVersionName() + " (" + list.get(position).getVersionCode() + ")");
+        holder.backupdate.setText(context.getString(R.string.backupdate_text) + list.get(position).getItemModified());
+        holder.filesize.setText(context.getString(R.string.size_text) + list.get(position).getItemSizeHuman() + " (" + list.get(position).getItemSize() + context.getString(R.string.byte_text));
+        holder.status.setText(context.getString(R.string.status_text) + list.get(position).getStatus());
+        holder.versioninfo.setText(context.getString(R.string.version_text) + list.get(position).getVersionName() + " (" + list.get(position).getVersionCode() + ")");
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;
@@ -93,7 +93,6 @@ public class CustomBackupListArrayAdapter extends ArrayAdapter<PInfo> {
      *
      * @author Tobias Schürg inspired by Alxandr
      *         (http://stackoverflow.com/a/2726348/570168)
-     *
      */
     private class AppFilter<T> extends Filter {
 

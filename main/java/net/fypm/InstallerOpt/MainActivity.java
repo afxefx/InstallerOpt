@@ -50,7 +50,6 @@ public class MainActivity extends Activity {
     private static final String TAG = "InstallerOpt";
     public Activity activity;
     private PrefsFragment fragmentPrefs;
-    private final String PREFS_FRAGMENT_TAG = "prefsfragmenttag";
 
     @SuppressWarnings({"deprecation"})
     @Override
@@ -72,6 +71,7 @@ public class MainActivity extends Activity {
             MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_APP_ICON, true).apply();
         }
 
+        final String PREFS_FRAGMENT_TAG = "prefsfragmenttag";
         if (savedInstanceState != null) { // saved instance state, fragment may exist
             // look up the instance that already exists by tag
             fragmentPrefs = (PrefsFragment)
@@ -270,11 +270,11 @@ public class MainActivity extends Activity {
 
         }
 
-        private boolean isLauncherIconVisible(ComponentName componentName) {
+        /*private boolean isLauncherIconVisible(ComponentName componentName) {
             int enabledSetting = getPackageManager()
                     .getComponentEnabledSetting(componentName);
             return enabledSetting != PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-        }
+        }*/
 
         private final Preference.OnPreferenceChangeListener changeListenerLauncher = new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {

@@ -13,8 +13,7 @@
         android:id="@+id/android:list"
         android:choiceMode="multipleChoice"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_height="0dp"
         android:layout_alignParentTop="true"
         android:layout_weight="1" >
     </ListView>

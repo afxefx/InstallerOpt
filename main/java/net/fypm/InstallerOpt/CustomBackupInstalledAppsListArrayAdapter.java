@@ -70,8 +70,8 @@ public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInf
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.appname.setText(list.get(position).getName());
         //holder.pname.setText(list.get(position).getPackageName());
-        holder.versioninfo.setText("Version: " + list.get(position).getVersionName());
-        holder.status.setText("Status: " + list.get(position).getStatus());
+        holder.versioninfo.setText(context.getString(R.string.version_text) + list.get(position).getVersionName());
+        holder.status.setText(context.getString(R.string.status_text) + list.get(position).getStatus());
         holder.appicon.setImageDrawable(list.get(position).getAppIcon());
 
         return view;
@@ -90,7 +90,6 @@ public class CustomBackupInstalledAppsListArrayAdapter extends ArrayAdapter<PInf
      *
      * @author Tobias Schürg inspired by Alxandr
      *         (http://stackoverflow.com/a/2726348/570168)
-     *
      */
     private class AppFilter<T> extends Filter {
 
