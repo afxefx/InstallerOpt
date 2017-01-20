@@ -231,5 +231,6 @@
     <string name="status_text">Stav: &#160;</string>
     <string name="version_text">Verzia: &#160;</string>
     <string name="apps_text">&#160; aplikácií</string>
+    <string name="not_available_text">Not Available</string>
 
 </resources>

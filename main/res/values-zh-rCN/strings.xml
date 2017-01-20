@@ -214,5 +214,6 @@
     <string name="status_text">Status:&#160;</string>
     <string name="version_text">Version:&#160;</string>
     <string name="apps_text">&#160;apps</string>
+    <string name="not_available_text">Not Available</string>
 
 </resources>

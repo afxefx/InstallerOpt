@@ -34,7 +34,7 @@ public class About extends Activity {
                 });
         AlertDialog thisAboutDialog = aboutDialog.create();
         thisAboutDialog.show();
-        ((TextView) thisAboutDialog.findViewById(android.R.id.message)).setClickable(true);
+        thisAboutDialog.findViewById(android.R.id.message).setClickable(true);
         ((TextView) thisAboutDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

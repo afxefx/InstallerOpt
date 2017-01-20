@@ -576,7 +576,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (currentVersion != null) {
                             ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
                         } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
                         }
                         ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
                         toast.setView(layoutVersion);
@@ -613,7 +613,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (currentCode != 0) {
                             ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
                         } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
                         }
                         ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
                         toast.setView(layoutVersion);
@@ -654,14 +654,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (currentVersion != null) {
                             ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
                         } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText("Not Available");
+                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
                             //((TextView) layoutVersion.findViewById(R.id.current_version)).setVisibility(View.VISIBLE);
                         }
                         ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
                         if (currentCode != 0) {
                             ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
                         } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText("Not Available");
+                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
                         }
                         ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
                         toast.setView(layoutVersion);
