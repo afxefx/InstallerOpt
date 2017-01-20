@@ -81,6 +81,7 @@
     <string name="no_old_files_message">No files present in old backup folder</string>
     <string name="non_writeable_message">Unable to write to chosen folder, please choose another</string>
     <string name="none" translatable="false"></string>
+    <string name="not_available_text">Not Available</string>
     <string name="parse_application_message">Parsing application*</string>
     <string name="parse_application_of_message">*of*</string>
     <string name="parse_backup_message">Parsing backup*</string>
