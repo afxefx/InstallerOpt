@@ -210,8 +210,8 @@
     <string name="share_menu">Zdieľať</string>
     <string name="enable_notifications_title">Upozornenia</string>
     <string name="enable_notifications_summary">Povoliť upozornenia pre akcie InstallerOpt</string>
-    <string name="enable_install_unknown_apps_prompt_summary">Blocks unknown app installs, but prompts to override on each install</string>
-    <string name="enable_install_unknown_apps_prompt_title">Unknown Apps Prompt</string>
+    <string name="enable_install_unknown_apps_prompt_summary">Blokuje inštalovanie neznámych aplikácií, ale zobrazí výzvu na potlačenie pri každej inštalácii</string>
+    <string name="enable_install_unknown_apps_prompt_title">Výzva neznámych aplikácií</string>
     <string name="MasterSwitch">Hlavný prepínač</string>
     <string name="enable_module_summary">Vypnutím zakážete všetky funckie InstallerOpt</string>
     <string name="enable_module_title">InstallerOpt modul</string>
@@ -231,6 +231,6 @@
     <string name="status_text">Stav: &#160;</string>
     <string name="version_text">Verzia: &#160;</string>
     <string name="apps_text">&#160; aplikácií</string>
-    <string name="not_available_text">Not Available</string>
+    <string name="not_available_text">Nie je dostupné</string>
 
 </resources>
