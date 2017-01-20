@@ -190,7 +190,7 @@ public class ManageBackups extends ListActivity {
                 //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
                 adapter.notifyDataSetChanged();
                 return true;
-            case R.id.sort_status_asc:
+            /*case R.id.sort_status_asc:
                 Collections.sort(filesInFolderPackageInfo, PInfo.COMPARE_BY_STATUS);
                 //Collections.sort(filesInFolder, new NaturalOrderComparator());
                 adapter.notifyDataSetChanged();
@@ -199,7 +199,7 @@ public class ManageBackups extends ListActivity {
                 Collections.sort(filesInFolderPackageInfo, Collections.reverseOrder(PInfo.COMPARE_BY_STATUS));
                 //Collections.sort(filesInFolder, Collections.reverseOrder(new NaturalOrderComparator()));
                 adapter.notifyDataSetChanged();
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
