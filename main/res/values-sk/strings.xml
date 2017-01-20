@@ -178,10 +178,10 @@
     <string name="exception_message">Táto možnosť zablokuje všetky inštalácie na pozadí a môže brániť automatickému obnovovaniu napr. z Titanium Backup, chcete pridať výnimky?</string>
     <string name="exception_selection_empty">Nie sú pridané žiadne výnimky, prosím, vyberte aplikáciu a skúste znova</string>
     <string name="sort_menu">Zoradiť</string>
-    <string name="sort_name_asc">Názov - vzostupne</string>
-    <string name="sort_name_des">Názov - zostupne</string>
-    <string name="sort_size_asc">Veľkosť - vzostupne</string>
-    <string name="sort_size_des">Veľkosť - zostupne</string>
+    <string name="sort_name_asc">Názov - A-Z</string>
+    <string name="sort_name_des">Názov - Z-A</string>
+    <string name="sort_size_asc">Veľkosť - od najmenších</string>
+    <string name="sort_size_des">Veľkosť - od najväščích</string>
     <string name="enable_install_external_storage_summary">Ak je povolené, aplikácie budú nainštalované na externé úložisko, na interné ak je zakázané</string>
     <string name="enable_install_external_storage_title">Inštalovať ne externé úložisko</string>
     <string name="parse_application_message">Analýza aplikácie*</string>
@@ -222,8 +222,8 @@
     <string name="install_status_success">Inštalácia bola úspešná</string>
     <string name="install_status_success_cont">Nainštalovaných: &#160;</string>
     <string name="search_box_text">Filter&#8230;</string>
-    <string name="sort_date_asc">Dátum - vzostupne</string>
-    <string name="sort_date_des">Dátum - zostupne</string>
+    <string name="sort_date_asc">Dátum - od najstarších</string>
+    <string name="sort_date_des">Dátum - od najnovších</string>
     <string name="install_status_failure_cont">Nenainštalovaných: &#160;</string>
     <string name="backupdate_text">Dátum zálohy: &#160;</string>
     <string name="byte_text">&#160;bajtov)</string>
