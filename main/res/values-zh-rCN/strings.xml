@@ -166,9 +166,9 @@
     <string name="enable_disable_lucky_patcher_presence_title">幸运破解器</string>
     <string name="enable_disable_sig_check_summary">允许安装不同签名的应用</string>
     <string name="enable_disable_sig_check_title">禁用签名检查</string>
-    <string name="enable_disable_system_apps_summary">允许停用系统应用,长按卸载</string>
+    <string name="enable_disable_system_apps_summary">允许停用系统应用,长按为卸载</string>
     <string name="enable_disable_system_apps_title">系统应用状态</string>
-    <string name="enable_disable_user_apps_summary">将卸载按钮转换为停用,长按卸载</string>
+    <string name="enable_disable_user_apps_summary">将卸载按钮转换为停用,长按为卸载</string>
     <string name="enable_disable_user_apps_title">停用用户应用</string>
     <string name="enable_disable_verify_signatures_summary">允许安装未经签名的应用</string>
     <string name="enable_disable_verify_signatures_title">禁用签名验证</string>
