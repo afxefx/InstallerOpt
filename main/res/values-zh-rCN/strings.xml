@@ -47,7 +47,7 @@
     <string name="delete_all_button_text">删除所有</string>
     <string name="delete_button_text">删除</string>
     <string name="delete_file_message">删除文件*</string>
-    <string name="dialog_message">XDA支持页面: http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
+    <string name="dialog_message">XDA支持页面:http://forum.xda-developers.com/xposed/modules/xposed-installeropt-0-4-t3377008\n\nGithub: https://github.com/afxefx/InstallerOpt</string>
     <string name="disable">禁用</string>
     <string name="enable">启用</string>
     <string name="enable_backup_message">请启用备份APK选项并选择备份文件夹以查看统计</string>
@@ -58,7 +58,7 @@
     <string name="ExpertPrefs">专家设置 - 继续前注意！</string>
     <string name="folder_size_error_message">新旧文件夹大小不匹配,删除被取消</string>
     <string name="free_space_message">新的备份文件夹没有足够的空间,请重新选择</string>
-    <string name="install_status_failure">Install Failure</string>
+    <string name="install_status_failure">安装失败</string>
     <string name="install_status_failure_cont">&#160;未安装</string>
     <string name="install_status_failure_error_code">错误代码:&#160;</string>
     <string name="install_status_success">安装成功</string>
@@ -104,7 +104,7 @@
     <string name="share_menu">分享</string>
     <string name="size_text">大小:&#160;</string>
     <string name="sort_date_asc">日期 - 旧到新</string>
-    <string name="sort_date_des">Date - 新到旧</string>
+    <string name="sort_date_des">日期 - 新到旧</string>
     <string name="sort_menu">分类</string>
     <string name="sort_name_asc">名称 - 升序</string>
     <string name="sort_name_des">名称 - 降序</string>
