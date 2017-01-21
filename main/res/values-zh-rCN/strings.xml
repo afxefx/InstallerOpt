@@ -140,7 +140,7 @@
     <string name="enable_app_storage_buttons_title">启用应用存储按钮</string>
     <string name="enable_auto_close_install_summary">安装完成后自动关闭窗口</string>
     <string name="enable_auto_close_install_title">安装后自动关闭</string>
-    <string name="enable_auto_close_install_vibrate_summary">当使用自动安装参数时安装完成后震动</string>
+    <string name="enable_auto_close_install_vibrate_summary">当使用自动安装命令时安装完成后震动</string>
     <string name="enable_auto_close_install_vibrate_title">自动安装后震动</string>
     <string name="enable_auto_close_uninstall_summary">卸载完成后自动关闭窗口</string>
     <string name="enable_auto_close_uninstall_title">卸载后自动关闭</string>
