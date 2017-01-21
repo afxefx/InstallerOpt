@@ -190,7 +190,7 @@
     <string name="enable_keep_apps_data_title">保留应用数据</string>
     <string name="enable_launch_app_summary">在查看应用信息时点击应用图标以打开应用</string>
     <string name="enable_launch_app_title">应用图标打开</string>
-    <string name="enable_module_summary">取消选中以禁用所有InstallerOpt功能</string>
+    <string name="enable_module_summary">取消选中将禁用所有InstallerOpt功能</string>
     <string name="enable_module_title">InstallerOpt模块</string>
     <string name="enable_notifications_summary">为InstallerOpt启用通知栏操作</string>
     <string name="enable_notifications_title">通知栏</string>
