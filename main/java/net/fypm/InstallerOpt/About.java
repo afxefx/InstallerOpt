@@ -21,7 +21,7 @@ public class About extends Activity {
                 new SpannableString(this.getText(R.string.dialog_message));
         Linkify.addLinks(s, Linkify.WEB_URLS);
         message.setText(s);
-        aboutDialog.setTitle(R.string.about_menu);
+        aboutDialog.setTitle(getString(R.string.about_menu) + " - " + BuildConfig.VERSION_NAME);
         aboutDialog.setMessage(s);
         aboutDialog.setCancelable(false);
         aboutDialog.setPositiveButton(android.R.string.ok,

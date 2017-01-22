@@ -61,6 +61,8 @@ public class ManageBackups extends ListActivity {
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
         unknownApps = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false);
         unknownAppsPrompt = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, false);
+        MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_ORIGINAL, unknownApps).apply();
+        MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT_ORIGINAL, unknownAppsPrompt).apply();
         if (enableDark) {
             setTheme(R.style.AppThemeDark);
         }
@@ -539,9 +541,9 @@ public class ManageBackups extends ListActivity {
         @Override
         protected void onPostExecute(String unused) {
             Toast.makeText(ctx, R.string.backup_restore_complete_message, Toast.LENGTH_LONG).show();
-            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
-            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, unknownApps).apply();
-            MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, unknownAppsPrompt).apply();
+            //MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
+            //MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, unknownApps).apply();
+            //MultiprocessPreferences.getDefaultSharedPreferences(ctx).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, unknownAppsPrompt).apply();
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.dismiss();
             }

@@ -12,6 +12,7 @@
     android:rowCount="5" >
 
     <TextView
+        android:id="@+id/current_version_label"
         android:layout_column="0"
         android:layout_columnSpan="1"
         android:layout_height="wrap_content"
@@ -39,6 +40,7 @@
         android:textColor="@color/white" />
 
     <TextView
+        android:id="@+id/new_version_label"
         android:layout_column="0"
         android:layout_columnSpan="1"
         android:layout_height="wrap_content"
@@ -66,6 +68,7 @@
         android:textColor="@color/white" />
 
     <TextView
+        android:id="@+id/toast_spacer"
         android:layout_column="0"
         android:layout_columnSpan="2"
         android:layout_gravity="right"
@@ -77,6 +80,7 @@
         android:layout_width="wrap_content" />
 
     <TextView
+        android:id="@+id/current_version_code_label"
         android:layout_column="0"
         android:layout_columnSpan="1"
         android:layout_height="wrap_content"
@@ -104,6 +108,7 @@
         android:textColor="@color/white" />
 
     <TextView
+        android:id="@+id/new_version_code_label"
         android:layout_column="0"
         android:layout_columnSpan="1"
         android:layout_height="wrap_content"

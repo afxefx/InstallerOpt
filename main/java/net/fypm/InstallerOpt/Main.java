@@ -139,6 +139,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installShell;
     public static boolean installUnknownApps;
     public static boolean installUnknownAppsPrompt;
+    public static boolean installUnknownAppsOriginal;
+    public static boolean installUnknownAppsPromptOriginal;
     public static boolean isModuleEnabled;
     public static boolean keepAppsData;
     //public static boolean prefsChanged;
@@ -371,6 +373,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
                 if (isModuleEnabled) {
                     enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, installerOptContext);
+                    installUnknownAppsOriginal = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_ORIGINAL, installerOptContext);
+                    installUnknownAppsPromptOriginal = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT_ORIGINAL, installerOptContext);
                     enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, installerOptContext);
                     enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, installerOptContext);
                     enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, installerOptContext);
@@ -396,7 +401,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     }
 
-                    if (enableAutoCloseInstall) {
+                    if (enableAutoCloseInstall || autoInstallCancelOverride) {
                         Button mDone = (Button) XposedHelpers.getObjectField(
                                 XposedHelpers.getSurroundingThis(param.thisObject),
                                 "mDoneButton");
@@ -416,8 +421,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog_end("autoCloseInstallHook");
                             }
                             if (!appInstalledText.isEmpty()) {
-                            /*Toast.makeText(mContext, appInstalledText,
-                                    Toast.LENGTH_LONG).show();*/
+                                if (enableDebug) {
+                                    Toast.makeText(mContext, appInstalledText,
+                                            Toast.LENGTH_LONG).show();
+                                }
                                 if (enableNotifications) {
                                     postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", installerOptContext);
                                 }
@@ -432,17 +439,23 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 }
                             }
                         } else {
-                        /*Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
-                                Toast.LENGTH_LONG).show();*/
                             if (enableNotifications) {
                                 postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, installerOptContext);
                             }
                             if (enableDebug) {
+                                Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
+                                        Toast.LENGTH_LONG).show();
                                 xlog_start("autoCloseInstallHook");
                                 xlog("Install failed", msg);
                                 xlog("msg", msg);
                                 xlog_end("autoCloseInstallHook");
                             }
+                        }
+
+                        if (autoInstallCancelOverride) {
+                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
+                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, installUnknownAppsOriginal).apply();
+                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, installUnknownAppsPromptOriginal).apply();
                         }
                     }
 
@@ -541,9 +554,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 }
                 if (isModuleEnabled) {
                     enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, installerOptContext);
                     enableAutoHideInstall = getPref(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, installerOptContext);
                     Activity packageInstaller = (Activity) param.thisObject;
-                    if (!autoInstallCancelled && enableAutoHideInstall) {
+                    if (enableAutoHideInstall || autoInstallCancelOverride) {
                         packageInstaller.onBackPressed();
                     }
                 }
@@ -624,6 +638,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
                             }
                             ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                            layoutVersion.findViewById(R.id.current_version_code_label).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.new_version_code_label).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.current_version_code).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.new_version_code).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.toast_spacer).setVisibility(View.GONE);
                             toast.setView(layoutVersion);
                             toast.show();
                         }
@@ -661,6 +680,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
                             }
                             ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                            layoutVersion.findViewById(R.id.current_version_label).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.new_version_label).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.current_version).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.new_version).setVisibility(View.GONE);
+                            layoutVersion.findViewById(R.id.toast_spacer).setVisibility(View.GONE);
                             toast.setView(layoutVersion);
                             toast.show();
                         }
@@ -680,7 +704,6 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         xlog("Current button", mOk.toString());
                         xlog("Current package info", mPkgInfo.toString());
                         xlog("Current package name", packageName);
-                        xlog("Disable signature check status", checkSignatures);
                         xlog_end("autoInstallHook");
                     }
 
@@ -715,13 +738,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     }
 
-                    if (enableAutoInstall && !autoInstallCancelOverride) {
-                        if ((newVersion.equals(currentVersion) && newCode == currentCode) || newCode < currentCode) {
+                    if (enableAutoInstall || autoInstallCancelOverride) {
+                        if (((newVersion.equals(currentVersion) && newCode == currentCode) || newCode < currentCode) && !autoInstallCancelOverride) {
                             Toast.makeText(mContext, "Auto install cancelled due to matching version info and/or current version is newer than one being installed", Toast.LENGTH_LONG)
                                     .show();
-                            autoInstallCancelled = true;
                         } else {
-                            autoInstallCancelled = false;
                             XposedHelpers.setObjectField(param.thisObject,
                                     "mScrollView", null);
                             XposedHelpers.setBooleanField(param.thisObject,
@@ -1479,6 +1500,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog_start("installPackageHook - isInstallStage");
                                 xlog("isInstallStage equals", isInstallStage);
                                 xlog("flags", flags);
+                                int uid = Binder.getCallingUid();
+                                xlog("Calling UID: ", uid);
+                                int total = param.args.length;
+                                xlog("Total arguments: ", total);
+                                for (int i = 0; i < total; i++) {
+                                    if (param.args[i] != null) {
+                                        try {
+                                            xlog("Argument " + i, param.args[i]);
+                                        } catch (Throwable t) {
+                                            xlog("Error caught", t);
+                                        }
+                                    }
+                                }
                                 xlog_end("installPackageHook - isInstallStage");
                             }
                         } catch (Exception e) {
@@ -1497,6 +1531,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog("isInstallStage equals", isInstallStage);
                                 xlog("id", id);
                                 xlog("flags", flags);
+                                int uid = Binder.getCallingUid();
+                                xlog("Calling UID: ", uid);
+                                int total = param.args.length;
+                                xlog("Total arguments: ", total);
+                                for (int i = 0; i < total; i++) {
+                                    if (param.args[i] != null) {
+                                        try {
+                                            xlog("Argument " + i, param.args[i]);
+                                        } catch (Throwable t) {
+                                            xlog("Error caught", t);
+                                        }
+                                    }
+                                }
                                 xlog_end("installPackageHook - isNotInstallStage");
                             }
                         } catch (Exception e) {
@@ -1535,23 +1582,27 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.args[id] = flags;
                     }
 
-                /*if (isInstallPackageAsUser) {
-                    int uid = Binder.getCallingUid();
-                    xlog("Calling UID: ", uid);
-                    int total = param.args.length;
-                    xlog("Total arguments: ", total);
-                    for (int i = 0; i < total; i++) {
-                        if (param.args[i] != null) {
-                            try {
-                                xlog("Argument " + i, param.args[i]);
-                            } catch (Throwable t) {
-                                xlog("Error caught", t);
+                    if (isInstallPackageAsUser) {
+                        if (enableDebug) {
+                            xlog_start("installPackageHook - isInstallPackageAsUser");
+                            int uid = Binder.getCallingUid();
+                            xlog("Calling UID: ", uid);
+                            int total = param.args.length;
+                            xlog("Total arguments: ", total);
+                            for (int i = 0; i < total; i++) {
+                                if (param.args[i] != null) {
+                                    try {
+                                        xlog("Argument " + i, param.args[i]);
+                                    } catch (Throwable t) {
+                                        xlog("Error caught", t);
+                                    }
+                                }
                             }
+                            xlog_end("installPackageHook - isInstallPackageAsUser");
                         }
                     }
-                }
 
-                if (isInstallStage) {
+                /*if (isInstallStage) {
                     int installerUid = (int) XposedHelpers.getObjectField(param.thisObject, "installUid");
                     xlog("installerUid: ", installerUid);
                 }*/

@@ -57,15 +57,15 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_module"
-            android:key="enable_auto_hide_install"
-            android:summary="@string/enable_auto_hide_install_summary"
-            android:title="@string/enable_auto_hide_install_title" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_module"
             android:key="enable_auto_install"
             android:summary="@string/enable_auto_install_summary"
             android:title="@string/enable_auto_install_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_module"
+            android:key="enable_auto_hide_install"
+            android:summary="@string/enable_auto_hide_install_summary"
+            android:title="@string/enable_auto_hide_install_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_module"
@@ -123,15 +123,15 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_module"
-            android:key="enable_version_code"
-            android:summary="@string/enable_version_code_summary"
-            android:title="@string/enable_version_code_title" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="enable_module"
             android:key="enable_version"
             android:summary="@string/enable_version_summary"
             android:title="@string/enable_version_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_module"
+            android:key="enable_version_code"
+            android:summary="@string/enable_version_code_summary"
+            android:title="@string/enable_version_code_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="enable_module"
