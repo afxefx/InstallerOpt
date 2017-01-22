@@ -208,6 +208,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("appInfoHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("appInfoHook");
@@ -363,6 +364,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoCloseInstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoCloseInstallHook");
@@ -532,6 +534,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoHideInstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoHideInstallHook");
@@ -555,6 +558,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoInstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoInstallHook");
@@ -755,6 +759,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoInstallHook2");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoInstallHook2");
@@ -787,6 +792,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoCloseUninstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoCloseUninstallHook");
@@ -813,6 +819,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoUninstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoUninstallHook");
@@ -838,6 +845,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("autoUninstallHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoUninstallHook");
@@ -1016,6 +1024,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("deletePackageHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("deletePackageHook");
@@ -1074,6 +1083,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("disableChangerHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("disableChangerHook");
@@ -1133,6 +1143,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("disableUserAppsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("disableUserAppsHook");
@@ -1284,6 +1295,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("initAppStorageSettingsButtonsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("initAppStorageSettingsButtonsHook");
@@ -1335,6 +1347,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("initUninstallButtonsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("initUninstallButtonsHook");
@@ -1434,6 +1447,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("installPackageHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("installPackageHook");
@@ -1623,6 +1637,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("showButtonsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("showButtonsHook");
@@ -1645,6 +1660,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("systemAppsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("systemAppsHook");
@@ -1676,6 +1692,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("unknownAppsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("unknownAppsHook");
@@ -1698,6 +1715,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("unknownAppsPrompt");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("unknownAppsPrompt");
@@ -1728,6 +1746,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("unknownAppsHookPrompt");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("unknownAppsHookPrompt");
@@ -1784,6 +1803,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 if (installerOptContext != null) {
                     isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
+                    isModuleEnabled = false;
                     xlog_start("verifyAppsHook");
                     xlog("Unable to get InstallerOpt context", null);
                     xlog_end("verifyAppsHook");
