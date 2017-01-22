@@ -401,63 +401,64 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     }
 
-                    if (enableAutoCloseInstall || autoInstallCancelOverride) {
-                        Button mDone = (Button) XposedHelpers.getObjectField(
-                                XposedHelpers.getSurroundingThis(param.thisObject),
-                                "mDoneButton");
+                    Button mDone = (Button) XposedHelpers.getObjectField(
+                            XposedHelpers.getSurroundingThis(param.thisObject),
+                            "mDoneButton");
 
-                        if (installedApp && mDone != null) {
+                    if (installedApp && mDone != null) {
+                        if (enableAutoCloseInstall || autoInstallCancelOverride) {
                             mDone.performClick();
-                            String appInstalledText = "";
-                            Resources resources = mContext.getResources();
-                            appInstalledText = (String) resources.getText(resources
-                                    .getIdentifier("install_done", "string",
-                                            Common.PACKAGEINSTALLER_PKG));
+                        }
+                        String appInstalledText = "";
+                        Resources resources = mContext.getResources();
+                        appInstalledText = (String) resources.getText(resources
+                                .getIdentifier("install_done", "string",
+                                        Common.PACKAGEINSTALLER_PKG));
+                        if (enableDebug) {
+                            xlog_start("autoCloseInstallHook");
+                            xlog("msg", msg);
+                            xlog("mDone", mDone);
+                            xlog("appInstalledText", appInstalledText);
+                            xlog_end("autoCloseInstallHook");
+                        }
+                        if (!appInstalledText.isEmpty()) {
                             if (enableDebug) {
-                                xlog_start("autoCloseInstallHook");
-                                xlog("msg", msg);
-                                xlog("mDone", mDone);
-                                xlog("appInstalledText", appInstalledText);
-                                xlog_end("autoCloseInstallHook");
-                            }
-                            if (!appInstalledText.isEmpty()) {
-                                if (enableDebug) {
-                                    Toast.makeText(mContext, appInstalledText,
-                                            Toast.LENGTH_LONG).show();
-                                }
-                                if (enableNotifications) {
-                                    postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", installerOptContext);
-                                }
-                                if (enableVibrateDevice) {
-                                    try {
-                                        vibrateDevice(500, installerOptContext);
-                                        xlog("Vibrate on install successful", null);
-                                    } catch (Exception e) {
-                                        xlog("Unable to vibrate on install", e);
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        } else {
-                            if (enableNotifications) {
-                                postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, installerOptContext);
-                            }
-                            if (enableDebug) {
-                                Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
+                                Toast.makeText(mContext, appInstalledText,
                                         Toast.LENGTH_LONG).show();
-                                xlog_start("autoCloseInstallHook");
-                                xlog("Install failed", msg);
-                                xlog("msg", msg);
-                                xlog_end("autoCloseInstallHook");
+                            }
+                            if (enableNotifications) {
+                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", installerOptContext);
+                            }
+                            if (enableVibrateDevice) {
+                                try {
+                                    vibrateDevice(500, installerOptContext);
+                                    xlog("Vibrate on install successful", null);
+                                } catch (Exception e) {
+                                    xlog("Unable to vibrate on install", e);
+                                    e.printStackTrace();
+                                }
                             }
                         }
-
-                        if (autoInstallCancelOverride) {
-                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
-                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, installUnknownAppsOriginal).apply();
-                            MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, installUnknownAppsPromptOriginal).apply();
+                    } else {
+                        if (enableNotifications) {
+                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, installerOptContext);
+                        }
+                        if (enableDebug) {
+                            Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
+                                    Toast.LENGTH_LONG).show();
+                            xlog_start("autoCloseInstallHook");
+                            xlog("Install failed", msg);
+                            xlog("msg", msg);
+                            xlog_end("autoCloseInstallHook");
                         }
                     }
+
+                    if (autoInstallCancelOverride) {
+                        MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, false).apply();
+                        MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, installUnknownAppsOriginal).apply();
+                        MultiprocessPreferences.getDefaultSharedPreferences(installerOptContext).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, installUnknownAppsPromptOriginal).apply();
+                    }
+
 
                     if (deleteApkFiles && installedApp) {
                         String apkFile = packageUri.getPath();
