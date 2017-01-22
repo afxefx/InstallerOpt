@@ -92,6 +92,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
     public Class<?> disableChangerClass;
     public Context mContext;
+    public Context installerOptContext;
     public TextView view;
     public static String backupDir;
     public static XSharedPreferences prefs;
@@ -138,6 +139,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean installShell;
     public static boolean installUnknownApps;
     public static boolean installUnknownAppsPrompt;
+    public static boolean isModuleEnabled;
     public static boolean keepAppsData;
     //public static boolean prefsChanged;
     public static boolean showButtons;
@@ -202,143 +204,153 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enablePlay = getPref(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, getInstallerOptContext());
-                enablePackageName = getPref(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, getInstallerOptContext());
-                enableLaunchApp = getPref(Common.PREF_ENABLE_LAUNCH_APP, getInstallerOptContext());
-                uninstallSystemApps = getPref(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, getInstallerOptContext());
-                /*prefsModifiedTime = getPrefLong("prefsModifiedTime", getInstallerOptContext());
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("appInfoHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("appInfoHook");
+                }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enablePlay = getPref(Common.PREF_ENABLE_OPEN_APP_GOOGLE_PLAY, installerOptContext);
+                    enablePackageName = getPref(Common.PREF_ENABLE_SHOW_PACKAGE_NAME, installerOptContext);
+                    enableLaunchApp = getPref(Common.PREF_ENABLE_LAUNCH_APP, installerOptContext);
+                    uninstallSystemApps = getPref(Common.PREF_ENABLE_UNINSTALL_SYSTEM_APP, installerOptContext);
+                /*prefsModifiedTime = getPrefLong("prefsModifiedTime", installerOptContext);
                 if (prefsModifiedTime + 900000 > SystemClock.elapsedRealtime()) {
                     setPref(mContext, Common.PREF_MODIFIED_PREFERENCES, true, 0, 0, null);
                 }*/
-                PackageInfo pkgInfo = (PackageInfo) param.args[0];
-                Object view;
-                Resources mResources;
+                    PackageInfo pkgInfo = (PackageInfo) param.args[0];
+                    Object view;
+                    Resources mResources;
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    view = XposedHelpers.getObjectField(param.thisObject, "mHeader");
-                    mResources = (Resources) XposedHelpers.callMethod(param.thisObject, "getResources");
-                } else {
-                    view = XposedHelpers.getObjectField(param.thisObject, "mRootView");
-                    mResources = ((View) view).getResources();
-                }
-                View appSnippet;
-                TextView appVersion;
-                int iconId = 0;
-                int labelId = 0;
-                int appSnippetId = mResources.getIdentifier("app_snippet", "id", Common.SETTINGS_PKG);
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        view = XposedHelpers.getObjectField(param.thisObject, "mHeader");
+                        mResources = (Resources) XposedHelpers.callMethod(param.thisObject, "getResources");
+                    } else {
+                        view = XposedHelpers.getObjectField(param.thisObject, "mRootView");
+                        mResources = ((View) view).getResources();
+                    }
+                    View appSnippet;
+                    TextView appVersion;
+                    int iconId = 0;
+                    int labelId = 0;
+                    int appSnippetId = mResources.getIdentifier("app_snippet", "id", Common.SETTINGS_PKG);
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    int appVersionId = mResources.getIdentifier("summary", "id", "android");
-                    appVersion = (TextView) XposedHelpers.callMethod(view, "findViewById", appVersionId);
-                    appSnippet = (View) XposedHelpers.callMethod(view, "findViewById", appSnippetId);
-                    iconId = mResources.getIdentifier("icon", "id", "android");
-                    labelId = mResources.getIdentifier("title", "id", "android");
-                } else {
-                    appVersion = (TextView) XposedHelpers.getObjectField(param.thisObject, "mAppVersion");
-                    appSnippet = ((View) view).findViewById(appSnippetId);
-                    iconId = mResources.getIdentifier("app_icon", "id", Common.SETTINGS_PKG);
-                    labelId = mResources.getIdentifier("app_name", "id", Common.SETTINGS_PKG);
-                }
-                ImageView appIcon = (ImageView) appSnippet.findViewById(iconId);
-                final TextView appLabel = (TextView) appSnippet.findViewById(labelId);
-                String version = appVersion.getText().toString();
-                //final Resources res = getInstallerOptContext().getResources();
-                final String apkFile = pkgInfo.applicationInfo.sourceDir;
-                final String packageName = pkgInfo.packageName;
-                final String appName = appLabel.getText().toString();
-                if (enableDebug && isModuleEnabled()) {
-                    xlog_start("appInfoHook");
-                    xlog("Hooked setAppLabelAndIcon", null);
-                    xlog("Current application", mContext.toString());
-                    xlog("Current package info", pkgInfo.toString());
-                    xlog("Current package APK", apkFile);
-                    xlog("Current package name", packageName);
-                    xlog("Current version name", version);
-                    xlog("Application label", appName);
-                    xlog_end("appInfoHook");
-                }
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        int appVersionId = mResources.getIdentifier("summary", "id", "android");
+                        appVersion = (TextView) XposedHelpers.callMethod(view, "findViewById", appVersionId);
+                        appSnippet = (View) XposedHelpers.callMethod(view, "findViewById", appSnippetId);
+                        iconId = mResources.getIdentifier("icon", "id", "android");
+                        labelId = mResources.getIdentifier("title", "id", "android");
+                    } else {
+                        appVersion = (TextView) XposedHelpers.getObjectField(param.thisObject, "mAppVersion");
+                        appSnippet = ((View) view).findViewById(appSnippetId);
+                        iconId = mResources.getIdentifier("app_icon", "id", Common.SETTINGS_PKG);
+                        labelId = mResources.getIdentifier("app_name", "id", Common.SETTINGS_PKG);
+                    }
+                    ImageView appIcon = (ImageView) appSnippet.findViewById(iconId);
+                    final TextView appLabel = (TextView) appSnippet.findViewById(labelId);
+                    String version = appVersion.getText().toString();
+                    //final Resources res = installerOptContext.getResources();
+                    final String apkFile = pkgInfo.applicationInfo.sourceDir;
+                    final String packageName = pkgInfo.packageName;
+                    final String appName = appLabel.getText().toString();
+                    if (enableDebug) {
+                        xlog_start("appInfoHook");
+                        xlog("Hooked setAppLabelAndIcon", null);
+                        xlog("Current application", mContext.toString());
+                        xlog("Current package info", pkgInfo.toString());
+                        xlog("Current package APK", apkFile);
+                        xlog("Current package name", packageName);
+                        xlog("Current version name", version);
+                        xlog("Application label", appName);
+                        xlog_end("appInfoHook");
+                    }
 
-                if (enablePlay && isModuleEnabled()) {
-                    appIcon.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            String uri = "market://details?id=" + packageName;
-                            Intent openGooglePlay = new Intent(
-                                    Intent.ACTION_VIEW, Uri.parse(uri));
-                            openGooglePlay
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivity(openGooglePlay);
-                            return true;
-                        }
-                    });
-                }
-
-                if (enableLaunchApp && isModuleEnabled()) {
-                    appIcon.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent launchIntent = mContext.getPackageManager()
-                                    .getLaunchIntentForPackage(packageName);
-                            if (launchIntent != null) {
-                                launchIntent
+                    if (enablePlay) {
+                        appIcon.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                String uri = "market://details?id=" + packageName;
+                                Intent openGooglePlay = new Intent(
+                                        Intent.ACTION_VIEW, Uri.parse(uri));
+                                openGooglePlay
                                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(launchIntent);
+                                mContext.startActivity(openGooglePlay);
+                                return true;
                             }
-                        }
-                    });
-                }
+                        });
+                    }
 
-                if (enablePackageName && isModuleEnabled()) {
-                    appLabel.setTag(0);
-                    appLabel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            final int status = (Integer) v.getTag();
-                            if (status == 0) {
-                                appLabel.setText(packageName);
-                                appLabel.setLines(1);
-                                appLabel.setHorizontallyScrolling(true);
-                                appLabel.setMarqueeRepeatLimit(-1);
-                                appLabel.setSelected(true);
-                                v.setTag(1);
-                            } else {
-                                appLabel.setText(appName);
-                                appLabel.setLines(1);
-                                appLabel.setHorizontallyScrolling(true);
-                                appLabel.setMarqueeRepeatLimit(-1);
-                                appLabel.setSelected(true);
-                                v.setTag(0);
+                    if (enableLaunchApp) {
+                        appIcon.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent launchIntent = mContext.getPackageManager()
+                                        .getLaunchIntentForPackage(packageName);
+                                if (launchIntent != null) {
+                                    launchIntent
+                                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    mContext.startActivity(launchIntent);
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
 
-                if (uninstallSystemApps && isModuleEnabled()) {
-                    View.OnLongClickListener uninstallSystemApp = new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            //Toast.makeText(mContext, "Long click detected",
-                            //        Toast.LENGTH_LONG).show();
-                            try {
-                                uninstallSystemApp(packageName);
-                            } catch (Throwable e) {
-                                xlog_start("appInfoHook - uninstallSystemApps");
-                                xlog("", e);
-                                xlog_end("appInfoHook - uninstallSystemApps");
+                    if (enablePackageName) {
+                        appLabel.setTag(0);
+                        appLabel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                final int status = (Integer) v.getTag();
+                                if (status == 0) {
+                                    appLabel.setText(packageName);
+                                    appLabel.setLines(1);
+                                    appLabel.setHorizontallyScrolling(true);
+                                    appLabel.setMarqueeRepeatLimit(-1);
+                                    appLabel.setSelected(true);
+                                    v.setTag(1);
+                                } else {
+                                    appLabel.setText(appName);
+                                    appLabel.setLines(1);
+                                    appLabel.setHorizontallyScrolling(true);
+                                    appLabel.setMarqueeRepeatLimit(-1);
+                                    appLabel.setSelected(true);
+                                    v.setTag(0);
+                                }
                             }
-                            return true;
-                        }
-                    };
-                    Button mUninstallButton = (Button) XposedHelpers
-                            .getObjectField(param.thisObject,
-                                    "mUninstallButton");
+                        });
+                    }
+
+                    if (uninstallSystemApps) {
+                        View.OnLongClickListener uninstallSystemApp = new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                //Toast.makeText(mContext, "Long click detected",
+                                //        Toast.LENGTH_LONG).show();
+                                try {
+                                    uninstallSystemApp(packageName, installerOptContext);
+                                } catch (Throwable e) {
+                                    xlog_start("appInfoHook - uninstallSystemApps");
+                                    xlog("", e);
+                                    xlog_end("appInfoHook - uninstallSystemApps");
+                                }
+                                return true;
+                            }
+                        };
+                        Button mUninstallButton = (Button) XposedHelpers
+                                .getObjectField(param.thisObject,
+                                        "mUninstallButton");
                     /*Button mSpecialDisableButton = (Button) XposedHelpers
                             .getObjectField(param.thisObject,
                                     "mSpecialDisableButton");*/
-                    mUninstallButton.setOnLongClickListener(uninstallSystemApp);
+                        mUninstallButton.setOnLongClickListener(uninstallSystemApp);
                     /*mSpecialDisableButton
                             .setOnLongClickListener(uninstallSystemApp);*/
+                    }
                 }
             }
         };
@@ -347,157 +359,167 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, getInstallerOptContext());
-                enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, getInstallerOptContext());
-                enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, getInstallerOptContext());
-                enableOpenAppOps = getPref(Common.PREF_ENABLE_OPEN_APP_OPS, getInstallerOptContext());
-                deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, getInstallerOptContext());
-                enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, getInstallerOptContext());
-                Resources res = getInstallerOptContext().getResources();
-                Button mLaunch = (Button) XposedHelpers.getObjectField(
-                        XposedHelpers.getSurroundingThis(param.thisObject),
-                        "mLaunchButton");
-                Uri packageUri = (Uri) XposedHelpers.getObjectField(
-                        XposedHelpers.getSurroundingThis(param.thisObject),
-                        "mPackageURI");
-
-                Message msg = (Message) param.args[0];
-                boolean installedApp = false;
-                if (msg != null) {
-                    installedApp = (msg.arg1 == Common.INSTALL_SUCCEEDED);
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoCloseInstallHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoCloseInstallHook");
                 }
-                if (enableAutoLaunchInstall && isModuleEnabled()) {
-                    if (installedApp && mLaunch != null) {
-                        mLaunch.performClick();
-                    }
-                }
-
-                if (enableAutoCloseInstall && isModuleEnabled()) {
-                    Button mDone = (Button) XposedHelpers.getObjectField(
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAutoCloseInstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL, installerOptContext);
+                    enableAutoLaunchInstall = getPref(Common.PREF_ENABLE_AUTO_LAUNCH_INSTALL, installerOptContext);
+                    enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, installerOptContext);
+                    enableOpenAppOps = getPref(Common.PREF_ENABLE_OPEN_APP_OPS, installerOptContext);
+                    deleteApkFiles = getPref(Common.PREF_ENABLE_DELETE_APK_FILE_INSTALL, installerOptContext);
+                    enableVibrateDevice = getPref(Common.PREF_ENABLE_AUTO_CLOSE_INSTALL_VIBRATE, installerOptContext);
+                    Resources res = installerOptContext.getResources();
+                    Button mLaunch = (Button) XposedHelpers.getObjectField(
                             XposedHelpers.getSurroundingThis(param.thisObject),
-                            "mDoneButton");
+                            "mLaunchButton");
+                    Uri packageUri = (Uri) XposedHelpers.getObjectField(
+                            XposedHelpers.getSurroundingThis(param.thisObject),
+                            "mPackageURI");
 
-                    if (installedApp && mDone != null) {
-                        mDone.performClick();
-                        String appInstalledText = "";
-                        Resources resources = mContext.getResources();
-                        appInstalledText = (String) resources.getText(resources
-                                .getIdentifier("install_done", "string",
-                                        Common.PACKAGEINSTALLER_PKG));
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("autoCloseInstallHook");
-                            xlog("msg", msg);
-                            xlog("mDone", mDone);
-                            xlog("appInstalledText", appInstalledText);
-                            xlog_end("autoCloseInstallHook");
+                    Message msg = (Message) param.args[0];
+                    boolean installedApp = false;
+                    if (msg != null) {
+                        installedApp = (msg.arg1 == Common.INSTALL_SUCCEEDED);
+                    }
+                    if (enableAutoLaunchInstall) {
+                        if (installedApp && mLaunch != null) {
+                            mLaunch.performClick();
                         }
-                        if (!appInstalledText.isEmpty()) {
+                    }
+
+                    if (enableAutoCloseInstall) {
+                        Button mDone = (Button) XposedHelpers.getObjectField(
+                                XposedHelpers.getSurroundingThis(param.thisObject),
+                                "mDoneButton");
+
+                        if (installedApp && mDone != null) {
+                            mDone.performClick();
+                            String appInstalledText = "";
+                            Resources resources = mContext.getResources();
+                            appInstalledText = (String) resources.getText(resources
+                                    .getIdentifier("install_done", "string",
+                                            Common.PACKAGEINSTALLER_PKG));
+                            if (enableDebug) {
+                                xlog_start("autoCloseInstallHook");
+                                xlog("msg", msg);
+                                xlog("mDone", mDone);
+                                xlog("appInstalledText", appInstalledText);
+                                xlog_end("autoCloseInstallHook");
+                            }
+                            if (!appInstalledText.isEmpty()) {
                             /*Toast.makeText(mContext, appInstalledText,
                                     Toast.LENGTH_LONG).show();*/
-                            if (enableNotifications && isModuleEnabled()) {
-                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "");
-                            }
-                            if (enableVibrateDevice && isModuleEnabled()) {
-                                try {
-                                    vibrateDevice(500);
-                                    xlog("Vibrate on install successful", null);
-                                } catch (Exception e) {
-                                    xlog("Unable to vibrate on install", e);
-                                    e.printStackTrace();
+                                if (enableNotifications) {
+                                    postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", installerOptContext);
+                                }
+                                if (enableVibrateDevice) {
+                                    try {
+                                        vibrateDevice(500, installerOptContext);
+                                        xlog("Vibrate on install successful", null);
+                                    } catch (Exception e) {
+                                        xlog("Unable to vibrate on install", e);
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
-                        }
-                    } else {
+                        } else {
                         /*Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
                                 Toast.LENGTH_LONG).show();*/
-                        if (enableNotifications && isModuleEnabled()) {
-                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1);
-                        }
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("autoCloseInstallHook");
-                            xlog("Install failed", msg);
-                            xlog("msg", msg);
-                            xlog_end("autoCloseInstallHook");
-                        }
-                    }
-                }
-
-                if (deleteApkFiles && installedApp && isModuleEnabled()) {
-                    String apkFile = packageUri.getPath();
-                    deleteApkFile(apkFile);
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("autoCloseInstallHook - deleteApkFiles");
-                        xlog("APK file: ", apkFile);
-                        xlog_end("autoCloseInstallHook - deleteApkFiles");
-                    }
-                }
-
-                if (enableOpenAppOps && Common.JB_MR2_NEWER && isModuleEnabled()) {
-                    ApplicationInfo appInfo = (ApplicationInfo) XposedHelpers
-                            .getObjectField(XposedHelpers
-                                            .getSurroundingThis(param.thisObject),
-                                    "mAppInfo");
-                    if (appInfo == null) {
-                        return;
-                    }
-                    String packageName = appInfo.packageName;
-                    Intent openAppInAppOps = new Intent();
-                    boolean useSettingsApp = true;
-
-                    try {
-                        PackageInfo pkgInfo = mContext.getPackageManager()
-                                .getPackageInfo(Common.APPOPSXPOSED_PKG, 0);
-                        if (pkgInfo.versionCode >= 12100) {
-                            openAppInAppOps.setClassName(
-                                    Common.APPOPSXPOSED_PKG,
-                                    Common.APPOPSXPOSED_APPOPSACTIVITY);
-                            useSettingsApp = false;
-                        }
-                    } catch (PackageManager.NameNotFoundException e) {
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("enableOpenAppOps - NameNotFoundException");
-                            xlog("", e);
-                            xlog_end("enableOpenAppOps - NameNotFoundException");
+                            if (enableNotifications) {
+                                postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, installerOptContext);
+                            }
+                            if (enableDebug) {
+                                xlog_start("autoCloseInstallHook");
+                                xlog("Install failed", msg);
+                                xlog("msg", msg);
+                                xlog_end("autoCloseInstallHook");
+                            }
                         }
                     }
 
-                    if (useSettingsApp && isModuleEnabled()) {
+                    if (deleteApkFiles && installedApp) {
+                        String apkFile = packageUri.getPath();
+                        deleteApkFile(apkFile, installerOptContext);
+                        if (enableDebug) {
+                            xlog_start("autoCloseInstallHook - deleteApkFiles");
+                            xlog("APK file: ", apkFile);
+                            xlog_end("autoCloseInstallHook - deleteApkFiles");
+                        }
+                    }
+
+                    if (enableOpenAppOps && Common.JB_MR2_NEWER) {
+                        ApplicationInfo appInfo = (ApplicationInfo) XposedHelpers
+                                .getObjectField(XposedHelpers
+                                                .getSurroundingThis(param.thisObject),
+                                        "mAppInfo");
+                        if (appInfo == null) {
+                            return;
+                        }
+                        String packageName = appInfo.packageName;
+                        Intent openAppInAppOps = new Intent();
+                        boolean useSettingsApp = true;
+
+                        try {
+                            PackageInfo pkgInfo = mContext.getPackageManager()
+                                    .getPackageInfo(Common.APPOPSXPOSED_PKG, 0);
+                            if (pkgInfo.versionCode >= 12100) {
+                                openAppInAppOps.setClassName(
+                                        Common.APPOPSXPOSED_PKG,
+                                        Common.APPOPSXPOSED_APPOPSACTIVITY);
+                                useSettingsApp = false;
+                            }
+                        } catch (PackageManager.NameNotFoundException e) {
+                            if (enableDebug) {
+                                xlog_start("enableOpenAppOps - NameNotFoundException");
+                                xlog("", e);
+                                xlog_end("enableOpenAppOps - NameNotFoundException");
+                            }
+                        }
+
+                        if (useSettingsApp) {
+                            openAppInAppOps
+                                    .setAction(Common.ACTION_APP_OPS_SETTINGS);
+                        }
+
+                        Bundle args = new Bundle();
+                        args.putString(Common.PACKAGE, packageName);
+
+                        openAppInAppOps.putExtra(
+                                PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                                Common.APPOPSDETAILS);
                         openAppInAppOps
-                                .setAction(Common.ACTION_APP_OPS_SETTINGS);
-                    }
-
-                    Bundle args = new Bundle();
-                    args.putString(Common.PACKAGE, packageName);
-
-                    openAppInAppOps.putExtra(
-                            PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                            Common.APPOPSDETAILS);
-                    openAppInAppOps
-                            .putExtra(
-                                    PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS,
-                                    args);
-                    openAppInAppOps.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    try {
-                        mContext.startActivity(openAppInAppOps);
-                    } catch (ActivityNotFoundException e) {
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("enableOpenAppOps - ActivityNotFoundException");
-                            xlog("", e);
-                            xlog_end("enableOpenAppOps - ActivityNotFoundException");
+                                .putExtra(
+                                        PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS,
+                                        args);
+                        openAppInAppOps.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        try {
+                            mContext.startActivity(openAppInAppOps);
+                        } catch (ActivityNotFoundException e) {
+                            if (enableDebug) {
+                                xlog_start("enableOpenAppOps - ActivityNotFoundException");
+                                xlog("", e);
+                                xlog_end("enableOpenAppOps - ActivityNotFoundException");
+                            }
                         }
+
                     }
 
-                }
-
-                if (enableDebug && isModuleEnabled()) {
-                    xlog_start("autoCloseInstallHook");
-                    xlog("Auto close install status", enableAutoCloseInstall);
-                    xlog("Auto launch install status", enableAutoLaunchInstall);
-                    xlog("mLaunch", mLaunch);
-                    xlog("msg", msg);
-                    xlog("installedApp status", installedApp);
-                    xlog_end("autoCloseInstallHook");
+                    if (enableDebug) {
+                        xlog_start("autoCloseInstallHook");
+                        xlog("Auto close install status", enableAutoCloseInstall);
+                        xlog("Auto launch install status", enableAutoLaunchInstall);
+                        xlog("mLaunch", mLaunch);
+                        xlog("msg", msg);
+                        xlog("installedApp status", installedApp);
+                        xlog_end("autoCloseInstallHook");
+                    }
                 }
             }
         };
@@ -506,11 +528,21 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAutoHideInstall = getPref(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, getInstallerOptContext());
-                Activity packageInstaller = (Activity) param.thisObject;
-                if (!autoInstallCancelled && enableAutoHideInstall && isModuleEnabled()) {
-                    packageInstaller.onBackPressed();
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoHideInstallHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoHideInstallHook");
+                }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAutoHideInstall = getPref(Common.PREF_ENABLE_AUTO_HIDE_INSTALL, installerOptContext);
+                    Activity packageInstaller = (Activity) param.thisObject;
+                    if (!autoInstallCancelled && enableAutoHideInstall) {
+                        packageInstaller.onBackPressed();
+                    }
                 }
             }
         };
@@ -519,177 +551,186 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, getInstallerOptContext());
-                enableVersionCode = getPref(Common.PREF_ENABLE_SHOW_VERSION_CODE, getInstallerOptContext());
-                enableVersionInline = getPref(Common.PREF_ENABLE_SHOW_VERSION_INLINE, getInstallerOptContext());
-                enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, getInstallerOptContext());
-                enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, getInstallerOptContext());
-                autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, getInstallerOptContext());
-                //Add below two in prefs
-                //checkSignatures = getPref("enabled_disable_sig_check", getInstallerOptContext());
-                //confirmCheckSignatures = getPref("enabled_confirm_check_signatures", getInstallerOptContext());
-                //int msg = (int) XposedHelpers.getObjectField(param.thisObject, "msg");
-                int newCode = 0;
-                int currentCode = 0;
-                PackageInfo pi = null;
-                PackageInfo pi2 = null;
-                String versionInfo = null;
-                String newVersion = null;
-                String currentVersion = null;
-                String versionCode = null;
-                Button mOk = (Button) XposedHelpers.getObjectField(
-                        param.thisObject, "mOk");
-                PackageManager mPm = mContext.getPackageManager();
-                PackageInfo mPkgInfo = (PackageInfo) XposedHelpers
-                        .getObjectField(param.thisObject, "mPkgInfo");
-                Resources res = getInstallerOptContext().getResources();
-                LayoutInflater inflater = LayoutInflater.from(getInstallerOptContext());
-                GridLayout layoutVersion = (GridLayout) inflater.inflate(res.getLayout(R.layout.version_layout), null);
-                Toast toast = new Toast(mContext);
-                toast.setDuration(Toast.LENGTH_LONG);
-                String packageName = mPkgInfo.packageName;
-                newVersion = mPkgInfo.versionName;
-                versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
-                try {
-                    pi = mPm.getPackageInfo(packageName, 0);
-                    currentVersion = pi.versionName;
-                    versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
-                } catch (PackageManager.NameNotFoundException e) {
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("autoInstallHook - Current version not found");
-                        xlog("", e);
-                        xlog_end("autoInstallHook - Current version not found");
-                    }
-                }
-                if (enableVersion && !enableVersionCode && isModuleEnabled()) {
-                    if (enableVersionInline && isModuleEnabled()) {
-                        if (view != null) {
-                            CharSequence temp = view.getText();
-                            temp = temp + "\n\n" + versionInfo + "\n";
-                            view.setText(temp);
-                        }
-                    }
-
-                    if (enableVersionToast && isModuleEnabled()) {
-                        //Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG).show();
-                        if (currentVersion != null) {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
-                        } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
-                        }
-                        ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
-                        toast.setView(layoutVersion);
-                        toast.show();
-                    }
-                }
-                newCode = mPkgInfo.versionCode;
-                versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
-                try {
-                    pi2 = mPm.getPackageInfo(packageName, 0);
-                    currentCode = pi2.versionCode;
-                    versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
-                } catch (PackageManager.NameNotFoundException e) {
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("autoInstallHook - Current version code not found");
-                        xlog("", e);
-                        xlog_end("autoInstallHook - Current version code not found");
-                    }
-                }
-                if (enableVersionCode && !enableVersion && isModuleEnabled()) {
-                    if (enableVersionInline && isModuleEnabled()) {
-                        if (view != null) {
-                            CharSequence temp = view.getText();
-                            temp = temp
-                                    + "\n\n"
-                                    + versionCode
-                                    + "\n";
-                            view.setText(temp);
-                        }
-                    }
-
-                    if (enableVersionToast && isModuleEnabled()) {
-                        //Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG).show();
-                        if (currentCode != 0) {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
-                        } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
-                        }
-                        ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
-                        toast.setView(layoutVersion);
-                        toast.show();
-                    }
-                }
-
-                if (enableDebug && isModuleEnabled()) {
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
                     xlog_start("autoInstallHook");
-                    if (currentVersion != null) {
-                        xlog("Current version", currentVersion);
-                    }
-                    xlog("New version", newVersion);
-                    if (currentCode != 0) {
-                        xlog("Current version code", currentCode);
-                    }
-                    xlog("New version code", newCode);
-                    xlog("Current application", mContext.toString());
-                    xlog("Current button", mOk.toString());
-                    xlog("Current package info", mPkgInfo.toString());
-                    xlog("Current package name", packageName);
-                    xlog("Disable signature check status", checkSignatures);
+                    xlog("Unable to get InstallerOpt context", null);
                     xlog_end("autoInstallHook");
                 }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableVersion = getPref(Common.PREF_ENABLE_SHOW_VERSION, installerOptContext);
+                    enableVersionCode = getPref(Common.PREF_ENABLE_SHOW_VERSION_CODE, installerOptContext);
+                    enableVersionInline = getPref(Common.PREF_ENABLE_SHOW_VERSION_INLINE, installerOptContext);
+                    enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, installerOptContext);
+                    enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, installerOptContext);
+                    autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, installerOptContext);
+                    //Add below two in prefs
+                    //checkSignatures = getPref("enabled_disable_sig_check", installerOptContext);
+                    //confirmCheckSignatures = getPref("enabled_confirm_check_signatures", installerOptContext);
+                    //int msg = (int) XposedHelpers.getObjectField(param.thisObject, "msg");
+                    int newCode = 0;
+                    int currentCode = 0;
+                    PackageInfo pi = null;
+                    PackageInfo pi2 = null;
+                    String versionInfo = null;
+                    String newVersion = null;
+                    String currentVersion = null;
+                    String versionCode = null;
+                    Button mOk = (Button) XposedHelpers.getObjectField(
+                            param.thisObject, "mOk");
+                    PackageManager mPm = mContext.getPackageManager();
+                    PackageInfo mPkgInfo = (PackageInfo) XposedHelpers
+                            .getObjectField(param.thisObject, "mPkgInfo");
+                    Resources res = installerOptContext.getResources();
+                    LayoutInflater inflater = LayoutInflater.from(installerOptContext);
+                    GridLayout layoutVersion = (GridLayout) inflater.inflate(res.getLayout(R.layout.version_layout), null);
+                    Toast toast = new Toast(mContext);
+                    toast.setDuration(Toast.LENGTH_LONG);
+                    String packageName = mPkgInfo.packageName;
+                    newVersion = mPkgInfo.versionName;
+                    versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
+                    try {
+                        pi = mPm.getPackageInfo(packageName, 0);
+                        currentVersion = pi.versionName;
+                        versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        if (enableDebug) {
+                            xlog_start("autoInstallHook - Current version not found");
+                            xlog("", e);
+                            xlog_end("autoInstallHook - Current version not found");
+                        }
+                    }
+                    if (enableVersion && !enableVersionCode) {
+                        if (enableVersionInline) {
+                            if (view != null) {
+                                CharSequence temp = view.getText();
+                                temp = temp + "\n\n" + versionInfo + "\n";
+                                view.setText(temp);
+                            }
+                        }
 
-                if (enableVersion && enableVersionCode && isModuleEnabled()) {
-                    String versionAll = versionInfo + "\n\n" + versionCode;
-                    if (enableVersionInline && isModuleEnabled()) {
-                        if (view != null) {
-                            CharSequence temp = view.getText();
-                            temp = temp + "\n\n" + versionAll + "\n";
-                            view.setText(temp);
+                        if (enableVersionToast) {
+                            //Toast.makeText(mContext, versionInfo, Toast.LENGTH_LONG).show();
+                            if (currentVersion != null) {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
+                            } else {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
+                            }
+                            ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                            toast.setView(layoutVersion);
+                            toast.show();
+                        }
+                    }
+                    newCode = mPkgInfo.versionCode;
+                    versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
+                    try {
+                        pi2 = mPm.getPackageInfo(packageName, 0);
+                        currentCode = pi2.versionCode;
+                        versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        if (enableDebug) {
+                            xlog_start("autoInstallHook - Current version code not found");
+                            xlog("", e);
+                            xlog_end("autoInstallHook - Current version code not found");
+                        }
+                    }
+                    if (enableVersionCode && !enableVersion) {
+                        if (enableVersionInline) {
+                            if (view != null) {
+                                CharSequence temp = view.getText();
+                                temp = temp
+                                        + "\n\n"
+                                        + versionCode
+                                        + "\n";
+                                view.setText(temp);
+                            }
+                        }
+
+                        if (enableVersionToast) {
+                            //Toast.makeText(mContext, versionCode, Toast.LENGTH_LONG).show();
+                            if (currentCode != 0) {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
+                            } else {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
+                            }
+                            ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                            toast.setView(layoutVersion);
+                            toast.show();
                         }
                     }
 
-                    if (enableVersionToast && isModuleEnabled()) {
-                        //Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG).show();
+                    if (enableDebug) {
+                        xlog_start("autoInstallHook");
                         if (currentVersion != null) {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
-                        } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
-                            //((TextView) layoutVersion.findViewById(R.id.current_version)).setVisibility(View.VISIBLE);
+                            xlog("Current version", currentVersion);
                         }
-                        ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                        xlog("New version", newVersion);
                         if (currentCode != 0) {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
-                        } else {
-                            ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
+                            xlog("Current version code", currentCode);
                         }
-                        ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
-                        toast.setView(layoutVersion);
-                        toast.show();
-
+                        xlog("New version code", newCode);
+                        xlog("Current application", mContext.toString());
+                        xlog("Current button", mOk.toString());
+                        xlog("Current package info", mPkgInfo.toString());
+                        xlog("Current package name", packageName);
+                        xlog("Disable signature check status", checkSignatures);
+                        xlog_end("autoInstallHook");
                     }
-                }
 
-                if (enableAutoInstall && !autoInstallCancelOverride && isModuleEnabled()) {
-                    if ((newVersion.equals(currentVersion) && newCode == currentCode) || newCode < currentCode) {
-                        Toast.makeText(mContext, "Auto install cancelled due to matching version info and/or current version is newer than one being installed", Toast.LENGTH_LONG)
-                                .show();
-                        autoInstallCancelled = true;
-                    } else {
-                        autoInstallCancelled = false;
-                        XposedHelpers.setObjectField(param.thisObject,
-                                "mScrollView", null);
-                        XposedHelpers.setBooleanField(param.thisObject,
-                                "mOkCanInstall", true);
-                        mOk.performClick();
+                    if (enableVersion && enableVersionCode) {
+                        String versionAll = versionInfo + "\n\n" + versionCode;
+                        if (enableVersionInline) {
+                            if (view != null) {
+                                CharSequence temp = view.getText();
+                                temp = temp + "\n\n" + versionAll + "\n";
+                                view.setText(temp);
+                            }
+                        }
+
+                        if (enableVersionToast) {
+                            //Toast.makeText(mContext, versionAll, Toast.LENGTH_LONG).show();
+                            if (currentVersion != null) {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(currentVersion);
+                            } else {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version)).setText(res.getString(R.string.not_available_text));
+                                //((TextView) layoutVersion.findViewById(R.id.current_version)).setVisibility(View.VISIBLE);
+                            }
+                            ((TextView) layoutVersion.findViewById(R.id.new_version)).setText(newVersion);
+                            if (currentCode != 0) {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(String.valueOf(currentCode));
+                            } else {
+                                ((TextView) layoutVersion.findViewById(R.id.current_version_code)).setText(res.getString(R.string.not_available_text));
+                            }
+                            ((TextView) layoutVersion.findViewById(R.id.new_version_code)).setText(String.valueOf(newCode));
+                            toast.setView(layoutVersion);
+                            toast.show();
+
+                        }
                     }
-                }
+
+                    if (enableAutoInstall && !autoInstallCancelOverride) {
+                        if ((newVersion.equals(currentVersion) && newCode == currentCode) || newCode < currentCode) {
+                            Toast.makeText(mContext, "Auto install cancelled due to matching version info and/or current version is newer than one being installed", Toast.LENGTH_LONG)
+                                    .show();
+                            autoInstallCancelled = true;
+                        } else {
+                            autoInstallCancelled = false;
+                            XposedHelpers.setObjectField(param.thisObject,
+                                    "mScrollView", null);
+                            XposedHelpers.setBooleanField(param.thisObject,
+                                    "mOkCanInstall", true);
+                            mOk.performClick();
+                        }
+                    }
 
                 /*if (confirmCheckSignatures && !checkSignatures) {
                     Intent confirmSignatureCheck = new Intent(
                             Common.ACTION_CONFIRM_CHECK_SIGNATURE);
                     confirmSignatureCheck.setPackage(Common.PACKAGE_NAME);
-                    getInstallerOptContext().sendBroadcast(confirmSignatureCheck);
+                    installerOptContext.sendBroadcast(confirmSignatureCheck);
 
                 }
                 ScrollView mScrollView = (ScrollView) XposedHelpers.getObjectField(
@@ -698,9 +739,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.thisObject, "label");
                 TextView label = new TextView(mContext);
                 label.setText("blahblah");*/
-                //mScrollView.addView(label);
-                //setPref(getInstallerOptContext(), "app_version", null, 0, versionInfo);
-                //setPref(getInstallerOptContext(), "app_version_code", null, 0, versionCode);
+                    //mScrollView.addView(label);
+                    //setPref(installerOptContext, "app_version", null, 0, versionInfo);
+                    //setPref(installerOptContext, "app_version_code", null, 0, versionCode);
+                }
             }
         };
 
@@ -708,13 +750,22 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         autoInstallHook2 = new XC_LayoutInflated() {
             @Override
             public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-                //mContext = AndroidAppHelper.currentApplication();
-                //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                //versionCode = getPrefString("app_version", getInstallerOptContext());
-                //versionInfo = getPrefString("app_version_code", getInstallerOptContext());
+                mContext = AndroidAppHelper.currentApplication();
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoInstallHook2");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoInstallHook2");
+                }
+                if (isModuleEnabled) {
+                    //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    //versionCode = getPrefString("app_version", installerOptContext);
+                    //versionInfo = getPrefString("app_version_code", installerOptContext);
 
-                view = (TextView) liparam.view.findViewById(
-                        liparam.res.getIdentifier("install_confirm_question", "id", Common.PACKAGEINSTALLER_PKG));
+                    view = (TextView) liparam.view.findViewById(
+                            liparam.res.getIdentifier("install_confirm_question", "id", Common.PACKAGEINSTALLER_PKG));
                 /*CharSequence temp = view.getText();
                 temp = "\n\n" + versionInfo + "\n\n" + versionCode;
                 view.setText(temp);
@@ -722,8 +773,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 String versionInfo = null;
                 String versionCode = null;*/
 
-                //MultiprocessPreferences.edit(mContext).remove("app_version");
-                //MultiprocessPreferences.edit(mContext).remove("app_version_code");
+                    //MultiprocessPreferences.edit(mContext).remove("app_version");
+                    //MultiprocessPreferences.edit(mContext).remove("app_version_code");
+                }
             }
         };
 
@@ -731,13 +783,23 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAutoCloseUninstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_UNINSTALL, getInstallerOptContext());
-                if (enableAutoCloseUninstall && isModuleEnabled()) {
-                    Button mOk = (Button) XposedHelpers.getObjectField(
-                            param.thisObject, "mOkButton");
-                    if (mOk != null) {
-                        mOk.performClick();
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoCloseUninstallHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoCloseUninstallHook");
+                }
+                if (isModuleEnabled) {
+                    //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAutoCloseUninstall = getPref(Common.PREF_ENABLE_AUTO_CLOSE_UNINSTALL, installerOptContext);
+                    if (enableAutoCloseUninstall) {
+                        Button mOk = (Button) XposedHelpers.getObjectField(
+                                param.thisObject, "mOkButton");
+                        if (mOk != null) {
+                            mOk.performClick();
+                        }
                     }
                 }
             }
@@ -747,14 +809,24 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, getInstallerOptContext());
-                if (enableAutoUninstall && isModuleEnabled()) {
-                    if (Common.LOLLIPOP_NEWER) {
-                        Activity packageInstaller = (Activity) param.thisObject;
-                        packageInstaller.onBackPressed();
-                        XposedHelpers.callMethod(param.thisObject,
-                                "startUninstallProgress");
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoUninstallHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoUninstallHook");
+                }
+                if (isModuleEnabled) {
+                    //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, installerOptContext);
+                    if (enableAutoUninstall) {
+                        if (Common.LOLLIPOP_NEWER) {
+                            Activity packageInstaller = (Activity) param.thisObject;
+                            packageInstaller.onBackPressed();
+                            XposedHelpers.callMethod(param.thisObject,
+                                    "startUninstallProgress");
+                        }
                     }
                 }
             }
@@ -762,19 +834,29 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, getInstallerOptContext());
-                if (enableAutoUninstall && isModuleEnabled()) {
-                    try {
-                        Button mOk = (Button) XposedHelpers.getObjectField(
-                                param.thisObject, "mOk");
-                        if (mOk != null) {
-                            mOk.performClick();
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("autoUninstallHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("autoUninstallHook");
+                }
+                if (isModuleEnabled) {
+                    //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, installerOptContext);
+                    if (enableAutoUninstall) {
+                        try {
+                            Button mOk = (Button) XposedHelpers.getObjectField(
+                                    param.thisObject, "mOk");
+                            if (mOk != null) {
+                                mOk.performClick();
+                            }
+                        } catch (NoSuchFieldError nsfe) {
+                            xlog_start("autoUninstallHook");
+                            xlog("Error caught", nsfe);
+                            xlog_end("autoUninstallHook");
                         }
-                    } catch (NoSuchFieldError nsfe) {
-                        xlog_start("autoUninstallHook");
-                        xlog("Error caught", nsfe);
-                        xlog_end("autoUninstallHook");
                     }
                 }
             }
@@ -809,13 +891,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     prefs.reload();
                     checkDuplicatedPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, false);
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, getInstallerOptContext());
-                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    checkDuplicatedPermissions = getPref(Common.PREF_DISABLE_CHECK_DUPLICATED_PERMISSION, installerOptContext);
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
-                if (checkDuplicatedPermissions && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
+                if (isModuleEnabled && checkDuplicatedPermissions) {
+                    if (enableDebug) {
                         xlog("Disable duplicate permissions check set to", checkDuplicatedPermissions);
                     }
                     param.setResult(true);
@@ -831,12 +916,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     prefs.reload();
                     checkPermissions = prefs.getBoolean(Common.PREF_DISABLE_CHECK_PERMISSION, false);
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, getInstallerOptContext());
-                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    checkPermissions = getPref(Common.PREF_DISABLE_CHECK_PERMISSION, installerOptContext);
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
-                if (checkPermissions && isModuleEnabled()) {
+                if (isModuleEnabled && checkPermissions) {
                     /*if (enableDebug) {
                         xlog("Disable check permissions set to", checkPermissions);
                     }*/
@@ -853,13 +941,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     prefs.reload();
                     checkSdkVersion = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SDK_VERSION, false);
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, getInstallerOptContext());
-                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    checkSdkVersion = getPref(Common.PREF_DISABLE_CHECK_SDK_VERSION, installerOptContext);
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
-                if (checkSdkVersion && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
+                if (isModuleEnabled && checkSdkVersion) {
+                    if (enableDebug) {
                         xlog("checkSdkVersion set to", checkSdkVersion);
                     }
                     XposedHelpers.setObjectField(param.thisObject,
@@ -874,13 +965,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
                 //xlog("disableCheckSignatures value in checkSignaturesHook", disableCheckSignatures);
                 //xlog("checkSignatures value in checkSignaturesHook", checkSignatures);
-                if (disableCheckSignatures && checkSignatures && isModuleEnabled()) {
+                if (isModuleEnabled && disableCheckSignatures && checkSignatures) {
                     /*xlog_start("checkSignaturesHook");
                     xlog("Disable signature checks set to", checkSignatures);
                     xlog_end("checkSignaturesHook");*/
@@ -896,13 +990,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     debugApps = prefs.getBoolean(Common.PREF_ENABLE_DEBUG_APP, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    debugApps = getPref(Common.PREF_ENABLE_DEBUG_APP, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
                 int id = 5;
                 int flags = (Integer) param.args[id];
-                if (debugApps && isModuleEnabled()) {
+                if (isModuleEnabled && debugApps) {
                     if ((flags & Common.DEBUG_ENABLE_DEBUGGER) == 0) {
                         flags |= Common.DEBUG_ENABLE_DEBUGGER;
                     }
@@ -915,28 +1012,38 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                keepAppsData = getPref(Common.PREF_ENABLE_KEEP_APP_DATA, getInstallerOptContext());
-                uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, getInstallerOptContext());
-                int id = 3;
-                int flags = (Integer) param.args[id];
-
-                if (keepAppsData && isModuleEnabled() && (flags & Common.DELETE_KEEP_DATA) == 0) {
-                    flags |= Common.DELETE_KEEP_DATA;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("deletePackageHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("deletePackageHook");
                 }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    keepAppsData = getPref(Common.PREF_ENABLE_KEEP_APP_DATA, installerOptContext);
+                    uninstallBackground = getPref(Common.PREF_DISABLE_UNINSTALL_BACKGROUND, installerOptContext);
+                    int id = 3;
+                    int flags = (Integer) param.args[id];
 
-                if (uninstallBackground && isModuleEnabled() && Binder.getCallingUid() == Common.ROOT_UID) {
-                    param.setResult(null);
-                    if (enableDebug && isModuleEnabled()) {
-                        //Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG).show();
-                        xlog_start("deletePackageHook - uninstallBackground");
-                        xlog("Background uninstall attempt blocked", null);
-                        xlog_end("deletePackageHook - uninstallBackground");
+                    if (keepAppsData && (flags & Common.DELETE_KEEP_DATA) == 0) {
+                        flags |= Common.DELETE_KEEP_DATA;
                     }
+
+                    if (uninstallBackground && Binder.getCallingUid() == Common.ROOT_UID) {
+                        param.setResult(null);
+                        if (enableDebug) {
+                            //Toast.makeText(mContext, "Background uninstall attempt blocked", Toast.LENGTH_LONG).show();
+                            xlog_start("deletePackageHook - uninstallBackground");
+                            xlog("Background uninstall attempt blocked", null);
+                            xlog_end("deletePackageHook - uninstallBackground");
+                        }
+                    }
+                    //if (isModuleEnabled()) {
+                    param.args[id] = flags;
+                    //}
                 }
-                //if (isModuleEnabled()) {
-                param.args[id] = flags;
-                //}
             }
         };
 
@@ -945,8 +1052,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 prefs.reload();
                 deviceAdmins = prefs.getBoolean(Common.PREF_ENABLE_UNINSTALL_DEVICE_ADMIN, false);
-                if (deviceAdmins && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
+                isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
+                if (isModuleEnabled && deviceAdmins) {
+                    if (enableDebug) {
                         xlog_start("deviceAdminsHook");
                         xlog("deviceAdmins set to", deviceAdmins);
                         xlog_end("deviceAdminsHook");
@@ -962,43 +1070,53 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
-                if (disableUserApps && isModuleEnabled()) {
-                    Object v = param.args[0];
-                    Object mUninstallButton = XposedHelpers
-                            .getObjectField(param.thisObject,
-                                    "mUninstallButton");
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("disableChangerHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("disableChangerHook");
+                }
+                if (isModuleEnabled) {
+                    disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, installerOptContext);
+                    if (disableUserApps) {
+                        Object v = param.args[0];
+                        Object mUninstallButton = XposedHelpers
+                                .getObjectField(param.thisObject,
+                                        "mUninstallButton");
 
-                    if (v == mUninstallButton) {
-                        Object appEntry = XposedHelpers.getObjectField(
-                                param.thisObject, "mAppEntry");
-                        Object appEntryInfo = XposedHelpers.getObjectField(
-                                appEntry, "info");
-                        boolean appEntryInfoEnabled = (Boolean) XposedHelpers
-                                .getObjectField(appEntryInfo, "enabled");
+                        if (v == mUninstallButton) {
+                            Object appEntry = XposedHelpers.getObjectField(
+                                    param.thisObject, "mAppEntry");
+                            Object appEntryInfo = XposedHelpers.getObjectField(
+                                    appEntry, "info");
+                            boolean appEntryInfoEnabled = (Boolean) XposedHelpers
+                                    .getObjectField(appEntryInfo, "enabled");
 
-                        if (!appEntryInfoEnabled) {
-                            Object disableChanger = XposedHelpers
-                                    .newInstance(
-                                            disableChangerClass,
-                                            param.thisObject,
-                                            appEntryInfo,
-                                            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
-                            XposedHelpers.callMethod(disableChanger, "execute",
-                                    (Object) null);
-                            XposedHelpers.callMethod(param.thisObject, "refreshUi");
-                            return null;
-                        } else {
-                            Object disableChanger = XposedHelpers
-                                    .newInstance(
-                                            disableChangerClass,
-                                            param.thisObject,
-                                            appEntryInfo,
-                                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER);
-                            XposedHelpers.callMethod(disableChanger, "execute",
-                                    (Object) null);
-                            XposedHelpers.callMethod(param.thisObject, "refreshUi");
-                            return null;
+                            if (!appEntryInfoEnabled) {
+                                Object disableChanger = XposedHelpers
+                                        .newInstance(
+                                                disableChangerClass,
+                                                param.thisObject,
+                                                appEntryInfo,
+                                                PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+                                XposedHelpers.callMethod(disableChanger, "execute",
+                                        (Object) null);
+                                XposedHelpers.callMethod(param.thisObject, "refreshUi");
+                                return null;
+                            } else {
+                                Object disableChanger = XposedHelpers
+                                        .newInstance(
+                                                disableChangerClass,
+                                                param.thisObject,
+                                                appEntryInfo,
+                                                PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER);
+                                XposedHelpers.callMethod(disableChanger, "execute",
+                                        (Object) null);
+                                XposedHelpers.callMethod(param.thisObject, "refreshUi");
+                                return null;
+                            }
                         }
                     }
                 }
@@ -1011,10 +1129,20 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
-                if (disableUserApps && isModuleEnabled()) {
-                    if ((Integer) param.args[0] == 9)
-                        param.args[0] = 7;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("disableUserAppsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("disableUserAppsHook");
+                }
+                if (isModuleEnabled) {
+                    disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, installerOptContext);
+                    if (disableUserApps) {
+                        if ((Integer) param.args[0] == 9)
+                            param.args[0] = 7;
+                    }
                 }
             }
         };
@@ -1086,11 +1214,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 *//*mContext = AndroidAppHelper.currentApplication();
                 try {
-                    checkLuckyPatcher = getPref(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, getInstallerOptContext());
+                    checkLuckyPatcher = getPref(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, installerOptContext);
                 } catch (Throwable e) {
                     checkLuckyPatcher = prefs.getBoolean(Common.PREF_DISABLE_CHECK_LUCKY_PATCHER, false);
                 }
-                if (checkLuckyPatcher && isModuleEnabled()) {
+                if (checkLuckyPatcher) {
                     String packageName = (String) param.args[0];
                     int uid = Binder.getCallingUid();
                     String caller = (String) XposedHelpers.callMethod(
@@ -1121,15 +1249,16 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     prefs.reload();
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                     hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
-                    if (enableDebug && isModuleEnabled()) {
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
+                    if (enableDebug) {
                         Log.i(TAG, "hideAppCrashes set via shared prefs");
                     }
                 } catch (Throwable e) {
                     Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
                 }
-                if (hideAppCrashes && isModuleEnabled()) {
+                if (isModuleEnabled && hideAppCrashes) {
                     try {
-                        if (enableDebug && isModuleEnabled()) {
+                        if (enableDebug) {
                             xlog_start("hideAppCrashesHook");
                             xlog("hideAppCrashes set to", hideAppCrashes);
                             xlog("App crashed", param.args[3]);
@@ -1151,26 +1280,36 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableAppStorageSettingsButtons = getPref(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, getInstallerOptContext());
-                if (enableAppStorageSettingsButtons && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("initAppStorageSettingsButtonsHook");
-                        xlog("Hooked initAppStorageSettingsButtonsHook", null);
-                        xlog_end("initAppStorageSettingsButtonsHook");
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("initAppStorageSettingsButtonsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("initAppStorageSettingsButtonsHook");
+                }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableAppStorageSettingsButtons = getPref(Common.PREF_ENABLE_APP_STORAGE_BUTTONS, installerOptContext);
+                    if (enableAppStorageSettingsButtons) {
+                        if (enableDebug) {
+                            xlog_start("initAppStorageSettingsButtonsHook");
+                            xlog("Hooked initAppStorageSettingsButtonsHook", null);
+                            xlog_end("initAppStorageSettingsButtonsHook");
+                        }
+                        Button mClearDataButton = (Button) XposedHelpers
+                                .getObjectField(param.thisObject,
+                                        "mClearDataButton");
+                        XposedHelpers.callMethod(mClearDataButton,
+                                "setOnClickListener", param.thisObject);
+                        Button mClearCacheButton = (Button) XposedHelpers
+                                .getObjectField(param.thisObject,
+                                        "mClearCacheButton");
+                        XposedHelpers.callMethod(mClearCacheButton,
+                                "setOnClickListener", param.thisObject);
+                        mClearDataButton.setEnabled(true);
+                        mClearCacheButton.setEnabled(true);
                     }
-                    Button mClearDataButton = (Button) XposedHelpers
-                            .getObjectField(param.thisObject,
-                                    "mClearDataButton");
-                    XposedHelpers.callMethod(mClearDataButton,
-                            "setOnClickListener", param.thisObject);
-                    Button mClearCacheButton = (Button) XposedHelpers
-                            .getObjectField(param.thisObject,
-                                    "mClearCacheButton");
-                    XposedHelpers.callMethod(mClearCacheButton,
-                            "setOnClickListener", param.thisObject);
-                    mClearDataButton.setEnabled(true);
-                    mClearCacheButton.setEnabled(true);
                 }
             }
         };
@@ -1178,7 +1317,12 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         initAppOpsDetailsHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                /*mContext = AndroidAppHelper.currentApplication();
+                installerOptContext = getInstallerOptContext();
+                isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                if (isModuleEnabled) {*/
                 param.setResult(false);
+                //}
                 return;
             }
         };
@@ -1187,78 +1331,87 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, getInstallerOptContext());
-                if (disableUserApps && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("initUninstallButtonsHook");
-                        xlog("Hooked initUninstallButtons", null);
-                        xlog_end("initUninstallButtonsHook");
-                    }
-                    Object appEntry = XposedHelpers.getObjectField(
-                            param.thisObject, "mAppEntry");
-                    final Object appEntryInfo = XposedHelpers.getObjectField(
-                            appEntry, "info");
-                    Object appPackageInfo = XposedHelpers.getObjectField(
-                            param.thisObject, "mPackageInfo");
-                    final String appPackageName = (String) XposedHelpers.getObjectField(
-                            appPackageInfo, "packageName");
-                    boolean appEntryInfoEnabled = (Boolean) XposedHelpers
-                            .getObjectField(appEntryInfo, "enabled");
-                    int appEntryInfoFlags = (Integer) XposedHelpers
-                            .getObjectField(appEntryInfo, "flags");
-                    boolean isSystem = false;
-                    if ((appEntryInfoFlags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        isSystem = true;
-                    }
-                    if (!isSystem) {
-                        Button mUninstallButton = (Button) XposedHelpers
-                                .getObjectField(param.thisObject,
-                                        "mUninstallButton");
-                        XposedHelpers.callMethod(mUninstallButton,
-                                "setOnClickListener", param.thisObject);
-                        mUninstallButton.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("initUninstallButtonsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("initUninstallButtonsHook");
+                }
+                if (isModuleEnabled) {
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    disableUserApps = getPref(Common.PREF_ENABLE_DISABLE_USER_APPS, installerOptContext);
+                    if (disableUserApps) {
+                        if (enableDebug) {
+                            xlog_start("initUninstallButtonsHook");
+                            xlog("Hooked initUninstallButtons", null);
+                            xlog_end("initUninstallButtonsHook");
+                        }
+                        Object appEntry = XposedHelpers.getObjectField(
+                                param.thisObject, "mAppEntry");
+                        final Object appEntryInfo = XposedHelpers.getObjectField(
+                                appEntry, "info");
+                        Object appPackageInfo = XposedHelpers.getObjectField(
+                                param.thisObject, "mPackageInfo");
+                        final String appPackageName = (String) XposedHelpers.getObjectField(
+                                appPackageInfo, "packageName");
+                        boolean appEntryInfoEnabled = (Boolean) XposedHelpers
+                                .getObjectField(appEntryInfo, "enabled");
+                        int appEntryInfoFlags = (Integer) XposedHelpers
+                                .getObjectField(appEntryInfo, "flags");
+                        boolean isSystem = false;
+                        if ((appEntryInfoFlags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                            isSystem = true;
+                        }
+                        if (!isSystem) {
+                            Button mUninstallButton = (Button) XposedHelpers
+                                    .getObjectField(param.thisObject,
+                                            "mUninstallButton");
+                            XposedHelpers.callMethod(mUninstallButton,
+                                    "setOnClickListener", param.thisObject);
+                            mUninstallButton.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
                                 /*Toast.makeText(mContext, "Long click detected, now figure out the uninstall Jerry",
                                         Toast.LENGTH_LONG).show();*/
-                                try {
-                                    XposedHelpers.callMethod(param.thisObject, "uninstallPkg", appPackageName, true, false);
-                                } catch (Throwable e) {
-                                    xlog_start("initUninstallButtonsHook - mUninstallButton onLongClick");
-                                    xlog("", e);
-                                    xlog_end("initUninstallButtonsHook - mUninstallButton onLongClick");
+                                    try {
+                                        XposedHelpers.callMethod(param.thisObject, "uninstallPkg", appPackageName, true, false);
+                                    } catch (Throwable e) {
+                                        xlog_start("initUninstallButtonsHook - mUninstallButton onLongClick");
+                                        xlog("", e);
+                                        xlog_end("initUninstallButtonsHook - mUninstallButton onLongClick");
+                                    }
+                                    return true;
                                 }
-                                return true;
+                            });
+                            Resources resources = (Resources) XposedHelpers
+                                    .callMethod(param.thisObject, "getResources");
+                            String textDisable = (String) resources
+                                    .getText(resources.getIdentifier(
+                                            "disable_text", "string",
+                                            Common.SETTINGS_PKG));
+                            if (textDisable == null) {
+                                textDisable = installerOptContext.getResources()
+                                        .getString(R.string.disable);
                             }
-                        });
-                        Resources resources = (Resources) XposedHelpers
-                                .callMethod(param.thisObject, "getResources");
-                        String textDisable = (String) resources
-                                .getText(resources.getIdentifier(
-                                        "disable_text", "string",
-                                        Common.SETTINGS_PKG));
-                        if (textDisable == null) {
-                            textDisable = getInstallerOptContext().getResources()
-                                    .getString(R.string.disable);
-                        }
-                        String textEnable = (String) resources
-                                .getText(resources.getIdentifier("enable_text",
-                                        "string", Common.SETTINGS_PKG));
-                        if (textEnable == null) {
-                            textEnable = getInstallerOptContext().getResources()
-                                    .getString(R.string.enable);
-                        }
+                            String textEnable = (String) resources
+                                    .getText(resources.getIdentifier("enable_text",
+                                            "string", Common.SETTINGS_PKG));
+                            if (textEnable == null) {
+                                textEnable = installerOptContext.getResources()
+                                        .getString(R.string.enable);
+                            }
 
-                        if (appEntryInfoEnabled) {
-                            mUninstallButton.setText(textDisable);
+                            if (appEntryInfoEnabled) {
+                                mUninstallButton.setText(textDisable);
                             /*Toast.makeText(mContext, "App is enabled",
                                     Toast.LENGTH_LONG).show();*/
-                        } else {
-                            mUninstallButton.setText(textEnable);
+                            } else {
+                                mUninstallButton.setText(textEnable);
                             /*Toast.makeText(mContext, "App is disabled",
                                     Toast.LENGTH_LONG).show();*/
-                        }
+                            }
                         /*try {
                             View mMoreControlButtons = (View) XposedHelpers
                                     .getObjectField(param.thisObject,
@@ -1267,6 +1420,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         } catch (NoSuchFieldError e) {
                             mSpecialDisableButton.setVisibility(View.VISIBLE);
                         }*/
+                        }
                     }
                 }
             }
@@ -1276,87 +1430,96 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, getInstallerOptContext());
-                backupDir = getPrefString(Common.PREF_BACKUP_APK_LOCATION, getInstallerOptContext());
-                enableDebug = getPref(Common.PREF_ENABLE_DEBUG, getInstallerOptContext());
-                enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, getInstallerOptContext());
-                downgradeApps = getPref(Common.PREF_ENABLE_DOWNGRADE_APP, getInstallerOptContext());
-                forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, getInstallerOptContext());
-                installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, getInstallerOptContext());
-                installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, getInstallerOptContext());
-                installShell = getPref(Common.PREF_DISABLE_INSTALL_SHELL, getInstallerOptContext());
-                mContext = (Context) XposedHelpers.getObjectField(
-                        param.thisObject, "mContext");
-                boolean isInstallStage = "installStage".equals(param.method
-                        .getName());
-                boolean isInstallPackageAsUser = "installPackageAsUser".equals(param.method
-                        .getName());
-                int flags = 0;
-                int id = 0;
-                if (isInstallStage && isModuleEnabled()) {
-                    try {
-                        id = 4;
-                        flags = (Integer) XposedHelpers.getObjectField(
-                                param.args[id], "installFlags");
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("installPackageHook - isInstallStage");
-                            xlog("isInstallStage equals", isInstallStage);
-                            xlog("flags", flags);
-                            xlog_end("installPackageHook - isInstallStage");
-                        }
-                    } catch (Exception e) {
-                        XposedBridge.log(e);
-                        XposedBridge.log("Stacktrace follows:");
-                        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-                            XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
-                        }
-                    }
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 } else {
-                    try {
-                        id = Common.JB_MR1_NEWER ? 2 : 1;
-                        flags = (Integer) param.args[id];
-                        if (enableDebug && isModuleEnabled()) {
-                            xlog_start("installPackageHook - isNotInstallStage");
-                            xlog("isInstallStage equals", isInstallStage);
-                            xlog("id", id);
-                            xlog("flags", flags);
-                            xlog_end("installPackageHook - isNotInstallStage");
+                    xlog_start("installPackageHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("installPackageHook");
+                }
+                if (isModuleEnabled) {
+                    backupApkFiles = getPref(Common.PREF_ENABLE_BACKUP_APK_FILE, installerOptContext);
+                    backupDir = getPrefString(Common.PREF_BACKUP_APK_LOCATION, installerOptContext);
+                    enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                    enableNotifications = getPref(Common.PREF_ENABLE_NOTIFICATIONS, installerOptContext);
+                    downgradeApps = getPref(Common.PREF_ENABLE_DOWNGRADE_APP, installerOptContext);
+                    forwardLock = getPref(Common.PREF_DISABLE_FORWARD_LOCK, installerOptContext);
+                    installAppsOnExternal = getPref(Common.PREF_ENABLE_INSTALL_EXTERNAL_STORAGE, installerOptContext);
+                    installBackground = getPref(Common.PREF_DISABLE_INSTALL_BACKGROUND, installerOptContext);
+                    installShell = getPref(Common.PREF_DISABLE_INSTALL_SHELL, installerOptContext);
+                    mContext = (Context) XposedHelpers.getObjectField(
+                            param.thisObject, "mContext");
+                    boolean isInstallStage = "installStage".equals(param.method
+                            .getName());
+                    boolean isInstallPackageAsUser = "installPackageAsUser".equals(param.method
+                            .getName());
+                    int flags = 0;
+                    int id = 0;
+                    if (isInstallStage) {
+                        try {
+                            id = 4;
+                            flags = (Integer) XposedHelpers.getObjectField(
+                                    param.args[id], "installFlags");
+                            if (enableDebug) {
+                                xlog_start("installPackageHook - isInstallStage");
+                                xlog("isInstallStage equals", isInstallStage);
+                                xlog("flags", flags);
+                                xlog_end("installPackageHook - isInstallStage");
+                            }
+                        } catch (Exception e) {
+                            XposedBridge.log(e);
+                            XposedBridge.log("Stacktrace follows - installPackageHook - isInstallStage:");
+                            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                                XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                            }
                         }
-                    } catch (Exception e) {
-                        XposedBridge.log(e);
-                        XposedBridge.log("Stacktrace follows:");
-                        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-                            XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                    } else {
+                        try {
+                            id = Common.JB_MR1_NEWER ? 2 : 1;
+                            flags = (Integer) param.args[id];
+                            if (enableDebug) {
+                                xlog_start("installPackageHook - isNotInstallStage");
+                                xlog("isInstallStage equals", isInstallStage);
+                                xlog("id", id);
+                                xlog("flags", flags);
+                                xlog_end("installPackageHook - isNotInstallStage");
+                            }
+                        } catch (Exception e) {
+                            XposedBridge.log(e);
+                            XposedBridge.log("Stacktrace follows - installPackageHook - isNotInstallStage:");
+                            for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+                                XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
+                            }
                         }
                     }
-                }
-                if (downgradeApps && isModuleEnabled()) {
-                    if ((flags & Common.INSTALL_ALLOW_DOWNGRADE) == 0) {
-                        flags |= Common.INSTALL_ALLOW_DOWNGRADE;
+                    if (downgradeApps) {
+                        if ((flags & Common.INSTALL_ALLOW_DOWNGRADE) == 0) {
+                            flags |= Common.INSTALL_ALLOW_DOWNGRADE;
+                        }
                     }
-                }
-                if (forwardLock && isModuleEnabled()) {
-                    if ((flags & Common.INSTALL_FORWARD_LOCK) != 0) {
-                        flags &= ~Common.INSTALL_FORWARD_LOCK;
+                    if (forwardLock) {
+                        if ((flags & Common.INSTALL_FORWARD_LOCK) != 0) {
+                            flags &= ~Common.INSTALL_FORWARD_LOCK;
+                        }
                     }
-                }
-                if (installAppsOnExternal && isModuleEnabled()) {
-                    if ((flags & Common.INSTALL_EXTERNAL) == 0) {
-                        flags |= Common.INSTALL_EXTERNAL;
+                    if (installAppsOnExternal) {
+                        if ((flags & Common.INSTALL_EXTERNAL) == 0) {
+                            flags |= Common.INSTALL_EXTERNAL;
+                        }
                     }
-                }
 
-                if (isInstallStage && isModuleEnabled()) {
-                    Object sessions = param.args[id];
-                    XposedHelpers.setIntField(sessions, "installFlags",
-                            flags);
-                    param.args[id] = sessions;
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog("sessions", sessions);
+                    if (isInstallStage) {
+                        Object sessions = param.args[id];
+                        XposedHelpers.setIntField(sessions, "installFlags",
+                                flags);
+                        param.args[id] = sessions;
+                        if (enableDebug) {
+                            xlog("sessions", sessions);
+                        }
+                    } else {
+                        param.args[id] = flags;
                     }
-                } else {
-                    param.args[id] = flags;
-                }
 
                 /*if (isInstallPackageAsUser) {
                     int uid = Binder.getCallingUid();
@@ -1379,57 +1542,58 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     xlog("installerUid: ", installerUid);
                 }*/
 
-                if (installBackground && isModuleEnabled() && Binder.getCallingUid() == Common.ROOT_UID) {
-                    param.setResult(null);
-                    if (enableNotifications && isModuleEnabled()) {
-                        Looper.prepare();
-                        //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
-                        postNotification("Install Blocked", "Background install attempt blocked", "");
-                        Looper.loop();
-                    }
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("installPackageHook - installBackground");
-                        xlog("Background install attempt blocked", null);
-                        xlog_end("installPackageHook - installBackground");
-                    }
-                    return;
-                }
-
-                if (installShell && isModuleEnabled() && Binder.getCallingUid() == Common.SHELL_UID) {
-                    param.setResult(null);
-                    if (enableNotifications && isModuleEnabled()) {
-                        Looper.prepare();
-                        //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
-                        postNotification("Install Blocked", "ADB install attempt blocked", "");
-                        Looper.loop();
-                    }
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("installPackageHook - installShell");
-                        xlog("ADB install attempt blocked", null);
-                        xlog_end("installPackageHook - installShell");
-                    }
-                    return;
-                }
-
-                if (backupApkFiles && isModuleEnabled() && backupDir != null) {
-                    if (!isInstallStage) {
-                        String apkFile = null;
-                        if (Common.LOLLIPOP_NEWER) {
-                            apkFile = (String) param.args[0];
-                        } else {
-                            Uri packageUri = (Uri) param.args[0];
-                            apkFile = packageUri.getPath();
+                    if (installBackground && Binder.getCallingUid() == Common.ROOT_UID) {
+                        param.setResult(null);
+                        if (enableNotifications) {
+                            Looper.prepare();
+                            //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
+                            postNotification("Install Blocked", "Background install attempt blocked", "", installerOptContext);
+                            Looper.loop();
                         }
-                        if (apkFile != null) {
-                            backupApkFile(apkFile, backupDir);
-                            if (enableDebug && isModuleEnabled()) {
-                                xlog_start("installPackageHook - backupApkFiles");
-                                xlog("APK file", apkFile);
-                                xlog_end("installPackageHook - backupApkFiles");
+                        if (enableDebug) {
+                            xlog_start("installPackageHook - installBackground");
+                            xlog("Background install attempt blocked", null);
+                            xlog_end("installPackageHook - installBackground");
+                        }
+                        return;
+                    }
+
+                    if (installShell && Binder.getCallingUid() == Common.SHELL_UID) {
+                        param.setResult(null);
+                        if (enableNotifications) {
+                            Looper.prepare();
+                            //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
+                            postNotification("Install Blocked", "ADB install attempt blocked", "", installerOptContext);
+                            Looper.loop();
+                        }
+                        if (enableDebug) {
+                            xlog_start("installPackageHook - installShell");
+                            xlog("ADB install attempt blocked", null);
+                            xlog_end("installPackageHook - installShell");
+                        }
+                        return;
+                    }
+
+                    if (backupApkFiles && backupDir != null) {
+                        if (!isInstallStage) {
+                            String apkFile = null;
+                            if (Common.LOLLIPOP_NEWER) {
+                                apkFile = (String) param.args[0];
+                            } else {
+                                Uri packageUri = (Uri) param.args[0];
+                                apkFile = packageUri.getPath();
+                            }
+                            if (apkFile != null) {
+                                backupApkFile(apkFile, backupDir, installerOptContext);
+                                if (enableDebug) {
+                                    xlog_start("installPackageHook - backupApkFiles");
+                                    xlog("APK file", apkFile);
+                                    xlog_end("installPackageHook - backupApkFiles");
                                 /*XposedBridge.log("Stacktrace follows:");
                                 for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                                     XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
                                 }*/
+                                }
                             }
                         }
                     }
@@ -1455,10 +1619,20 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                showButtons = getPref(Common.PREF_ENABLE_SHOW_BUTTON, getInstallerOptContext());
-                if (showButtons && isModuleEnabled()) {
-                    param.setResult(true);
-                    return;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("showButtonsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("showButtonsHook");
+                }
+                if (isModuleEnabled) {
+                    showButtons = getPref(Common.PREF_ENABLE_SHOW_BUTTON, installerOptContext);
+                    if (showButtons) {
+                        param.setResult(true);
+                        return;
+                    }
                 }
             }
         };
@@ -1467,12 +1641,21 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                disableSystemApps = getPref(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, getInstallerOptContext());
-                if (disableSystemApps && isModuleEnabled()) {
-                    param.setResult(false);
-                    return;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("systemAppsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("systemAppsHook");
                 }
-
+                if (isModuleEnabled) {
+                    disableSystemApps = getPref(Common.PREF_ENABLE_DISABLE_SYSTEM_APP, installerOptContext);
+                    if (disableSystemApps) {
+                        param.setResult(false);
+                        return;
+                    }
+                }
             }
         };
 
@@ -1489,10 +1672,20 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                installUnknownApps = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, getInstallerOptContext());
-                if (installUnknownApps && isModuleEnabled()) {
-                    param.setResult(true);
-                    return;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("unknownAppsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("unknownAppsHook");
+                }
+                if (isModuleEnabled) {
+                    installUnknownApps = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, installerOptContext);
+                    if (installUnknownApps) {
+                        param.setResult(true);
+                        return;
+                    }
                 }
             }
         };
@@ -1501,17 +1694,28 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, getInstallerOptContext());
-                if (installUnknownAppsPrompt && isModuleEnabled()) {
-                    int DLG_UNKNOWN_APPS = Build.VERSION.SDK_INT >= 17 ? 1 : 2;
-                    if ((Integer) param.args[0] != DLG_UNKNOWN_APPS) {
-                        XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
-                        XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("unknownAppsPrompt");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("unknownAppsPrompt");
+                }
+                if (isModuleEnabled) {
+                    installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, installerOptContext);
+                    if (installUnknownAppsPrompt) {
+                        int DLG_UNKNOWN_APPS = Build.VERSION.SDK_INT >= 17 ? 1 : 2;
+                        if ((Integer) param.args[0] != DLG_UNKNOWN_APPS) {
+                            XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
+                            XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
+                        }
+                        return null;
                     }
+                    XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
+                    XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
                     return null;
                 }
-                XposedHelpers.callMethod(param.thisObject, "removeDialog", (Integer) param.args[0]);
-                XposedHelpers.callMethod(param.thisObject, "showDialog", (Integer) param.args[0]);
                 return null;
             }
         };
@@ -1520,42 +1724,52 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 mContext = AndroidAppHelper.currentApplication();
-                installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, getInstallerOptContext());
-                if (installUnknownAppsPrompt && isModuleEnabled()) {
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
                     xlog_start("unknownAppsHookPrompt");
-                    String checkUnknownSourceMethod = "";
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("unknownAppsHookPrompt");
+                }
+                if (isModuleEnabled) {
+                    installUnknownAppsPrompt = getPref(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, installerOptContext);
+                    if (installUnknownAppsPrompt) {
+                        xlog_start("unknownAppsHookPrompt");
+                        String checkUnknownSourceMethod = "";
 
-                    String instAlertTitle = "Package installation";
-                    String instAlertBody = "You are trying to install an apk from an unknown source.\nYour phone/tablet and personal data are more vulnerable to attack by apps from unknown sources. You agree that you are solely responsible for any damage to your phone or loss of data that may result from using these apps.\n\nDo you want to continue the installation?";
+                        String instAlertTitle = "Package installation";
+                        String instAlertBody = "You are trying to install an apk from an unknown source.\nYour phone/tablet and personal data are more vulnerable to attack by apps from unknown sources. You agree that you are solely responsible for any damage to your phone or loss of data that may result from using these apps.\n\nDo you want to continue the installation?";
 
-                    if (Build.VERSION.SDK_INT >= 22) {
-                        checkUnknownSourceMethod = "isUnknownSourcesEnabled";
-                    } else {
-                        checkUnknownSourceMethod = "isInstallingUnknownAppsAllowed";
-                    }
-                    if (Common.MARSHMALLOW_NEWER) {
-                        if (!(Boolean) XposedHelpers.callMethod(param.thisObject, "isUnknownSourcesAllowedByAdmin")) {
-                            return;
+                        if (Build.VERSION.SDK_INT >= 22) {
+                            checkUnknownSourceMethod = "isUnknownSourcesEnabled";
+                        } else {
+                            checkUnknownSourceMethod = "isInstallingUnknownAppsAllowed";
                         }
-                    }
-                    if (!(Boolean) XposedHelpers.callMethod(param.thisObject, checkUnknownSourceMethod)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder((Context) param.thisObject);
-                        builder.setTitle(instAlertTitle);
-                        //Alert taken from Android settings
-                        builder.setMessage(instAlertBody);
-                        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                XposedHelpers.callMethod(param.thisObject, "initiateInstall");
+                        if (Common.MARSHMALLOW_NEWER) {
+                            if (!(Boolean) XposedHelpers.callMethod(param.thisObject, "isUnknownSourcesAllowedByAdmin")) {
+                                return;
                             }
-                        });
-                        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                XposedHelpers.callMethod(param.thisObject, "finish");
-                            }
-                        });
-                        builder.show();
+                        }
+                        if (!(Boolean) XposedHelpers.callMethod(param.thisObject, checkUnknownSourceMethod)) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder((Context) param.thisObject);
+                            builder.setTitle(instAlertTitle);
+                            //Alert taken from Android settings
+                            builder.setMessage(instAlertBody);
+                            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    XposedHelpers.callMethod(param.thisObject, "initiateInstall");
+                                }
+                            });
+                            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    XposedHelpers.callMethod(param.thisObject, "finish");
+                                }
+                            });
+                            builder.show();
+                        }
                     }
                 }
             }
@@ -1566,17 +1780,27 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 //prefs.reload();
                 mContext = AndroidAppHelper.currentApplication();
-                verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, getInstallerOptContext());
-                if (verifyApps && isModuleEnabled()) {
-                    if (enableDebug && isModuleEnabled()) {
-                        xlog_start("verifyAppsHook");
-                        xlog("Disable app verification set to", verifyApps);
-                        xlog_end("verifyAppsHook");
-                    }
-                    param.setResult(false);
-                    return;
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    xlog_start("verifyAppsHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("verifyAppsHook");
                 }
-                //}
+                if (isModuleEnabled) {
+                    verifyApps = getPref(Common.PREF_DISABLE_VERIFY_APP, installerOptContext);
+                    if (verifyApps) {
+                        if (enableDebug) {
+                            xlog_start("verifyAppsHook");
+                            xlog("Disable app verification set to", verifyApps);
+                            xlog_end("verifyAppsHook");
+                        }
+                        param.setResult(false);
+                        return;
+                    }
+                    //}
+                }
             }
         };
 
@@ -1587,11 +1811,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     verifyJar = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_JAR, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    verifyJar = getPref(Common.PREF_DISABLE_VERIFY_JAR, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                    verifyJar = getPref(Common.PREF_DISABLE_VERIFY_JAR, installerOptContext);
                 }
-                if (verifyJar && isModuleEnabled()) {
+                if (isModuleEnabled && verifyJar) {
                     //xlog("Disable JAR verification set to", verifyJar);
                     String name = (String) XposedHelpers.getObjectField(
                             param.thisObject, "name");
@@ -1643,11 +1870,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    verifySignature = getPref(Common.PREF_DISABLE_VERIFY_SIGNATURE, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                    verifySignature = getPref(Common.PREF_DISABLE_VERIFY_SIGNATURE, installerOptContext);
                 }
-                if (verifySignature && isModuleEnabled()) {
+                if (isModuleEnabled && verifySignature) {
                     /*xlog("verifySignatureHook: Boot complete", bootCompleted);
                     xlog_start("verifySignatureHook");
                     xlog("Disable signature verification set to", verifySignature);
@@ -1664,11 +1894,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 try {
                     prefs.reload();
                     checkSignatures = prefs.getBoolean(Common.PREF_DISABLE_CHECK_SIGNATURE, false);
+                    isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 } catch (Throwable e) {
                     mContext = AndroidAppHelper.currentApplication();
-                    checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, getInstallerOptContext());
+                    installerOptContext = getInstallerOptContext();
+                    checkSignatures = getPref(Common.PREF_DISABLE_CHECK_SIGNATURE, installerOptContext);
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
                 }
-                if (checkSignatures && isModuleEnabled()) {
+                if (isModuleEnabled && checkSignatures) {
                     //xlog("verifySignaturesHook: Boot complete", bootCompleted);
                     /*xlog_start("verifySignaturesHook");
                     xlog("Disable signature checking set to", checkSignatures);
@@ -1714,7 +1947,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }*/
 
             if (Common.ANDROID_PKG.equals(lpparam.packageName)
-                    && Common.ANDROID_PKG.equals(lpparam.processName) && !lpparam.packageName.equals(Common.SYSTEM_UI)) {
+                    && Common.ANDROID_PKG.equals(lpparam.processName)) {
                 Class<?> appErrorDialogClass = XposedHelpers.findClass(
                         Common.APPERRORDIALOG, lpparam.classLoader);
                 Class<?> devicePolicyManagerClass = XposedHelpers.findClass(
@@ -2026,7 +2259,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         } catch (Throwable t) {
             xlog_start("handleLoadPackage");
             xlog("handleLoadPackage error caught: ", t);
-            XposedBridge.log("Stacktrace follows:");
+            XposedBridge.log("Stacktrace follows - handleLoadPackage:");
             for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
                 XposedBridge.log("HookDetection: " + stackTraceElement.getClassName() + "->" + stackTraceElement.getMethodName());
             }
@@ -2050,31 +2283,32 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         return ret;
     }
 
-    public void backupApkFile(String apkFile, String dir) {
+    public void backupApkFile(String apkFile, String dir, Context ctx) {
         Intent backupApkFile = new Intent(Common.ACTION_BACKUP_APK_FILE);
         backupApkFile.setPackage(Common.PACKAGE_NAME);
         backupApkFile.putExtra(Common.FILE, apkFile);
         backupApkFile.putExtra(Common.BACKUP_DIR, dir);
-        getInstallerOptContext().sendBroadcast(backupApkFile);
+        ctx.sendBroadcast(backupApkFile);
     }
 
-    public void deleteApkFile(String apkFile) {
+    public void deleteApkFile(String apkFile, Context ctx) {
         Intent deleteApkFile = new Intent(Common.ACTION_DELETE_APK_FILE);
         deleteApkFile.setPackage(Common.PACKAGE_NAME);
         deleteApkFile.putExtra(Common.FILE, apkFile);
-        getInstallerOptContext().sendBroadcast(deleteApkFile);
+        ctx.sendBroadcast(deleteApkFile);
     }
 
     public Context getInstallerOptContext() {
         Context context = null;
         try {
             context = mContext.createPackageContext(Common.PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+            return context;
         } catch (PackageManager.NameNotFoundException e) {
             xlog_start("getInstallerOptContext Error");
             xlog("", e);
             xlog_end("getInstallerOptContext Error");
+            return context;
         }
-        return context;
     }
 
     public static Boolean getPref(String pref, Context context) {
@@ -2082,10 +2316,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             return MultiprocessPreferences.getDefaultSharedPreferences(context).getBoolean(pref, false);
         } catch (Throwable t) {
             xlog_start("getPref Error");
-            xlog("", t);
+            xlog(pref, t);
             xlog_end("getPref Error");
+            return false;
         }
-        return false;
     }
 
     public static String getPrefString(String pref, Context context) {
@@ -2093,10 +2327,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(pref, null);
         } catch (Throwable t) {
             xlog_start("getPrefString Error");
-            xlog("", t);
+            xlog(pref, t);
             xlog_end("getPrefString Error");
+            return null;
         }
-        return null;
     }
 
     public static long getPrefLong(String pref, Context context) {
@@ -2104,10 +2338,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             return MultiprocessPreferences.getDefaultSharedPreferences(context).getLong(pref, 0);
         } catch (Throwable t) {
             xlog_start("getPrefLong Error");
-            xlog("", t);
+            xlog(pref, t);
             xlog_end("getPrefLong Error");
+            return 0;
         }
-        return 0;
     }
 
     public boolean isCyanogenMod() {
@@ -2153,23 +2387,22 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         }
     }*/
 
-    public boolean isModuleEnabled() {
+    /*public boolean isModuleEnabled(Context ctx) {
         try {
             prefs.reload();
             return prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
         } catch (Throwable e) {
-            mContext = AndroidAppHelper.currentApplication();
-            return getPref(Common.PREF_ENABLE_MODULE, getInstallerOptContext());
+            return getPref(Common.PREF_ENABLE_MODULE, ctx);
         }
-    }
+    }*/
 
-    public void postNotification(String title, String description, String thirdline) {
+    public void postNotification(String title, String description, String thirdline, Context ctx) {
         Intent postNotification = new Intent(
                 Common.ACTION_POST_NOTIFICATION);
         postNotification.putExtra(Common.DESCRIPTION, description);
         postNotification.putExtra(Common.THIRDLINE, thirdline);
         postNotification.putExtra(Common.TITLE, title);
-        getInstallerOptContext().sendBroadcast(postNotification);
+        ctx.sendBroadcast(postNotification);
     }
 
     public static void setPref(Context context, String pref, Boolean value, int value2, long value3, String value4) {
@@ -2233,19 +2466,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         verifySignature = prefs.getBoolean(Common.PREF_DISABLE_VERIFY_SIGNATURE, false);
     }
 
-    public void uninstallSystemApp(String packageName) {
+    public void uninstallSystemApp(String packageName, Context ctx) {
         Intent uninstallSystemApp = new Intent(
                 Common.ACTION_UNINSTALL_SYSTEM_APP);
         uninstallSystemApp.setPackage(Common.PACKAGE_NAME);
         uninstallSystemApp.putExtra(Common.PACKAGE, packageName);
-        getInstallerOptContext().sendBroadcast(uninstallSystemApp);
+        ctx.sendBroadcast(uninstallSystemApp);
     }
 
-    public void vibrateDevice(int duration) {
+    public void vibrateDevice(int duration, Context ctx) {
         Intent vibrateDevice = new Intent(
                 Common.ACTION_VIBRATE_DEVICE);
         vibrateDevice.putExtra(Common.DURATION, duration);
-        getInstallerOptContext().sendBroadcast(vibrateDevice);
+        ctx.sendBroadcast(vibrateDevice);
     }
 
     public static void xlog(String description, Object object) {
