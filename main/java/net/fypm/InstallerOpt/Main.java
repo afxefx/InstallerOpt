@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Binder;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -132,6 +134,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     public static boolean enableVersionToast;
     public static boolean enableVibrateDevice;
     public static boolean externalSdCardFullAccess;
+    public static boolean forceEnglish;
     public static boolean forwardLock;
     public static boolean hideAppCrashes;
     public static boolean installAppsOnExternal;
@@ -395,8 +398,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     if (msg != null) {
                         installedApp = (msg.arg1 == Common.INSTALL_SUCCEEDED);
                     }
-                    if (enableAutoLaunchInstall) {
-                        if (installedApp && mLaunch != null) {
+                    if (installedApp && mLaunch != null) {
+                        if (enableAutoLaunchInstall) {
                             mLaunch.performClick();
                         }
                     }
@@ -560,6 +563,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     Activity packageInstaller = (Activity) param.thisObject;
                     if (enableAutoHideInstall || autoInstallCancelOverride) {
                         packageInstaller.onBackPressed();
+                        if (enableDebug) {
+                            xlog_start("autoHideInstallHook");
+                            xlog("Hiding package installer window", null);
+                            xlog_end("autoHideInstallHook");
+                        }
                     }
                 }
             }
@@ -586,6 +594,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     enableVersionToast = getPref(Common.PREF_ENABLE_SHOW_VERSION_TOAST, installerOptContext);
                     enableAutoInstall = getPref(Common.PREF_ENABLE_AUTO_INSTALL, installerOptContext);
                     autoInstallCancelOverride = getPref(Common.PREF_ENABLE_AUTO_INSTALL_CANCEL_OVERRIDE, installerOptContext);
+                    forceEnglish = getPref(Common.PREF_ENABLE_FORCE_ENGLISH, installerOptContext);
                     //Add below two in prefs
                     //checkSignatures = getPref("enabled_disable_sig_check", installerOptContext);
                     //confirmCheckSignatures = getPref("enabled_confirm_check_signatures", installerOptContext);
@@ -610,11 +619,35 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     toast.setDuration(Toast.LENGTH_LONG);
                     String packageName = mPkgInfo.packageName;
                     newVersion = mPkgInfo.versionName;
-                    versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
+                    if (forceEnglish) {
+                        String languageToLoad = "en";
+                        Locale desiredLocale = new Locale(languageToLoad);
+                        Configuration conf = res.getConfiguration();
+                        Locale savedLocale = conf.locale;
+                        conf.locale = desiredLocale;
+                        res.updateConfiguration(conf, null);
+                        versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
+                        conf.locale = savedLocale;
+                        res.updateConfiguration(conf, null);
+                    } else {
+                        versionInfo = String.format("%s %25s", res.getString(R.string.new_version), newVersion);
+                    }
                     try {
                         pi = mPm.getPackageInfo(packageName, 0);
                         currentVersion = pi.versionName;
-                        versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
+                        if (forceEnglish) {
+                            String languageToLoad = "en";
+                            Locale desiredLocale = new Locale(languageToLoad);
+                            Configuration conf = res.getConfiguration();
+                            Locale savedLocale = conf.locale;
+                            conf.locale = desiredLocale;
+                            res.updateConfiguration(conf, null);
+                            versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
+                            conf.locale = savedLocale;
+                            res.updateConfiguration(conf, null);
+                        } else {
+                            versionInfo += String.format("%s %20s", res.getString(R.string.current_version_inline), currentVersion);
+                        }
                     } catch (PackageManager.NameNotFoundException e) {
                         if (enableDebug) {
                             xlog_start("autoInstallHook - Current version not found");
@@ -649,11 +682,35 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     }
                     newCode = mPkgInfo.versionCode;
-                    versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
+                    if (forceEnglish) {
+                        String languageToLoad = "en";
+                        Locale desiredLocale = new Locale(languageToLoad);
+                        Configuration conf = res.getConfiguration();
+                        Locale savedLocale = conf.locale;
+                        conf.locale = desiredLocale;
+                        res.updateConfiguration(conf, null);
+                        versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
+                        conf.locale = savedLocale;
+                        res.updateConfiguration(conf, null);
+                    } else {
+                        versionCode = String.format("%10s %19d", res.getString(R.string.new_version_code), newCode);
+                    }
                     try {
                         pi2 = mPm.getPackageInfo(packageName, 0);
                         currentCode = pi2.versionCode;
-                        versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
+                        if (forceEnglish) {
+                            String languageToLoad = "en";
+                            Locale desiredLocale = new Locale(languageToLoad);
+                            Configuration conf = res.getConfiguration();
+                            Locale savedLocale = conf.locale;
+                            conf.locale = desiredLocale;
+                            res.updateConfiguration(conf, null);
+                            versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
+                            conf.locale = savedLocale;
+                            res.updateConfiguration(conf, null);
+                        } else {
+                            versionCode += String.format("%10s %14d", res.getString(R.string.current_version_code_inline), currentCode);
+                        }
                     } catch (PackageManager.NameNotFoundException e) {
                         if (enableDebug) {
                             xlog_start("autoInstallHook - Current version code not found");
@@ -1502,9 +1559,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog("isInstallStage equals", isInstallStage);
                                 xlog("flags", flags);
                                 int uid = Binder.getCallingUid();
-                                xlog("Calling UID: ", uid);
+                                xlog("Calling UID", uid);
                                 int total = param.args.length;
-                                xlog("Total arguments: ", total);
+                                xlog("Total arguments", total);
                                 for (int i = 0; i < total; i++) {
                                     if (param.args[i] != null) {
                                         try {
@@ -1533,9 +1590,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 xlog("id", id);
                                 xlog("flags", flags);
                                 int uid = Binder.getCallingUid();
-                                xlog("Calling UID: ", uid);
+                                xlog("Calling UID", uid);
                                 int total = param.args.length;
-                                xlog("Total arguments: ", total);
+                                xlog("Total arguments", total);
                                 for (int i = 0; i < total; i++) {
                                     if (param.args[i] != null) {
                                         try {
