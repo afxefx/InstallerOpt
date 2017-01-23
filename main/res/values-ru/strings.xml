@@ -106,7 +106,7 @@
     <string name="disable_uninstall_background_title">Отключить фоновое удаление</string>
     <string name="disable_verify_apps_summary">Будет разрешена установка непроверенных приложений</string>
     <string name="disable_verify_apps_title">Отключить проверку приложений</string>
-    <string name="disable_verify_jar_summary">Будур разрешены несовместимые сертификаты в JAR файлах</string>
+    <string name="disable_verify_jar_summary">Будут разрешены несовместимые сертификаты в JAR файлах</string>
     <string name="disable_verify_jar_title">Отключить проверку JAR</string>
     <string name="enable_app_storage_buttons_summary">Включить кнопки "Очистить данные" и "Очистить кэш" до подсчета размера приложения</string>
     <string name="enable_app_storage_buttons_title">Включить кнопки сразу</string>
@@ -139,7 +139,7 @@
     <string name="enable_disable_sig_check_summary">Разрешить установку приложений с некорректной подписью</string>
     <string name="enable_disable_sig_check_title">Отключить проверку подписи</string>
     <string name="enable_disable_system_apps_summary">Разрешает выключить системное приложение, долгое нажатие на кнопку - удаляет его</string>
-    <string name="enable_disable_system_apps_title">Статус системного приложения</string>
+    <string name="enable_disable_system_apps_title">Обработка системных приложений</string>
     <string name="enable_disable_user_apps_summary">Кнопка "Удалить" выключает приложение, долгое нажатие на кнопку - удаляет его</string>
     <string name="enable_disable_user_apps_title">Выключать пользовательские приложения</string>
     <string name="enable_disable_verify_signatures_summary">Разрешить установку приложений с неподтвержденной подписью</string>
@@ -162,7 +162,7 @@
     <string name="enable_launch_app_title">Запуск по значку</string>
     <string name="enable_open_app_ops_summary">Запускать App Ops после установки приложения</string>
     <string name="enable_open_app_ops_title">Запустить App Ops</string>
-    <string name="enable_package_name_summary">В окне информации о приложении нажатие по имени приложение отобразит имя пакета</string>
+    <string name="enable_package_name_summary">В окне информации о приложении нажатие по имени приложения отобразит имя пакета</string>
     <string name="enable_package_name_title">Отображать имя пакета</string>
     <string name="enable_play_open_summary">В окне информации о приложении долгое нажатие по значку откроет страницу приложения в Play Маркете</string>
     <string name="enable_play_open_title">Открыть в Play Маркете</string>
