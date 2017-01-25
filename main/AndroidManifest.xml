@@ -88,7 +88,7 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Utils">
+        <receiver android:name=".Utils" android:process=":remote">
             <intent-filter>
                 <action android:name="InstallerOpt.intent.action.BACKUP_APK_FILE"/>
                 <action android:name="InstallerOpt.intent.action.BACKUP_PREFERENCES"/>

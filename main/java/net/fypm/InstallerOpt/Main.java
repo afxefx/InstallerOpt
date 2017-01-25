@@ -427,28 +427,32 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         if (!appInstalledText.isEmpty()) {
                             if (enableDebug) {
                                 Toast.makeText(mContext, appInstalledText,
-                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_SHORT).show();
                             }
                             if (enableNotifications) {
-                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", installerOptContext);
+                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", 42, installerOptContext);
                             }
                             if (enableVibrateDevice) {
                                 try {
                                     vibrateDevice(500, installerOptContext);
-                                    xlog("Vibrate on install successful", null);
+                                    if (enableDebug) {
+                                        xlog("Vibrate on install successful", null);
+                                    }
                                 } catch (Exception e) {
-                                    xlog("Unable to vibrate on install", e);
+                                    if (enableDebug) {
+                                        xlog("Unable to vibrate on install", e);
+                                    }
                                     e.printStackTrace();
                                 }
                             }
                         }
                     } else {
                         if (enableNotifications) {
-                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, installerOptContext);
+                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, 42, installerOptContext);
                         }
                         if (enableDebug) {
                             Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                             xlog_start("autoCloseInstallHook");
                             xlog("Install failed", msg);
                             xlog("msg", msg);
@@ -1243,8 +1247,9 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 prefs.reload();
                 externalSdCardFullAccess = prefs.getBoolean(
                         Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
+                isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
                 String permission = (String) param.args[1];
-                if (!externalSdCardFullAccess) {
+                if (!isModuleEnabled || !externalSdCardFullAccess) {
                     return;
                 }
                 if (Common.PERM_WRITE_EXTERNAL_STORAGE
@@ -1282,7 +1287,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                 prefs.reload();
                 externalSdCardFullAccess = prefs.getBoolean(
                         Common.PREF_ENABLE_EXTERNAL_SDCARD_FULL_ACCESS, true);
-                if (!externalSdCardFullAccess) {
+                isModuleEnabled = prefs.getBoolean(Common.PREF_ENABLE_MODULE, false);
+                if (!isModuleEnabled || !externalSdCardFullAccess) {
                     return;
                 }
                 Object extras = XposedHelpers.getObjectField(param.args[0], "mExtras");
@@ -1326,9 +1332,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         grantPermissionsBackButtonHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                //setResultAndFinish()
-                XposedHelpers.callMethod(param.thisObject, "setResultAndFinish");
-
+                mContext = AndroidAppHelper.currentApplication();
+                installerOptContext = getInstallerOptContext();
+                if (installerOptContext != null) {
+                    isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                } else {
+                    isModuleEnabled = false;
+                    xlog_start("grantPermissionsBackButtonHook");
+                    xlog("Unable to get InstallerOpt context", null);
+                    xlog_end("grantPermissionsBackButtonHook");
+                }
+                if (isModuleEnabled) {
+                    XposedHelpers.callMethod(param.thisObject, "setResultAndFinish");
+                }
             }
         };
 
@@ -1336,6 +1352,20 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 try {
+                    mContext = AndroidAppHelper.currentApplication();
+                    installerOptContext = getInstallerOptContext();
+                    if (installerOptContext != null) {
+                        enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
+                        isModuleEnabled = getPref(Common.PREF_ENABLE_MODULE, installerOptContext);
+                        hideAppCrashes = getPref(Common.PREF_ENABLE_HIDE_APP_CRASHES, installerOptContext);
+                    } else {
+                        isModuleEnabled = false;
+                        xlog_start("initAppStorageSettingsButtonsHook");
+                        xlog("Unable to get InstallerOpt context", null);
+                        xlog_end("initAppStorageSettingsButtonsHook");
+                    }
+                } catch (Throwable e) {
+                    Log.e(TAG, "hideAppCrashes error via content provider: ", e);
                     prefs.reload();
                     enableDebug = prefs.getBoolean(Common.PREF_ENABLE_DEBUG, false);
                     hideAppCrashes = prefs.getBoolean(Common.PREF_ENABLE_HIDE_APP_CRASHES, false);
@@ -1343,14 +1373,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     if (enableDebug) {
                         Log.i(TAG, "hideAppCrashes set via shared prefs");
                     }
-                } catch (Throwable e) {
-                    Log.e(TAG, "hideAppCrashes error via shared prefs: ", e);
                 }
                 if (isModuleEnabled && hideAppCrashes) {
                     try {
                         if (enableDebug) {
                             xlog_start("hideAppCrashesHook");
-                            xlog("hideAppCrashes set to", hideAppCrashes);
                             xlog("App crashed", param.args[3]);
                             xlog_end("hideAppCrashesHook");
                         }
@@ -1359,7 +1386,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         //XposedHelpers.callMethod(param.thisObject, "dismiss");
                     } catch (Throwable e) {
                         xlog_start("hideAppCrashesHook");
-                        xlog("hideAppCrashes", e);
+                        xlog("hideAppCrashes error", e);
                         xlog_end("hideAppCrashesHook");
                     }
                 }
@@ -1563,12 +1590,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 int total = param.args.length;
                                 xlog("Total arguments", total);
                                 for (int i = 0; i < total; i++) {
-                                    if (param.args[i] != null) {
-                                        try {
+                                    try {
+                                        if (param.args[i] != null) {
                                             xlog("Argument " + i, param.args[i]);
-                                        } catch (Throwable t) {
-                                            xlog("Error caught", t);
+                                        } else {
+                                            xlog("Argument " + i, "null");
                                         }
+                                    } catch (Throwable t) {
+                                        xlog("Error caught", t);
                                     }
                                 }
                                 xlog_end("installPackageHook - isInstallStage");
@@ -1594,12 +1623,14 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                 int total = param.args.length;
                                 xlog("Total arguments", total);
                                 for (int i = 0; i < total; i++) {
-                                    if (param.args[i] != null) {
-                                        try {
+                                    try {
+                                        if (param.args[i] != null) {
                                             xlog("Argument " + i, param.args[i]);
-                                        } catch (Throwable t) {
-                                            xlog("Error caught", t);
+                                        } else {
+                                            xlog("Argument " + i, "null");
                                         }
+                                    } catch (Throwable t) {
+                                        xlog("Error caught", t);
                                     }
                                 }
                                 xlog_end("installPackageHook - isNotInstallStage");
@@ -1648,13 +1679,15 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             int total = param.args.length;
                             xlog("Total arguments: ", total);
                             for (int i = 0; i < total; i++) {
-                                if (param.args[i] != null) {
                                     try {
-                                        xlog("Argument " + i, param.args[i]);
+                                        if (param.args[i] != null) {
+                                            xlog("Argument " + i, param.args[i]);
+                                        } else {
+                                            xlog("Argument " + i, "null");
+                                        }
                                     } catch (Throwable t) {
                                         xlog("Error caught", t);
                                     }
-                                }
                             }
                             xlog_end("installPackageHook - isInstallPackageAsUser");
                         }
@@ -1669,13 +1702,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.setResult(null);
                         if (enableNotifications) {
                             Looper.prepare();
-                            //Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
-                            postNotification("Install Blocked", "Background install attempt blocked", "", installerOptContext);
+                            postNotification("Install Blocked", "Background install attempt blocked", param.args[0].toString(), 404, installerOptContext);
+                            Looper.loop();
+                        } else {
+                            Looper.prepare();
+                            Toast.makeText(mContext, "Background install attempt blocked", Toast.LENGTH_LONG).show();
                             Looper.loop();
                         }
                         if (enableDebug) {
                             xlog_start("installPackageHook - installBackground");
                             xlog("Background install attempt blocked", null);
+                            xlog("Attempted file to install", param.args[0].toString());
                             xlog_end("installPackageHook - installBackground");
                         }
                         return;
@@ -1685,13 +1722,17 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.setResult(null);
                         if (enableNotifications) {
                             Looper.prepare();
-                            //Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
-                            postNotification("Install Blocked", "ADB install attempt blocked", "", installerOptContext);
+                            postNotification("Install Blocked", "ADB install attempt blocked", param.args[0].toString(), 404, installerOptContext);
+                            Looper.loop();
+                        } else {
+                            Looper.prepare();
+                            Toast.makeText(mContext, "ADB install attempt blocked", Toast.LENGTH_LONG).show();
                             Looper.loop();
                         }
                         if (enableDebug) {
                             xlog_start("installPackageHook - installShell");
                             xlog("ADB install attempt blocked", null);
+                            xlog("Attempted file to install", param.args[0].toString());
                             xlog_end("installPackageHook - installShell");
                         }
                         return;
@@ -2076,7 +2117,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
             }*/
 
             if (Common.ANDROID_PKG.equals(lpparam.packageName)
-                    && Common.ANDROID_PKG.equals(lpparam.processName)) {
+                    && Common.ANDROID_PKG.equals(lpparam.processName)
+                    && !lpparam.packageName.equals(Common.SYSTEM_UI)) {
                 Class<?> appErrorDialogClass = XposedHelpers.findClass(
                         Common.APPERRORDIALOG, lpparam.classLoader);
                 Class<?> devicePolicyManagerClass = XposedHelpers.findClass(
@@ -2525,10 +2567,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
         }
     }*/
 
-    public void postNotification(String title, String description, String thirdline, Context ctx) {
+    public void postNotification(String title, String description, String thirdline, int id, Context ctx) {
         Intent postNotification = new Intent(
                 Common.ACTION_POST_NOTIFICATION);
         postNotification.putExtra(Common.DESCRIPTION, description);
+        postNotification.putExtra(Common.ID, id);
         postNotification.putExtra(Common.THIRDLINE, thirdline);
         postNotification.putExtra(Common.TITLE, title);
         ctx.sendBroadcast(postNotification);
