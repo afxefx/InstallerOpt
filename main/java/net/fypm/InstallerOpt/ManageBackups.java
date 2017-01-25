@@ -59,6 +59,7 @@ public class ManageBackups extends ListActivity {
         super.onCreate(savedInstanceState);
         boolean enableDark = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DARK_THEME, false);
         enableDebug = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_DEBUG, false);
+        backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         unknownApps = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP, false);
         unknownAppsPrompt = MultiprocessPreferences.getDefaultSharedPreferences(this).getBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_PROMPT, false);
         MultiprocessPreferences.getDefaultSharedPreferences(this).edit().putBoolean(Common.PREF_ENABLE_INSTALL_UNKNOWN_APP_ORIGINAL, unknownApps).apply();
@@ -68,7 +69,6 @@ public class ManageBackups extends ListActivity {
         }
         setContentView(R.layout.backup_list);
 
-        backupDir = MultiprocessPreferences.getDefaultSharedPreferences(this).getString(Common.PREF_BACKUP_APK_LOCATION, null);
         lt = new ListTask();
         lt.execute();
         selectedItems = new ArrayList<String>();

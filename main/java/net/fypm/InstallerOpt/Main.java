@@ -430,7 +430,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                                         Toast.LENGTH_SHORT).show();
                             }
                             if (enableNotifications) {
-                                postNotification(res.getString(R.string.install_status_success), packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont), "", 42, installerOptContext);
+                                postNotification(res.getString(R.string.install_status_success),
+                                        packageUri.getLastPathSegment() + res.getString(R.string.install_status_success_cont),
+                                        "",
+                                        42,
+                                        installerOptContext);
                             }
                             if (enableVibrateDevice) {
                                 try {
@@ -448,7 +452,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         }
                     } else {
                         if (enableNotifications) {
-                            postNotification(res.getString(R.string.install_status_failure), packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont), res.getString(R.string.install_status_failure_error_code) + msg.arg1, 42, installerOptContext);
+                            postNotification(res.getString(R.string.install_status_failure),
+                                    packageUri.getLastPathSegment() + res.getString(R.string.install_status_failure_cont),
+                                    res.getString(R.string.install_status_failure_error_code) + msg.arg1,
+                                    42,
+                                    installerOptContext);
                         }
                         if (enableDebug) {
                             Toast.makeText(mContext, "App not installed\n\nError code: " + msg.arg1,
@@ -937,11 +945,19 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                     //enableDebug = getPref(Common.PREF_ENABLE_DEBUG, installerOptContext);
                     enableAutoUninstall = getPref(Common.PREF_ENABLE_AUTO_UNINSTALL, installerOptContext);
                     if (enableAutoUninstall) {
+                        Resources res = installerOptContext.getResources();
                         try {
                             Button mOk = (Button) XposedHelpers.getObjectField(
                                     param.thisObject, "mOk");
                             if (mOk != null) {
                                 mOk.performClick();
+                                if (enableNotifications) {
+                                    postNotification(res.getString(R.string.uninstall_status_success),
+                                            res.getString(R.string.uninstall_status_success_cont),
+                                            "",
+                                            43,
+                                            installerOptContext);
+                                }
                             }
                         } catch (NoSuchFieldError nsfe) {
                             xlog_start("autoUninstallHook");
@@ -1702,7 +1718,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.setResult(null);
                         if (enableNotifications) {
                             Looper.prepare();
-                            postNotification("Install Blocked", "Background install attempt blocked", param.args[0].toString(), 404, installerOptContext);
+                            postNotification("Install Blocked",
+                                    "Background install attempt blocked",
+                                    param.args[0].toString(),
+                                    404,
+                                    installerOptContext);
                             Looper.loop();
                         } else {
                             Looper.prepare();
@@ -1722,7 +1742,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         param.setResult(null);
                         if (enableNotifications) {
                             Looper.prepare();
-                            postNotification("Install Blocked", "ADB install attempt blocked", param.args[0].toString(), 404, installerOptContext);
+                            postNotification("Install Blocked",
+                                    "ADB install attempt blocked",
+                                    param.args[0].toString(),
+                                    404,
+                                    installerOptContext);
                             Looper.loop();
                         } else {
                             Looper.prepare();
@@ -1907,8 +1931,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                         xlog_start("unknownAppsHookPrompt");
                         String checkUnknownSourceMethod = "";
 
-                        String instAlertTitle = "Package installation";
-                        String instAlertBody = "You are trying to install an apk from an unknown source.\nYour phone/tablet and personal data are more vulnerable to attack by apps from unknown sources. You agree that you are solely responsible for any damage to your phone or loss of data that may result from using these apps.\n\nDo you want to continue the installation?";
+                        String instAlertTitle = "Package Installation";
+                        String instAlertBody = "You are trying to install an apk from an unknown source.\n\nYour phone/tablet and personal data are more vulnerable to attack by apps from unknown sources. You agree that you are solely responsible for any damage to your phone or loss of data that may result from using these apps.\n\nDo you want to continue the installation?";
 
                         if (Build.VERSION.SDK_INT >= 22) {
                             checkUnknownSourceMethod = "isUnknownSourcesEnabled";
@@ -2087,7 +2111,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
         try {
-            if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || resparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
+            if (resparam.packageName.equals(Common.PACKAGEINSTALLER_PKG)
+                    || resparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)
+                    || resparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG)
+                    || resparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
                 resparam.res.hookLayout(Common.PACKAGEINSTALLER_PKG, "layout", "install_confirm", autoInstallHook2);
             }
         } catch (Throwable t) {
@@ -2118,7 +2145,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
             if (Common.ANDROID_PKG.equals(lpparam.packageName)
                     && Common.ANDROID_PKG.equals(lpparam.processName)
-                    && !lpparam.packageName.equals(Common.SYSTEM_UI)) {
+                    /*&& !lpparam.packageName.equals(Common.SYSTEM_UI)*/) {
                 Class<?> appErrorDialogClass = XposedHelpers.findClass(
                         Common.APPERRORDIALOG, lpparam.classLoader);
                 Class<?> devicePolicyManagerClass = XposedHelpers.findClass(
@@ -2187,7 +2214,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
                             "com.android.server.pm.PackageManagerService",
                             lpparam.classLoader), "grantPermissionsLPw",
                             Common.CLASS_PACKAGE_PARSER_PACKAGE, boolean.class, String.class, externalSdCardAccessHook2);
-                } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+                } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
+                        || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
                     XposedHelpers.findAndHookMethod(
                             XposedHelpers.findClass(
                                     "com.android.server.SystemConfig",
@@ -2266,7 +2294,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXpo
 
             }
 
-            if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG) || lpparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
+            if (lpparam.packageName.equals(Common.PACKAGEINSTALLER_PKG)
+                    || lpparam.packageName.equals(Common.GOOGLE_PACKAGEINSTALLER_PKG)
+                    || lpparam.packageName.equals(Common.MOKEE_PACKAGEINSTALLER_PKG)
+                    || lpparam.packageName.equals(Common.SAMSUNG_PACKAGEINSTALLER_PKG)) {
                 XposedHelpers.findAndHookMethod(Common.INSTALLAPPPROGRESS + "$1",
                         lpparam.classLoader, "handleMessage", Message.class,
                         autoCloseInstallHook);

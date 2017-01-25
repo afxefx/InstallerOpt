@@ -114,6 +114,8 @@
     <string name="sort_status_des">Status - Descending</string>
     <string name="stats_menu">Backup Stats</string>
     <string name="status_text">Status:&#160;</string>
+    <string name="uninstall_status_success">Uninstall Success</string>
+    <string name="uninstall_status_success_cont">App was uninstalled</string>
     <string name="updated">Module has been updated</string>
     <string name="version_text">Version:&#160;</string>
     <string name="write_permission_message">External write permission is needed for backup APK functionality to work</string>
