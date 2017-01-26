@@ -114,6 +114,8 @@
     <string name="sort_status_des">状态 - 降序</string>
     <string name="stats_menu">备份状态</string>
     <string name="status_text">状态:&#160;</string>
+    <string name="uninstall_status_success">卸载成功</string>
+    <string name="uninstall_status_success_cont">应用已卸载</string>
     <string name="updated">模块已经更新</string>
     <string name="version_text">版本:&#160;</string>
     <string name="write_permission_message">需要外部存储访问权限以确保备份功能正常工作</string>
