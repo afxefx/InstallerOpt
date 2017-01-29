@@ -178,8 +178,8 @@
     <string name="enable_downgrade_apps_title">降级应用</string>
     <string name="enable_force_english_summary">强制该模块英文而不考虑当前语言环境</string>
     <string name="enable_force_english_title">强制英文</string>
-    <string name="enable_hide_app_crashes_summary">关闭应用强行停止的对话框</string>
-    <string name="enable_hide_app_crashes_title">禁用强行停止对话框</string>
+    <string name="enable_hide_app_crashes_summary">移除强行关闭确定按钮的超时对话框</string>
+    <string name="enable_hide_app_crashes_title">禁用强行关闭超时对话框</string>
     <string name="enable_hide_icon_summary">从启动器中移除应用图标</string>
     <string name="enable_hide_icon_title">应用图标</string>
     <string name="enable_install_external_storage_summary">应用在开启时会安装在外部存储,关闭时会安装在内部存储</string>
