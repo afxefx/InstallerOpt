@@ -229,6 +229,8 @@
     <string name="byte_text">&#160;bajtov)</string>
     <string name="size_text">Veľkosť: &#160;</string>
     <string name="status_text">Stav: &#160;</string>
+    <string name="uninstall_status_success">Odinštalovanie bolo úspešné</string>
+    <string name="uninstall_status_success_cont">Aplikácia bola odinštalovaná</string>
     <string name="version_text">Verzia: &#160;</string>
     <string name="apps_text">&#160; aplikácií</string>
     <string name="not_available_text">Nie je dostupné</string>
